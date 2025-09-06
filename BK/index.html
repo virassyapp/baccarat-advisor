@@ -1,0 +1,2864 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>バカラ戦略アドバイザー</title>
+    
+    <!-- PWA設定 -->
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoi44OQ44Kr44Op5oim55Wl44Ki44OJ44OQ44Kk44K244O8Iiwic2hvcnRfbmFtZSI6IkJhY2NhcmF0QWR2aXNvciIsImRlc2NyaXB0aW9uIjoi44OQ44Kr44Op44Gu5oim55Wl44KS44K144Od44O844OI44GZ44KL5aSa6KiA6Kqe44Ki44OJ44OQ44Kk44K244O8IiwiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjNhV1IwYUQwaU1USTRJaUJvWldsbmFIUTlJakV5T0NJZ2RtbGxkMEp2ZUQwaU1DQXdJREV5T0NBeE1qZ2lJR1pwYkd3OUlpTmhObUU0TWpjaUlIaHRiRzV6UFNKb2RIUndjem92TDNkM2R5NTNNeTV2Y21jdk1qQXdNQzl6ZG1jaVBnb2dJQ0E4Y0dGMGFDQmtQU0p0TmpRZ05qUkROalFnTWpjdU5UWWdNamN1TlRZZ05qUWdOalJETVRBd0xqUTBJRFkwSURFeU9DQTJOREF4TlM0ME5DQXlOeTQxTmlBNU5pQXlOeTQxTmlBNU5pQTVOa001TmlBeE1EQXVORFFnTmpRZ01UQTRJRFkwSURFeU9VTTNOQ0V4TURndU5EUWdNamN1TlRZZ01UQXdMalEwSURJM0xqVTJJRFkwSURFMklEWTBJajQ4TDNOMlp6ND0iLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCIsInNpemVzIjoiMTI4eDEyOCJ9XSwic3RhcnRfdXJsIjoiLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwidGhlbWVfY29sb3IiOiIjMWIyYzNlIiwiYmFja2dyb3VuZF9jb2xvciI6IiMwZjQ3MmEifQ==">
+    <meta name="theme-color" content="#1b2c3e">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="バカラアドバイザー">
+    
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1f36 0%, #2d3748 100%);
+            background-attachment: fixed;
+            color: white;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(78, 205, 196, 0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .title {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4, #45b7d1);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+        
+        .currency-selector, .language-selector {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .current-selector {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            padding: 12px 16px;
+            border-radius: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #4facfe;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
+        }
+        
+        .current-selector:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .funds-display {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 16px 24px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+        
+        .funds-display:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+        }
+        
+        .funds-amount {
+            font-weight: 800;
+            color: #10b981;
+            font-size: 22px;
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+        }
+        
+        .settings-button {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 12px;
+            border-radius: 14px;
+            color: #9ca3af;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 18px;
+        }
+        
+        .settings-button:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        @media (min-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ff6b6b);
+            background-size: 300% 100%;
+            animation: borderFlow 3s ease-in-out infinite;
+        }
+        
+        @keyframes borderFlow {
+            0%, 100% { background-position: 0% 0%; }
+            50% { background-position: 200% 0%; }
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #e2e8f0;
+        }
+        
+        /* Quick Input Styles */
+        .quick-input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .score-section {
+            text-align: center;
+        }
+        
+        .score-label {
+            font-size: 16px;
+            color: #cbd5e0;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .score-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .score-btn {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: white;
+            border-radius: 14px;
+            padding: 16px 10px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .score-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .score-btn.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: rgba(102, 126, 234, 0.6);
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+            transform: scale(1.1);
+        }
+        
+        .score-btn.selected:hover {
+            transform: scale(1.15);
+        }
+        
+        .calculate-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 18px 25px;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+            position: relative;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        
+        .calculate-btn:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6);
+        }
+        
+        /* Risk Management Styles */
+        .risk-card {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        
+        .risk-card::before {
+            background: linear-gradient(90deg, #ef4444, #dc2626, #b91c1c, #dc2626, #ef4444);
+        }
+        
+        .risk-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .risk-item {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            padding: 18px;
+            border-radius: 14px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .risk-label {
+            font-size: 14px;
+            color: #cbd5e0;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        .risk-value {
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        .risk-percentage {
+            color: #10b981;
+        }
+        
+        .risk-level {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .risk-safe {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.2));
+            color: #34d399;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        .risk-medium {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.2));
+            color: #fbbf24;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
+        }
+        
+        .risk-high {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2));
+            color: #f87171;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+        }
+        
+        .risk-controls {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .risk-input {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .risk-input label {
+            font-size: 14px;
+            color: #cbd5e0;
+            font-weight: 500;
+        }
+        
+        .risk-input span {
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+        
+        .control-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .btn-pause {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+        }
+        
+        .btn-pause:hover {
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.6);
+        }
+        
+        .btn-stop {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+        }
+        
+        .btn-stop:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.6);
+        }
+        
+        .button {
+            color: white;
+            border: none;
+            padding: 16px 25px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+            z-index: 1;
+        }
+        
+        .button:hover::before {
+            left: 100%;
+        }
+        
+        .button:active {
+            transform: translateY(0);
+        }
+        
+        .result-display {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 8px 0;
+        }
+        
+        .result-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .winner-player { 
+            color: #4facfe;
+            font-weight: 700;
+        }
+        .winner-banker { 
+            color: #ff6b6b;
+            font-weight: 700;
+        }
+        .winner-tie { 
+            color: #4ecdc4;
+            font-weight: 700;
+        }
+        
+        .suggestion-box {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%);
+            backdrop-filter: blur(15px);
+            padding: 28px;
+            border-radius: 18px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .suggestion-text {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #10b981, #3b82f6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 10px 0;
+        }
+        
+        .status-badge {
+            padding: 10px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .status-verified {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.2));
+            color: #34d399;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        .status-verifying {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.2));
+            color: #fbbf24;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
+        }
+        
+        .status-active {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2));
+            color: #f87171;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+        }
+        
+        .status-inactive {
+            background: linear-gradient(135deg, rgba(107, 114, 128, 0.2), rgba(75, 85, 99, 0.2));
+            color: #9ca3af;
+            box-shadow: 0 0 10px rgba(107, 114, 128, 0.2);
+        }
+        
+        .history-container {
+            background: rgba(15, 20, 25, 0.4);
+            backdrop-filter: blur(15px);
+            border-radius: 16px;
+            padding: 20px;
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 14px;
+            font-size: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .history-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(5px);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .history-empty {
+            text-align: center;
+            color: #6b7280;
+            padding: 50px 0;
+            font-size: 16px;
+        }
+        
+        .chart-container {
+            height: 300px;
+            background: rgba(15, 20, 25, 0.4);
+            backdrop-filter: blur(15px);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .chart-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            border-radius: 18px;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+
+        /* Enhanced Settings Modal */
+        .settings-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            animation: fadeIn 0.3s ease-out;
+            overflow-y: auto;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .settings-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 25px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+            animation: slideIn 0.4s ease-out;
+            position: relative;
+            margin: 20px 0;
+        }
+        
+        .settings-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ff6b6b);
+            background-size: 300% 100%;
+            animation: borderFlow 3s ease-in-out infinite;
+        }
+        
+        @keyframes slideIn {
+            from { 
+                opacity: 0;
+                transform: translateY(-30px) scale(0.9);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .settings-title {
+            font-size: 24px;
+            margin-bottom: 25px;
+            text-align: center;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .settings-section {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            transition: all 0.3s ease;
+        }
+        
+        .settings-section:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #d1d5db;
+            font-weight: 500;
+        }
+        
+        .input-field, .select-field {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus, .select-field:focus {
+            outline: none;
+            border-color: rgba(79, 172, 254, 0.6);
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.15), 0 0 20px rgba(79, 172, 254, 0.3);
+            transform: scale(1.02);
+            background: rgba(255, 255, 255, 0.12);
+        }
+        
+        .select-field option {
+            background: #1f2937;
+            color: white;
+        }
+        
+        /* Enhanced slider styles */
+        .enhanced-slider-container {
+            position: relative;
+            margin: 15px 0;
+        }
+        
+        .enhanced-slider {
+            width: 100%;
+            height: 10px;
+            border-radius: 6px;
+            background: linear-gradient(90deg, #10b981 0%, #f59e0b 50%, #ef4444 100%);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .enhanced-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.2s ease;
+        }
+        
+        .enhanced-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.7);
+        }
+        
+        .enhanced-slider::-moz-range-thumb {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+            transition: all 0.2s ease;
+        }
+        
+        .slider-value-popup {
+            position: absolute;
+            top: -45px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            opacity: 0;
+            transition: all 0.2s ease;
+            pointer-events: none;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .slider-value-popup::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #667eea;
+        }
+        
+        .enhanced-slider:hover + .slider-value-popup,
+        .enhanced-slider:focus + .slider-value-popup {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-5px);
+        }
+        
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 5px;
+        }
+        
+        .current-limit-display {
+            text-align: center;
+            padding: 12px;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            font-weight: 600;
+            color: #f87171;
+            margin-top: 10px;
+        }
+        
+        .settings-buttons-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .settings-btn {
+            padding: 16px 25px;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            color: white;
+        }
+        
+        .settings-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .settings-btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn-apply {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+        
+        .btn-apply:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6);
+        }
+        
+        .btn-cancel {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            box-shadow: 0 4px 15px rgba(107, 114, 128, 0.4);
+        }
+        
+        .btn-cancel:hover {
+            background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(107, 114, 128, 0.6);
+        }
+        
+        /* Pause/Resume overlay */
+        .pause-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(245, 158, 11, 0.95);
+            backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .pause-content {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+        
+        .pause-content h2 {
+            font-size: 28px;
+            margin-bottom: 15px;
+            color: #fbbf24;
+        }
+        
+        .pause-content p {
+            font-size: 16px;
+            margin-bottom: 25px;
+            color: #d1d5db;
+        }
+        
+        .resume-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+        
+        .resume-btn:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6);
+        }
+
+        /* Install prompt styles */
+        .install-prompt {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #3b82f6;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 1001;
+            max-width: calc(100vw - 40px);
+        }
+
+        .install-prompt button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .install-prompt button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .install-prompt .close-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 0;
+            margin-left: auto;
+        }
+
+        /* Enhanced currency and language options */
+        .currency-options, .language-options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        
+        .currency-option, .language-option {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .currency-option:hover, .language-option:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .currency-option.selected, .language-option.selected {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+            border-color: rgba(102, 126, 234, 0.4);
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .currency-option input[type="radio"], .language-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+        
+        .currency-checkmark, .language-checkmark {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            margin-right: 15px;
+            position: relative;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .currency-option.selected .currency-checkmark, .language-option.selected .language-checkmark {
+            border-color: #4ecdc4;
+            background: #4ecdc4;
+            box-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
+        }
+        
+        .currency-checkmark::after, .language-checkmark::after {
+            content: '';
+            position: absolute;
+            display: none;
+            top: 4px;
+            left: 4px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: white;
+        }
+        
+        .currency-option.selected .currency-checkmark::after, .language-option.selected .language-checkmark::after {
+            display: block;
+        }
+        
+        .currency-info, .language-info {
+            flex-grow: 1;
+        }
+        
+        .currency-name, .language-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .currency-details, .language-details {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .currency-flag, .language-flag {
+            font-size: 20px;
+            margin-right: 8px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .header-left {
+                justify-content: center;
+            }
+            
+            .quick-input-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .score-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+            
+            .score-btn {
+                padding: 14px 8px;
+                font-size: 16px;
+                min-height: 50px;
+            }
+            
+            .risk-display {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .settings-content {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .settings-buttons-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+        }
+    
+</style>
+</head>
+<body>
+    <!-- Pause Overlay -->
+    <div id="pauseOverlay" class="pause-overlay hidden">
+        <div class="pause-content">
+            <h2>⏸️ 一時停止中</h2>
+            <p>リスク管理により取引が一時停止されています</p>
+            <button class="resume-btn" id="resumeBtn">▶️ 再開</button>
+        </div>
+    </div>
+
+    <!-- Install prompt -->
+    <div id="installPrompt" class="install-prompt hidden">
+        <span>📱 ホーム画面にアプリを追加</span>
+        <button id="installBtn">インストール</button>
+        <button class="close-btn" id="closeInstall">×</button>
+    </div>
+
+    <!-- Enhanced Settings Modal -->
+    <div id="settingsModal" class="settings-modal hidden">
+        <div class="settings-content">
+            <h3 class="settings-title">⚙️ 設定</h3>
+            
+            <!-- Currency Section -->
+            <div class="settings-section">
+                <div class="section-title">
+                    <span>💱</span>
+                    <span id="currencySectionTitle">通貨設定</span>
+                </div>
+                <div class="input-group">
+                    <label class="input-label" id="currencyLabel">通貨</label>
+                    <select id="currencySelect" class="select-field">
+                        <option value="JPY">🇯🇵 日本円</option>
+                        <option value="USD">🇺🇸 US Dollar</option>
+                        <option value="EUR">🇪🇺 Euro</option>
+                        <option value="KRW">🇰🇷 韓国ウォン</option>
+                        <option value="CNY">🇨🇳 人民元</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Language Section -->
+            <div class="settings-section">
+                <div class="section-title">
+                    <span>🌍</span>
+                    <span id="languageSectionTitle">言語設定</span>
+                </div>
+                <div class="input-group">
+                    <label class="input-label" id="languageLabel">言語</label>
+                    <select id="languageSelect" class="select-field">
+                        <option value="ja">日本語</option>
+                        <option value="en">English</option>
+                        <option value="es">Español</option>
+                        <option value="zh">中文</option>
+                        <option value="ko">한국어</option>
+                        <option value="fr">Français</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Funds Section -->
+            <div class="settings-section">
+                <div class="section-title">
+                    <span>💰</span>
+                    <span id="fundsSectionTitle">資金設定</span>
+                </div>
+                <div class="input-group">
+                    <label class="input-label" id="initialFundsLabel">初期資金</label>
+                    <input type="number" id="initialFundsInput" class="input-field" value="100000" min="1000" step="1000">
+                </div>
+            </div>
+            
+            <!-- Strategy Section -->
+            <div class="settings-section">
+                <div class="section-title">
+                    <span>🎯</span>
+                    <span id="strategySectionTitle">戦略設定</span>
+                </div>
+                <div class="input-group">
+                    <label class="input-label" id="verificationCountLabel">パターン検証回数</label>
+                    <input type="number" id="verificationCountInput" class="input-field" value="4" min="1" max="10">
+                </div>
+            </div>
+            
+            <!-- Risk Management Section -->
+            <div class="settings-section">
+                <div class="section-title">
+                    <span>🛡️</span>
+                    <span id="riskSectionTitle">リスク管理</span>
+                </div>
+                <div class="input-group">
+                    <label class="input-label" id="lossLimitPercentLabel">損失限度 (%)</label>
+                    <div class="enhanced-slider-container">
+                        <input type="range" id="lossLimitSlider" class="enhanced-slider" min="0" max="100" value="20" step="1">
+                        <div class="slider-value-popup" id="sliderValuePopup">20%</div>
+                    </div>
+                    <div class="slider-labels">
+                        <span>0% (無制限)</span>
+                        <span id="currentLossLimitPercent">20%</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="current-limit-display" id="currentLimitDisplay">
+                        損失限度: ¥20,000 (20%)
+                    </div>
+                </div>
+            </div>
+            
+            <div class="settings-buttons-grid">
+                <button id="applySettings" class="settings-btn btn-apply">
+                    <span>✅</span>
+                    <span id="applyText">適用</span>
+                </button>
+                <button id="cancelSettings" class="settings-btn btn-cancel">
+                    <span>❌</span>
+                    <span id="cancelText">キャンセル</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <h1 class="title" id="appTitle">バカラ戦略アドバイザー</h1>
+                <div class="currency-selector">
+                    <div class="current-selector" id="currentCurrencyDisplay">
+                        <span>💱</span>
+                        <span id="currencyLabel">日本円</span>
+                    </div>
+                </div>
+                <div class="language-selector">
+                    <div class="current-selector">
+                        <span>🌍</span>
+                        <span id="currentLang">日本語</span>
+                    </div>
+                </div>
+                <button class="settings-button" id="settingsBtn">⚙️</button>
+            </div>
+            <div class="funds-display">
+                <span>💰</span>
+                <span id="currentFundsLabel">現在の資金:</span>
+                <span class="funds-amount" id="fundsAmount">¥100,000</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="main-content">
+            <!-- Left Panel -->
+            <div>
+                <!-- Quick Input -->
+                <div class="card">
+                    <h3 class="card-title">
+                        <span>⚡</span>
+                        <span id="quickInputTitle">クイック入力</span>
+                    </h3>
+                    
+                    <div class="quick-input-grid">
+                        <div class="score-section">
+                            <div class="score-label" id="playerLabel">プレイヤー</div>
+                            <div class="score-grid">
+                                <button class="score-btn" data-player="0">0</button>
+                                <button class="score-btn" data-player="1">1</button>
+                                <button class="score-btn" data-player="2">2</button>
+                                <button class="score-btn" data-player="3">3</button>
+                                <button class="score-btn" data-player="4">4</button>
+                                <button class="score-btn" data-player="5">5</button>
+                                <button class="score-btn" data-player="6">6</button>
+                                <button class="score-btn" data-player="7">7</button>
+                                <button class="score-btn" data-player="8">8</button>
+                                <button class="score-btn" data-player="9">9</button>
+                            </div>
+                        </div>
+                        
+                        <div class="score-section">
+                            <div class="score-label" id="bankerLabel">バンカー</div>
+                            <div class="score-grid">
+                                <button class="score-btn" data-banker="0">0</button>
+                                <button class="score-btn" data-banker="1">1</button>
+                                <button class="score-btn" data-banker="2">2</button>
+                                <button class="score-btn" data-banker="3">3</button>
+                                <button class="score-btn" data-banker="4">4</button>
+                                <button class="score-btn" data-banker="5">5</button>
+                                <button class="score-btn" data-banker="6">6</button>
+                                <button class="score-btn" data-banker="7">7</button>
+                                <button class="score-btn" data-banker="8">8</button>
+                                <button class="score-btn" data-banker="9">9</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="resultDisplay" class="result-display hidden">
+                        <div class="result-row">
+                            <span id="winnerLabel">勝者:</span>
+                            <span id="winnerValue"></span>
+                        </div>
+                        <div class="result-row">
+                            <span id="scoreDiffLabel">スコア差:</span>
+                            <span id="scoreDiffValue"></span>
+                        </div>
+                    </div>
+                    
+                    <button class="calculate-btn" id="calculateBtn">
+                        <span>🧮</span>
+                        <span id="calculateText">結果計算</span>
+                    </button>
+                </div>
+
+                <!-- Risk Management -->
+                <div class="card risk-card">
+                    <h3 class="card-title">
+                        <span>🛡️</span>
+                        <span id="riskManagementTitle">リスク管理</span>
+                    </h3>
+                    
+                    <div class="risk-display">
+                        <div class="risk-item">
+                            <div class="risk-label" id="fundsRatioLabel">資金比率</div>
+                            <div class="risk-value risk-percentage" id="fundsRatio">100.0%</div>
+                        </div>
+                        <div class="risk-item">
+                            <div class="risk-label" id="riskLevelLabel">リスクレベル</div>
+                            <div class="risk-level risk-safe" id="riskLevel">安全</div>
+                        </div>
+                    </div>
+                    
+                    <div class="loss-limit-control">
+                        <div class="risk-input">
+                            <label id="lossLimitLabel">損失限度:</label>
+                            <span id="lossLimitDisplay">¥20,000 (20%)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="risk-controls">
+                        <div class="risk-input">
+                            <label id="currentLossLabel">現在の損失:</label>
+                            <span id="currentLoss" style="color: #10b981; font-weight: bold;">¥0</span>
+                        </div>
+                    </div>
+                    
+                    <div class="control-buttons">
+                        <button class="button btn-pause" id="pauseBtn">
+                            <span>⏸️</span>
+                            <span id="pauseText">休憩</span>
+                        </button>
+                        <button class="button btn-stop" id="stopBtn">
+                            <span>🛑</span>
+                            <span id="stopText">終了</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bet Suggestion -->
+                <div class="card">
+                    <h3 class="card-title">
+                        <span>🎯</span>
+                        <span id="betSuggestionTitle">次回ベット提案</span>
+                    </h3>
+                    <div class="suggestion-box">
+                        <div class="suggestion-text" id="suggestionText">データ不足</div>
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div class="card">
+                    <h3 class="card-title" id="statusTitle">📊 ステータス</h3>
+                    
+                    <div class="status-item">
+                        <span id="strategyVerificationLabel">戦略検証:</span>
+                        <span class="status-badge status-verifying" id="verificationStatus">初期確認中</span>
+                    </div>
+                    
+                    <div class="status-item">
+                        <span id="martingaleLabel">マーチンゲール:</span>
+                        <span class="status-badge status-inactive" id="martingaleStatus">無効</span>
+                    </div>
+                    
+                    <div class="status-item">
+                        <span id="consecutiveLossesLabel">連続敗北:</span>
+                        <span style="color: #ef4444; font-weight: bold;" id="consecutiveLossesCount">0回</span>
+                    </div>
+                    
+                    <div class="status-item">
+                        <span id="currentBetLabel">現在のベット額:</span>
+                        <span style="color: #f59e0b; font-weight: bold;" id="currentBetAmount">¥500</span>
+                    </div>
+                    
+                    <div class="status-item hidden" id="tieStatusItem">
+                        <span id="tieStatusLabel">タイ状況:</span>
+                        <span class="status-badge" style="background: #581c87; color: #a855f7;" id="tieStatusValue"></span>
+                    </div>
+                </div>
+
+                <!-- Reset Button -->
+                <button class="button" id="resetBtn" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);">
+                    <span>🔄</span>
+                    <span id="resetText">全データリセット</span>
+                </button>
+            </div>
+
+            <!-- Right Panel -->
+            <div>
+                <!-- Chart -->
+                <div class="card">
+                    <h3 class="card-title" id="fundsProgressTitle">📈 資金推移</h3>
+                    <div class="chart-container" id="chartContainer">
+                        <canvas id="fundsChart" class="chart-canvas"></canvas>
+                        <span id="chartPlaceholder" style="position: absolute;">チャートはここに表示されます</span>
+                    </div>
+                </div>
+
+                <!-- Game History -->
+                <div class="card">
+                    <h3 class="card-title" id="gameHistoryTitle">📋 結果履歴</h3>
+                    <div class="history-container" id="historyContainer">
+                        <div class="history-empty" id="historyEmpty">まだ履歴がありません</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Complete translation object
+        const translations = {
+            ja: {
+                title: "バカラ戦略アドバイザー",
+                currentFunds: "現在の資金",
+                quickInput: "クイック入力",
+                playerScore: "プレイヤー",
+                bankerScore: "バンカー",
+                winner: "勝者",
+                scoreDifference: "スコア差",
+                calculate: "結果計算",
+                nextBetSuggestion: "次回ベット提案",
+                riskManagement: "リスク管理",
+                fundsRatio: "資金比率",
+                riskLevel: "リスクレベル",
+                lossLimit: "損失限度:",
+                currentLoss: "現在の損失:",
+                pause: "休憩",
+                stop: "終了",
+                status: "ステータス",
+                strategyVerification: "戦略検証",
+                martingale: "マーチンゲール",
+                consecutiveLosses: "連続敗北",
+                currentBetAmount: "現在のベット額",
+                tieStatus: "タイ状況",
+                resetAllData: "全データリセット",
+                fundsProgress: "資金推移",
+                gameHistory: "結果履歴",
+                noHistoryYet: "まだ履歴がありません",
+                chartPlaceholder: "チャートはここに表示されます",
+                player: "プレイヤー",
+                banker: "バンカー",
+                tie: "引き分け",
+                win: "勝ち",
+                lose: "負け",
+                none: "なし",
+                active: "有効",
+                inactive: "無効",
+                even: "偶数",
+                odd: "奇数",
+                times: "回",
+                dataInsufficient: "データ不足",
+                initialVerification: "初期確認中",
+                patternVerifying: "パターン検証中",
+                patternVerified: "パターン確認済み",
+                patternFailed: "パターン確認失敗",
+                tieOccurred: "タイ発生：ベット見送り",
+                consecutiveTie: "回連続タイ",
+                waitingNonTie: "非タイ結果待ち",
+                newBet: "新規ベット",
+                martingaleContinue: "マーチンゲール継続",
+                noBetSuggestion: "ベット提案なし",
+                confirmReset: "全データをリセットしますか？",
+                settings: "設定",
+                language: "言語",
+                initialFunds: "初期資金",
+                verificationCount: "パターン検証回数",
+                lossLimitPercent: "損失限度 (%)",
+                apply: "適用",
+                cancel: "キャンセル",
+                safe: "安全",
+                medium: "注意",
+                high: "危険",
+                paused: "一時停止中",
+                pausedDescription: "リスク管理により取引が一時停止されています",
+                resume: "再開",
+                sessionEnded: "セッション終了",
+                sessionEndedDescription: "損失限度に達したためセッションを終了しました",
+                languageSection: "言語設定",
+                fundsSection: "資金設定",
+                strategySection: "戦略設定",
+                riskSection: "リスク管理",
+                currencySection: "通貨設定"
+            },
+            en: {
+                title: "Baccarat Strategy Advisor",
+                currentFunds: "Current Funds",
+                quickInput: "Quick Input",
+                playerScore: "Player",
+                bankerScore: "Banker",
+                winner: "Winner",
+                scoreDifference: "Score Difference",
+                calculate: "Calculate Result",
+                nextBetSuggestion: "Next Bet Suggestion",
+                riskManagement: "Risk Management",
+                fundsRatio: "Funds Ratio",
+                riskLevel: "Risk Level",
+                lossLimit: "Loss Limit:",
+                currentLoss: "Current Loss:",
+                pause: "Pause",
+                stop: "Stop",
+                status: "Status",
+                strategyVerification: "Strategy Verification",
+                martingale: "Martingale",
+                consecutiveLosses: "Consecutive Losses",
+                currentBetAmount: "Current Bet Amount",
+                tieStatus: "Tie Status",
+                resetAllData: "Reset All Data",
+                fundsProgress: "Funds Progress",
+                gameHistory: "Game History",
+                noHistoryYet: "No history yet",
+                chartPlaceholder: "Chart will be displayed here",
+                player: "Player",
+                banker: "Banker",
+                tie: "Tie",
+                win: "Win",
+                lose: "Loss",
+                none: "None",
+                active: "Active",
+                inactive: "Inactive",
+                even: "Even",
+                odd: "Odd",
+                times: " times",
+                dataInsufficient: "Insufficient Data",
+                initialVerification: "Initial Verification",
+                patternVerifying: "Pattern Verifying",
+                patternVerified: "Pattern Verified",
+                patternFailed: "Pattern Failed",
+                tieOccurred: "Tie: Skip Bet",
+                consecutiveTie: " consecutive ties",
+                waitingNonTie: "Waiting non-tie",
+                newBet: "New Bet",
+                martingaleContinue: "Martingale Continue",
+                noBetSuggestion: "No Bet Suggestion",
+                confirmReset: "Reset all data?",
+                settings: "Settings",
+                language: "Language",
+                initialFunds: "Initial Funds",
+                verificationCount: "Pattern Verification Count",
+                lossLimitPercent: "Loss Limit (%)",
+                apply: "Apply",
+                cancel: "Cancel",
+                safe: "Safe",
+                medium: "Medium",
+                high: "High",
+                paused: "Paused",
+                pausedDescription: "Trading paused by risk management",
+                resume: "Resume",
+                sessionEnded: "Session Ended",
+                sessionEndedDescription: "Session ended due to reaching loss limit",
+                languageSection: "Language Settings",
+                fundsSection: "Funds Settings",
+                strategySection: "Strategy Settings",
+                riskSection: "Risk Management",
+                currencySection: "Currency Settings"
+            },
+            es: {
+                title: "Asesor de Estrategia de Baccarat",
+                currentFunds: "Fondos Actuales",
+                quickInput: "Entrada Rápida",
+                playerScore: "Jugador",
+                bankerScore: "Banca",
+                winner: "Ganador",
+                scoreDifference: "Diferencia de Puntos",
+                calculate: "Calcular Resultado",
+                nextBetSuggestion: "Sugerencia de Próxima Apuesta",
+                riskManagement: "Gestión de Riesgo",
+                fundsRatio: "Ratio de Fondos",
+                riskLevel: "Nivel de Riesgo",
+                lossLimit: "Límite de Pérdida:",
+                currentLoss: "Pérdida Actual:",
+                pause: "Pausar",
+                stop: "Parar",
+                status: "Estado",
+                strategyVerification: "Verificación de Estrategia",
+                martingale: "Martingala",
+                consecutiveLosses: "Pérdidas Consecutivas",
+                currentBetAmount: "Cantidad de Apuesta Actual",
+                tieStatus: "Estado de Empate",
+                resetAllData: "Reiniciar Todos los Datos",
+                fundsProgress: "Progreso de Fondos",
+                gameHistory: "Historial de Juego",
+                noHistoryYet: "Aún no hay historial",
+                chartPlaceholder: "El gráfico se mostrará aquí",
+                player: "Jugador",
+                banker: "Banca",
+                tie: "Empate",
+                win: "Ganar",
+                lose: "Perder",
+                none: "Ninguno",
+                active: "Activo",
+                inactive: "Inactivo",
+                even: "Par",
+                odd: "Impar",
+                times: " veces",
+                dataInsufficient: "Datos Insuficientes",
+                initialVerification: "Verificación Inicial",
+                patternVerifying: "Verificando Patrón",
+                patternVerified: "Patrón Verificado",
+                patternFailed: "Verificación de Patrón Fallida",
+                tieOccurred: "Empate: Saltar Apuesta",
+                consecutiveTie: " empates consecutivos",
+                waitingNonTie: "Esperando no empate",
+                newBet: "Nueva Apuesta",
+                martingaleContinue: "Continuar Martingala",
+                noBetSuggestion: "Sin Sugerencia de Apuesta",
+                confirmReset: "¿Reiniciar todos los datos?",
+                settings: "Configuración",
+                language: "Idioma",
+                initialFunds: "Fondos Iniciales",
+                verificationCount: "Número de Verificaciones de Patrón",
+                lossLimitPercent: "Límite de Pérdida (%)",
+                apply: "Aplicar",
+                cancel: "Cancelar",
+                safe: "Seguro",
+                medium: "Medio",
+                high: "Alto",
+                paused: "Pausado",
+                pausedDescription: "Operaciones pausadas por gestión de riesgo",
+                resume: "Reanudar",
+                sessionEnded: "Sesión Terminada",
+                sessionEndedDescription: "Sesión terminada por alcanzar el límite de pérdida",
+                languageSection: "Configuración de Idioma",
+                fundsSection: "Configuración de Fondos",
+                strategySection: "Configuración de Estrategia",
+                riskSection: "Gestión de Riesgo",
+                currencySection: "Configuración de Moneda"
+            },
+            zh: {
+                title: "百家乐策略顾问",
+                currentFunds: "当前资金",
+                quickInput: "快速输入",
+                playerScore: "闲家",
+                bankerScore: "庄家",
+                winner: "胜者",
+                scoreDifference: "分数差",
+                calculate: "计算结果",
+                nextBetSuggestion: "下次投注建议",
+                riskManagement: "风险管理",
+                fundsRatio: "资金比率",
+                riskLevel: "风险等级",
+                lossLimit: "损失限额:",
+                currentLoss: "当前损失:",
+                pause: "暂停",
+                stop: "停止",
+                status: "状态",
+                strategyVerification: "策略验证",
+                martingale: "马丁格尔",
+                consecutiveLosses: "连续失败",
+                currentBetAmount: "当前投注金额",
+                tieStatus: "平局状态",
+                resetAllData: "重置所有数据",
+                fundsProgress: "资金进展",
+                gameHistory: "游戏历史",
+                noHistoryYet: "暂无历史记录",
+                chartPlaceholder: "图表将在此显示",
+                player: "闲家",
+                banker: "庄家",
+                tie: "平局",
+                win: "胜",
+                lose: "负",
+                none: "无",
+                active: "活跃",
+                inactive: "非活跃",
+                even: "偶数",
+                odd: "奇数",
+                times: "次",
+                dataInsufficient: "数据不足",
+                initialVerification: "初始验证",
+                patternVerifying: "模式验证中",
+                patternVerified: "模式已验证",
+                patternFailed: "模式验证失败",
+                tieOccurred: "平局：跳过投注",
+                consecutiveTie: "次连续平局",
+                waitingNonTie: "等待非平局",
+                newBet: "新投注",
+                martingaleContinue: "马丁格尔继续",
+                noBetSuggestion: "无投注建议",
+                confirmReset: "重置所有数据？",
+                settings: "设置",
+                language: "语言",
+                initialFunds: "初始资金",
+                verificationCount: "模式验证次数",
+                lossLimitPercent: "损失限额 (%)",
+                apply: "应用",
+                cancel: "取消",
+                safe: "安全",
+                medium: "中等",
+                high: "高",
+                paused: "已暂停",
+                pausedDescription: "由于风险管理，交易已暂停",
+                resume: "恢复",
+                sessionEnded: "会话结束",
+                sessionEndedDescription: "由于达到损失限额，会话已结束",
+                languageSection: "语言设置",
+                fundsSection: "资金设置",
+                strategySection: "策略设置",
+                riskSection: "风险管理",
+                currencySection: "货币设置"
+            },
+            ko: {
+                title: "바카라 전략 어드바이저",
+                currentFunds: "현재 자금",
+                quickInput: "빠른 입력",
+                playerScore: "플레이어",
+                bankerScore: "뱅커",
+                winner: "승자",
+                scoreDifference: "점수 차이",
+                calculate: "결과 계산",
+                nextBetSuggestion: "다음 베팅 제안",
+                riskManagement: "리스크 관리",
+                fundsRatio: "자금 비율",
+                riskLevel: "리스크 레벨",
+                lossLimit: "손실 한도:",
+                currentLoss: "현재 손실:",
+                pause: "일시 정지",
+                stop: "중단",
+                status: "상태",
+                strategyVerification: "전략 검증",
+                martingale: "마틴게일",
+                consecutiveLosses: "연속 패배",
+                currentBetAmount: "현재 베팅 금액",
+                tieStatus: "무승부 상태",
+                resetAllData: "모든 데이터 리셋",
+                fundsProgress: "자금 진행",
+                gameHistory: "게임 기록",
+                noHistoryYet: "아직 기록이 없습니다",
+                chartPlaceholder: "차트가 여기에 표시됩니다",
+                player: "플레이어",
+                banker: "뱅커",
+                tie: "무승부",
+                win: "승리",
+                lose: "패배",
+                none: "없음",
+                active: "활성",
+                inactive: "비활성",
+                even: "짝수",
+                odd: "홀수",
+                times: "회",
+                dataInsufficient: "데이터 부족",
+                initialVerification: "초기 확인 중",
+                patternVerifying: "패턴 검증 중",
+                patternVerified: "패턴 확인됨",
+                patternFailed: "패턴 확인 실패",
+                tieOccurred: "무승부 발생: 베팅 건너뛰기",
+                consecutiveTie: "회 연속 무승부",
+                waitingNonTie: "비무승부 결과 대기",
+                newBet: "새 베팅",
+                martingaleContinue: "마틴게일 계속",
+                noBetSuggestion: "베팅 제안 없음",
+                confirmReset: "모든 데이터를 리셋하시겠습니까?",
+                settings: "설정",
+                language: "언어",
+                initialFunds: "초기 자금",
+                verificationCount: "패턴 검증 횟수",
+                lossLimitPercent: "손실 한도 (%)",
+                apply: "적용",
+                cancel: "취소",
+                safe: "안전",
+                medium: "주의",
+                high: "위험",
+                paused: "일시 정지됨",
+                pausedDescription: "리스크 관리에 의해 거래가 일시 정지되었습니다",
+                resume: "재개",
+                sessionEnded: "세션 종료",
+                sessionEndedDescription: "손실 한도에 도달하여 세션이 종료되었습니다",
+                languageSection: "언어 설정",
+                fundsSection: "자금 설정",
+                strategySection: "전략 설정",
+                riskSection: "리스크 관리",
+                currencySection: "통화 설정"
+            },
+            fr: {
+                title: "Conseiller Stratégique Baccarat",
+                currentFunds: "Fonds Actuels",
+                quickInput: "Saisie Rapide",
+                playerScore: "Joueur",
+                bankerScore: "Banquier",
+                winner: "Gagnant",
+                scoreDifference: "Différence de Score",
+                calculate: "Calculer le Résultat",
+                nextBetSuggestion: "Suggestion de Prochain Pari",
+                riskManagement: "Gestion des Risques",
+                fundsRatio: "Ratio des Fonds",
+                riskLevel: "Niveau de Risque",
+                lossLimit: "Limite de Perte:",
+                currentLoss: "Perte Actuelle:",
+                pause: "Pause",
+                stop: "Arrêter",
+                status: "Statut",
+                strategyVerification: "Vérification de Stratégie",
+                martingale: "Martingale",
+                consecutiveLosses: "Pertes Consécutives",
+                currentBetAmount: "Montant de Pari Actuel",
+                tieStatus: "Statut d'Égalité",
+                resetAllData: "Réinitialiser Toutes les Données",
+                fundsProgress: "Progression des Fonds",
+                gameHistory: "Historique de Jeu",
+                noHistoryYet: "Pas encore d'historique",
+                chartPlaceholder: "Le graphique sera affiché ici",
+                player: "Joueur",
+                banker: "Banquier",
+                tie: "Égalité",
+                win: "Gagner",
+                lose: "Perdre",
+                none: "Aucun",
+                active: "Actif",
+                inactive: "Inactif",
+                even: "Pair",
+                odd: "Impair",
+                times: " fois",
+                dataInsufficient: "Données Insuffisantes",
+                initialVerification: "Vérification Initiale",
+                patternVerifying: "Vérification du Motif",
+                patternVerified: "Motif Vérifié",
+                patternFailed: "Échec de Vérification du Motif",
+                tieOccurred: "Égalité: Passer le Pari",
+                consecutiveTie: " égalités consécutives",
+                waitingNonTie: "En attente de non-égalité",
+                newBet: "Nouveau Pari",
+                martingaleContinue: "Continuer Martingale",
+                noBetSuggestion: "Aucune Suggestion de Pari",
+                confirmReset: "Réinitialiser toutes les données?",
+                settings: "Paramètres",
+                language: "Langue",
+                initialFunds: "Fonds Initiaux",
+                verificationCount: "Nombre de Vérifications de Motif",
+                lossLimitPercent: "Limite de Perte (%)",
+                apply: "Appliquer",
+                cancel: "Annuler",
+                safe: "Sûr",
+                medium: "Moyen",
+                high: "Élevé",
+                paused: "En Pause",
+                pausedDescription: "Négociation mise en pause par la gestion des risques",
+                resume: "Reprendre",
+                sessionEnded: "Session Terminée",
+                sessionEndedDescription: "Session terminée en raison de l'atteinte de la limite de perte",
+                languageSection: "Paramètres de Langue",
+                fundsSection: "Paramètres de Fonds",
+                strategySection: "Paramètres de Stratégie",
+                riskSection: "Gestion des Risques",
+                currencySection: "Paramètres de Devise"
+            }
+        };
+
+        // Currency options
+        const currencies = {
+            JPY: {
+                symbol: "¥",
+                name: { ja: "日本円", en: "Japanese Yen", es: "Yen Japonés", zh: "日元", ko: "일본 엔", fr: "Yen Japonais" },
+                initialFunds: 100000,
+                initialBet: 500,
+                step: 100,
+                format: (value) => `¥${value.toLocaleString("ja-JP")}`
+            },
+            USD: {
+                symbol: "$",
+                name: { ja: "米ドル", en: "US Dollar", es: "Dólar Estadounidense", zh: "美元", ko: "미국 달러", fr: "Dollar Américain" },
+                initialFunds: 1000,
+                initialBet: 5,
+                step: 1,
+                format: (value) => `$${value.toLocaleString("en-US")}`
+            },
+            EUR: {
+                symbol: "€",
+                name: { ja: "ユーロ", en: "Euro", es: "Euro", zh: "欧元", ko: "유로", fr: "Euro" },
+                initialFunds: 900,
+                initialBet: 5,
+                step: 1,
+                format: (value) => `€${value.toLocaleString("de-DE")}`
+            },
+            KRW: {
+                symbol: "₩",
+                name: { ja: "韓国ウォン", en: "Korean Won", es: "Won Coreano", zh: "韩元", ko: "대한민국 원", fr: "Won Coréen" },
+                initialFunds: 1200000,
+                initialBet: 6000,
+                step: 1000,
+                format: (value) => `₩${value.toLocaleString("ko-KR")}`
+            },
+            CNY: {
+                symbol: "¥",
+                name: { ja: "人民元", en: "Chinese Yuan", es: "Yuan Chino", zh: "人民币", ko: "중국 위안", fr: "Yuan Chinois" },
+                initialFunds: 7000,
+                initialBet: 35,
+                step: 1,
+                format: (value) => `¥${value.toLocaleString("zh-CN")}`
+            }
+        };
+
+        // Language options
+        const languageOptions = [
+            { code: 'ja', name: '日本語' },
+            { code: 'en', name: 'English' },
+            { code: 'es', name: 'Español' },
+            { code: 'zh', name: '中文' },
+            { code: 'ko', name: '한국어' },
+            { code: 'fr', name: 'Français' }
+        ];
+
+        // App state
+        let currentLanguage = 'ja';
+        let currentCurrency = 'JPY';
+        let history = [];
+        let bankroll = currencies[currentCurrency].initialFunds;
+        let initialBankroll = currencies[currentCurrency].initialFunds;
+        let bankrollHistory = [{ round: 0, amount: currencies[currentCurrency].initialFunds }];
+        let initialBetAmount = currencies[currentCurrency].initialBet;
+        let betAmount = currencies[currentCurrency].initialBet;
+        let patternVerified = false;
+        let verificationCount = 0;
+        let consecutiveLosses = 0;
+        let martingaleActive = false;
+        let tiePending = false;
+        let suspendBetting = false;
+        let consecutiveTies = 0;
+        let lastNonTieRound = null;
+        let requiredVerifications = 4;
+        let activeBet = null;
+        
+        // Quick input state
+        let selectedPlayerScore = null;
+        let selectedBankerScore = null;
+        
+        // Risk management state
+        let isPaused = false;
+        let sessionEnded = false;
+        let lossLimitPercentage = 20;
+        let lossLimitAmount = initialBankroll * (lossLimitPercentage / 100);
+
+        // Format currency with appropriate scale
+        function formatCurrency(amount) {
+            return currencies[currentCurrency].format(amount);
+        }
+
+        // Format chart label with appropriate scale
+        function formatChartLabel(value) {
+            if (["JPY", "KRW"].includes(currentCurrency)) {
+                if (value >= 100000000) return (value / 100000000).toFixed(1) + "億";
+                if (value >= 10000) return (value / 10000).toFixed(1) + "万";
+            } else {
+                if (value >= 1000000) return (value / 1000000).toFixed(1) + "M";
+                if (value >= 1000) return (value / 1000).toFixed(1) + "k";
+            }
+            return currencies[currentCurrency].symbol + value;
+        }
+
+        // Get current translation
+        function t(key) {
+            return translations[currentLanguage]?.[key] || translations.ja[key] || key;
+        }
+
+        // Update UI text
+        function updateUIText() {
+            document.getElementById('appTitle').textContent = t('title');
+            document.getElementById('currentFundsLabel').textContent = t('currentFunds') + ':';
+            document.getElementById('currentLang').textContent = languageOptions.find(lang => lang.code === currentLanguage)?.name || '日本語';
+            document.getElementById('currencyLabel').textContent = currencies[currentCurrency].name[currentLanguage];
+            document.getElementById('quickInputTitle').textContent = t('quickInput');
+            document.getElementById('playerLabel').textContent = t('playerScore');
+            document.getElementById('bankerLabel').textContent = t('bankerScore');
+            document.getElementById('winnerLabel').textContent = t('winner') + ':';
+            document.getElementById('scoreDiffLabel').textContent = t('scoreDifference') + ':';
+            document.getElementById('calculateText').textContent = t('calculate');
+            document.getElementById('riskManagementTitle').textContent = t('riskManagement');
+            document.getElementById('fundsRatioLabel').textContent = t('fundsRatio');
+            document.getElementById('riskLevelLabel').textContent = t('riskLevel');
+            document.getElementById('lossLimitLabel').textContent = t('lossLimit');
+            document.getElementById('currentLossLabel').textContent = t('currentLoss');
+            document.getElementById('pauseText').textContent = t('pause');
+            document.getElementById('stopText').textContent = t('stop');
+            document.getElementById('betSuggestionTitle').textContent = t('nextBetSuggestion');
+            document.getElementById('statusTitle').textContent = '📊 ' + t('status');
+            document.getElementById('strategyVerificationLabel').textContent = t('strategyVerification') + ':';
+            document.getElementById('martingaleLabel').textContent = t('martingale') + ':';
+            document.getElementById('consecutiveLossesLabel').textContent = t('consecutiveLosses') + ':';
+            document.getElementById('currentBetLabel').textContent = t('currentBetAmount') + ':';
+            document.getElementById('tieStatusLabel').textContent = t('tieStatus') + ':';
+            document.getElementById('resetText').textContent = t('resetAllData');
+            document.getElementById('fundsProgressTitle').textContent = '📈 ' + t('fundsProgress');
+            document.getElementById('gameHistoryTitle').textContent = '📋 ' + t('gameHistory');
+            document.getElementById('chartPlaceholder').textContent = t('chartPlaceholder');
+            
+            // Settings modal text
+            document.getElementById('currencySectionTitle').textContent = t('currencySection');
+            document.getElementById('currencyLabel').textContent = t('currency');
+            document.getElementById('languageSectionTitle').textContent = t('languageSection');
+            document.getElementById('languageLabel').textContent = t('language');
+            document.getElementById('fundsSectionTitle').textContent = t('fundsSection');
+            document.getElementById('initialFundsLabel').textContent = t('initialFunds');
+            document.getElementById('strategySectionTitle').textContent = t('strategySection');
+            document.getElementById('verificationCountLabel').textContent = t('verificationCount');
+            document.getElementById('riskSectionTitle').textContent = t('riskSection');
+            document.getElementById('lossLimitPercentLabel').textContent = t('lossLimitPercent');
+            document.getElementById('applyText').textContent = t('apply');
+            document.getElementById('cancelText').textContent = t('cancel');
+            
+            // 通貨表示も更新（言語変更時に通貨名も変更されるため）
+            const currency = currencies[currentCurrency];
+            document.getElementById('currencyLabel').textContent = currency.name[currentLanguage];
+            
+            // ヘッダー部分の通貨表示も更新
+            const headerCurrencyDisplay = document.getElementById('currentCurrencyDisplay');
+            if (headerCurrencyDisplay) {
+                const currencyText = headerCurrencyDisplay.querySelector('span:last-child');
+                if (currencyText) {
+                    currencyText.textContent = currency.name[currentLanguage];
+                }
+            }
+            
+            updateDisplay();
+        }
+
+        // Update display values
+        function updateDisplay() {
+            document.getElementById('fundsAmount').textContent = formatCurrency(bankroll);
+            document.getElementById('currentBetAmount').textContent = formatCurrency(betAmount);
+            document.getElementById('consecutiveLossesCount').textContent = consecutiveLosses + t('times');
+            document.getElementById('suggestionText').textContent = getSuggestionText();
+            updateVerificationStatus();
+            updateMartingaleStatus();
+            updateTieStatus();
+            updateRiskDisplay();
+            refreshHistory();
+            updateChart();
+        }
+
+        // Refresh history display
+        function refreshHistory() {
+            const container = document.getElementById("historyContainer");
+            container.innerHTML = "";
+        
+            if (history.length === 0) {
+                container.innerHTML = `<div class="history-empty">${t('noHistoryYet')}</div>`;
+                return;
+            }
+        
+            history.forEach(item => {
+                const div = document.createElement("div");
+                div.className = "history-item";
+                div.innerHTML = `
+                    <span>${item.round} : ${item.winner}</span>
+                    <span>${formatCurrency(item.funds)}</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Update risk display
+        function updateRiskDisplay() {
+            const currentLoss = initialBankroll - bankroll;
+            const lossPercentage = (currentLoss / initialBankroll * 100);
+            const fundsRatio = (bankroll / initialBankroll * 100);
+            
+            document.getElementById('fundsRatio').textContent = fundsRatio.toFixed(1) + '%';
+            document.getElementById('currentLoss').textContent = currentLoss >= 0 ? 
+                formatCurrency(currentLoss) : 
+                '+' + formatCurrency(Math.abs(currentLoss));
+            document.getElementById('currentLoss').style.color = currentLoss >= 0 ? '#ef4444' : '#10b981';
+            
+            // Update loss limit display
+            const lossLimitFormatted = formatCurrency(lossLimitAmount);
+            document.getElementById('lossLimitDisplay').textContent = `${lossLimitFormatted} (${lossLimitPercentage}%)`;
+            
+            // Update risk level
+            const riskLevelElement = document.getElementById('riskLevel');
+            if (lossPercentage >= lossLimitPercentage) {
+                riskLevelElement.textContent = t('high');
+                riskLevelElement.className = 'risk-level risk-high';
+                if (!sessionEnded) {
+                    endSession();
+                }
+            } else if (lossPercentage >= lossLimitPercentage * 0.75) {
+                riskLevelElement.textContent = t('high');
+                riskLevelElement.className = 'risk-level risk-high';
+            } else if (lossPercentage >= lossLimitPercentage * 0.5) {
+                riskLevelElement.textContent = t('medium');
+                riskLevelElement.className = 'risk-level risk-medium';
+            } else {
+                riskLevelElement.textContent = t('safe');
+                riskLevelElement.className = 'risk-level risk-safe';
+            }
+        }
+
+        // Update loss limit display in settings
+        function updateLossLimitDisplay() {
+            const percentage = document.getElementById('lossLimitSlider').value;
+            const amount = initialBankroll * (percentage / 100);
+            const formattedAmount = formatCurrency(amount);
+            
+            document.getElementById('currentLossLimitPercent').textContent = percentage + '%';
+            document.getElementById('currentLimitDisplay').textContent = `${t('lossLimit')} ${formattedAmount} (${percentage}%)`;
+            document.getElementById('sliderValuePopup').textContent = percentage + '%';
+        }
+
+        // Handle score button clicks
+        function setupScoreButtons() {
+            document.querySelectorAll('[data-player]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('[data-player]').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    selectedPlayerScore = parseInt(btn.dataset.player);
+                    checkAutoCalculate();
+                });
+            });
+            
+            document.querySelectorAll('[data-banker]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('[data-banker]').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    selectedBankerScore = parseInt(btn.dataset.banker);
+                    checkAutoCalculate();
+                });
+            });
+        }
+
+        // Check if both scores are selected and auto-calculate
+        function checkAutoCalculate() {
+            if (selectedPlayerScore !== null && selectedBankerScore !== null && !sessionEnded && !isPaused) {
+                setTimeout(() => {
+                    calculateResult();
+                    // Reset selections after calculation
+                    selectedPlayerScore = null;
+                    selectedBankerScore = null;
+                    document.querySelectorAll('.score-btn.selected').forEach(btn => {
+                        btn.classList.remove('selected');
+                    });
+                }, 100);
+            }
+        }
+
+        // Get suggestion text
+        function getSuggestionText() {
+            if (sessionEnded) {
+                return t('sessionEnded');
+            }
+            
+            if (isPaused) {
+                return t('paused');
+            }
+            
+            if (suspendBetting) {
+                return t('tieOccurred');
+            }
+
+            if (!patternVerified) {
+                if (verificationCount === 0) {
+                    return `${t('initialVerification')}`;
+                } else {
+                    return `${t('patternVerifying')} (${verificationCount}/${requiredVerifications})`;
+                }
+            }
+
+            const suggestedBet = getSuggestedBet();
+            if (suggestedBet) {
+                const betStatus = martingaleActive ? t('martingaleContinue') : t('newBet');
+                return `${betStatus}: ${suggestedBet} (${formatCurrency(betAmount)})`;
+            } else {
+                return t('noBetSuggestion');
+            }
+        }
+
+        // Get suggested bet
+        function getSuggestedBet() {
+            const nonTieRounds = history.filter(r => r.winner !== t('tie'));
+            if (nonTieRounds.length < 1) return null;
+
+            const lastRound = nonTieRounds[nonTieRounds.length - 1];
+            const diffType = lastRound.diffType;
+            const lastWinner = lastRound.winner;
+
+            if (diffType === t('even')) {
+                return lastWinner === t('player') ? t('banker') : t('player');
+            } else if (diffType === t('odd')) {
+                return lastWinner;
+            }
+
+            return null;
+        }
+
+        // Update verification status
+        function updateVerificationStatus() {
+            const statusElement = document.getElementById('verificationStatus');
+            if (patternVerified) {
+                statusElement.textContent = t('patternVerified');
+                statusElement.className = 'status-badge status-verified';
+            } else {
+                statusElement.textContent = `${t('patternVerifying')} (${verificationCount}/${requiredVerifications})`;
+                statusElement.className = 'status-badge status-verifying';
+            }
+        }
+
+        // Update martingale status
+        function updateMartingaleStatus() {
+            const statusElement = document.getElementById('martingaleStatus');
+            if (martingaleActive) {
+                statusElement.textContent = t('active');
+                statusElement.className = 'status-badge status-active';
+            } else {
+                statusElement.textContent = t('inactive');
+                statusElement.className = 'status-badge status-inactive';
+            }
+        }
+
+        // Update tie status
+        function updateTieStatus() {
+            const tieItem = document.getElementById('tieStatusItem');
+            const tieValue = document.getElementById('tieStatusValue');
+            
+            if (consecutiveTies > 0) {
+                tieItem.classList.remove('hidden');
+                tieValue.textContent = consecutiveTies + t('consecutiveTie');
+            } else {
+                tieItem.classList.add('hidden');
+            }
+        }
+
+        // Update chart with improved formatting
+        function updateChart() {
+            const canvas = document.getElementById('fundsChart');
+            const placeholder = document.getElementById('chartPlaceholder');
+            
+            if (bankrollHistory.length <= 1) {
+                placeholder.style.display = 'block';
+                canvas.style.display = 'none';
+                return;
+            }
+            
+            placeholder.style.display = 'none';
+            canvas.style.display = 'block';
+            
+            const ctx = canvas.getContext('2d');
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * window.devicePixelRatio;
+            canvas.height = rect.height * window.devicePixelRatio;
+            canvas.style.width = rect.width + 'px';
+            canvas.style.height = rect.height + 'px';
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            
+            const padding = 60;
+            const chartWidth = rect.width - 2 * padding;
+            const chartHeight = rect.height - 2 * padding;
+            
+            // データ範囲を計算
+            const amounts = bankrollHistory.map(h => h.amount);
+            const minAmount = Math.min(...amounts);
+            const maxAmount = Math.max(...amounts);
+            const amountRange = Math.max(maxAmount - minAmount, maxAmount * 0.1);
+            
+            const adjustedMin = minAmount - amountRange * 0.1;
+            const adjustedMax = maxAmount + amountRange * 0.1;
+            const adjustedRange = adjustedMax - adjustedMin;
+            
+            // 背景をクリア
+            ctx.fillStyle = 'rgba(55, 65, 81, 0.8)';
+            ctx.fillRect(0, 0, rect.width, rect.height);
+            
+            // グリッドライン
+            ctx.strokeStyle = '#4b5563';
+            ctx.lineWidth = 1;
+            
+            // 水平線とY軸ラベル
+            const ySteps = 6;
+            for (let i = 0; i <= ySteps; i++) {
+                const y = padding + (chartHeight * i / ySteps);
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(padding + chartWidth, y);
+                ctx.stroke();
+                
+                const value = adjustedMax - (adjustedRange * i / ySteps);
+                ctx.fillStyle = '#9ca3af';
+                ctx.font = '11px sans-serif';
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'middle';
+                
+                ctx.fillText(formatChartLabel(value), padding - 8, y);
+            }
+            
+            // 垂直線
+            const maxPoints = Math.min(bankrollHistory.length, 15);
+            const step = Math.max(1, Math.floor(bankrollHistory.length / maxPoints));
+            
+            for (let i = 0; i < bankrollHistory.length; i += step) {
+                const x = padding + (chartWidth * i / (bankrollHistory.length - 1));
+                ctx.strokeStyle = '#4b5563';
+                ctx.lineWidth = 0.5;
+                ctx.beginPath();
+                ctx.moveTo(x, padding);
+                ctx.lineTo(x, padding + chartHeight);
+                ctx.stroke();
+                
+                if (i % Math.max(1, Math.floor(bankrollHistory.length / 8)) === 0) {
+                    ctx.fillStyle = '#9ca3af';
+                    ctx.font = '10px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'top';
+                    ctx.fillText(i.toString(), x, padding + chartHeight + 5);
+                }
+            }
+            
+            // データライン
+            if (bankrollHistory.length > 1) {
+                const isProfit = bankroll >= initialBankroll;
+                ctx.strokeStyle = isProfit ? '#10b981' : '#ef4444';
+                ctx.lineWidth = 2.5;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.beginPath();
+                
+                for (let i = 0; i < bankrollHistory.length; i++) {
+                    const x = padding + (chartWidth * i / (bankrollHistory.length - 1));
+                    const normalizedAmount = (bankrollHistory[i].amount - adjustedMin) / adjustedRange;
+                    const y = padding + chartHeight - (normalizedAmount * chartHeight);
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.stroke();
+                
+                // データポイント
+                ctx.fillStyle = isProfit ? '#10b981' : '#ef4444';
+                for (let i = 0; i < bankrollHistory.length; i++) {
+                    const x = padding + (chartWidth * i / (bankrollHistory.length - 1));
+                    const normalizedAmount = (bankrollHistory[i].amount - adjustedMin) / adjustedRange;
+                    const y = padding + chartHeight - (normalizedAmount * chartHeight);
+                    
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, 2 * Math.PI);
+                    ctx.fill();
+                    
+                    if (i === bankrollHistory.length - 1) {
+                        ctx.strokeStyle = isProfit ? '#10b981' : '#ef4444';
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.arc(x, y, 6, 0, 2 * Math.PI);
+                        ctx.stroke();
+                    }
+                }
+                
+                // 基準線（初期資金）
+                if (adjustedMin <= initialBankroll && adjustedMax >= initialBankroll) {
+                    const baselineY = padding + chartHeight - ((initialBankroll - adjustedMin) / adjustedRange * chartHeight);
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                    ctx.lineWidth = 1;
+                    ctx.setLineDash([5, 5]);
+                    ctx.beginPath();
+                    ctx.moveTo(padding, baselineY);
+                    ctx.lineTo(padding + chartWidth, baselineY);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                    
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                    ctx.font = '10px sans-serif';
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = 'bottom';
+                    ctx.fillText(t('initialFunds'), padding + 5, baselineY - 2);
+                }
+                
+                // 損失限度線
+                const lossLimitValue = initialBankroll - lossLimitAmount;
+                if (adjustedMin <= lossLimitValue && adjustedMax >= lossLimitValue && lossLimitPercentage > 0) {
+                    const lossLimitY = padding + chartHeight - ((lossLimitValue - adjustedMin) / adjustedRange * chartHeight);
+                    ctx.strokeStyle = 'rgba(239, 68, 68, 0.6)';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([3, 3]);
+                    ctx.beginPath();
+                    ctx.moveTo(padding, lossLimitY);
+                    ctx.lineTo(padding + chartWidth, lossLimitY);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                    
+                    ctx.fillStyle = 'rgba(239, 68, 68, 0.8)';
+                    ctx.font = 'bold 10px sans-serif';
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = 'top';
+                    ctx.fillText(t('lossLimit'), padding + 5, lossLimitY + 2);
+                }
+            }
+            
+            // 現在値表示
+            if (bankrollHistory.length > 0) {
+                const currentAmount = bankrollHistory[bankrollHistory.length - 1].amount;
+                const isProfit = currentAmount >= initialBankroll;
+                const profitLoss = currentAmount - initialBankroll;
+                const profitPercent = ((currentAmount / initialBankroll - 1) * 100).toFixed(1);
+                
+                ctx.fillStyle = isProfit ? '#10b981' : '#ef4444';
+                ctx.font = 'bold 12px sans-serif';
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'top';
+                ctx.fillText(
+                    `${formatCurrency(currentAmount)} (${profitLoss >= 0 ? '+' : ''}${formatCurrency(profitLoss)}, ${profitPercent}%)`,
+                    padding + chartWidth - 5,
+                    padding + 5
+                );
+            }
+        }
+
+        // Get winner class
+        function getWinnerClass(winner) {
+            if (winner === t('player')) return 'winner-player';
+            if (winner === t('banker')) return 'winner-banker';
+            return 'winner-tie';
+        }
+
+        // Calculate result
+        function calculateResult() {
+            if (sessionEnded || isPaused) return;
+            
+            const playerScore = selectedPlayerScore;
+            const bankerScore = selectedBankerScore;
+            
+            if (playerScore === null || bankerScore === null) return;
+            
+            let resultWinner;
+            if (playerScore > bankerScore) {
+                resultWinner = t('player');
+            } else if (bankerScore > playerScore) {
+                resultWinner = t('banker');
+            } else {
+                resultWinner = t('tie');
+            }
+
+            const diff = Math.abs(playerScore - bankerScore);
+            const diffType = diff % 2 === 0 ? t('even') : t('odd');
+            
+            // 前回のベット提案があった場合、自動的に勝敗を判定
+            if (activeBet && resultWinner !== t('tie')) {
+                const betResult = (activeBet === resultWinner) ? 'win' : 'lose';
+                applyBetResultAuto(betResult);
+                activeBet = null;
+            }
+            
+            // Show result
+            document.getElementById('winnerValue').textContent = resultWinner;
+            document.getElementById('winnerValue').className = getWinnerClass(resultWinner);
+            document.getElementById('scoreDiffValue').textContent = `${diff}`;
+            document.getElementById('resultDisplay').classList.remove('hidden');
+
+            const roundResult = {
+                playerScore,
+                bankerScore,
+                winner: resultWinner,
+                diffType,
+                round: history.length + 1,
+                funds: bankroll
+            };
+
+            processResult(roundResult);
+        }
+
+        // Process result
+        function processResult(roundResult) {
+            if (roundResult.winner === t('tie')) {
+                handleTie(roundResult);
+            } else {
+                handleNonTie(roundResult);
+            }
+        }
+
+        // Handle tie
+        function handleTie(roundResult) {
+            if (!tiePending) {
+                tiePending = true;
+                suspendBetting = true;
+                consecutiveTies = 1;
+                
+                const nonTieHistory = history.filter(r => r.winner !== t('tie'));
+                if (nonTieHistory.length > 0) {
+                    lastNonTieRound = nonTieHistory[nonTieHistory.length - 1];
+                }
+            } else {
+                consecutiveTies += 1;
+            }
+
+            history.push(roundResult);
+            updateDisplay();
+        }
+
+        // Handle non-tie
+        function handleNonTie(roundResult) {
+            if (tiePending) {
+                handleTieVerification(roundResult);
+                tiePending = false;
+                consecutiveTies = 0;
+            } else {
+                history.push(roundResult);
+                
+                // パターンが未確認の場合、または勝利後のリセット後の場合に検証
+                if (!patternVerified) {
+                    const verification = verifyPattern(history);
+                    
+                    if (verification.isVerified) {
+                        verificationCount += 1;
+                        
+                        if (verificationCount >= requiredVerifications) {
+                            patternVerified = true;
+                        }
+                    } else {
+                        verificationCount = 0;
+                    }
+                }
+            }
+            
+            // パターンが確認されている場合、次のベット提案を設定
+            if (patternVerified && !suspendBetting && !sessionEnded && !isPaused) {
+                const suggestion = getSuggestedBet();
+                if (suggestion) {
+                    activeBet = suggestion;
+                }
+            }
+            
+            updateDisplay();
+        }
+        // Handle tie verification
+        function handleTieVerification(roundResult) {
+            history.push(roundResult);
+            suspendBetting = false;
+        }
+
+        // Verify pattern
+        function verifyPattern(currentHistory) {
+            if (currentHistory.length < 2) {
+                return { isVerified: false };
+            }
+
+            const nonTieRounds = currentHistory.filter(r => r.winner !== t('tie'));
+            if (nonTieRounds.length < 2) {
+                return { isVerified: false };
+            }
+
+            const prevRound = nonTieRounds[nonTieRounds.length - 2];
+            const currRound = nonTieRounds[nonTieRounds.length - 1];
+            
+            const prevWinner = prevRound.winner;
+            const currWinner = currRound.winner;
+            const diffType = prevRound.diffType;
+
+            if (diffType === t('even')) {
+                return { isVerified: prevWinner !== currWinner };
+            } else if (diffType === t('odd')) {
+                return { isVerified: prevWinner === currWinner };
+            }
+
+            return { isVerified: false };
+        }
+
+        // Apply bet result automatically
+        function applyBetResultAuto(result) {
+            if (result === 'win') {
+                bankroll += betAmount;
+                betAmount = initialBetAmount;
+                consecutiveLosses = 0;
+                martingaleActive = false;
+                
+                // 勝利時にパターン検証をリセット
+                patternVerified = false;
+                verificationCount = 0;
+                
+            } else if (result === 'lose') {
+                bankroll -= betAmount;
+                consecutiveLosses += 1;
+                betAmount *= 2;
+                martingaleActive = true;
+            }
+
+            bankrollHistory.push({ 
+                round: bankrollHistory.length, 
+                amount: bankroll 
+            });
+            
+            checkRiskManagement();
+        }
+
+        // Check risk management
+        function checkRiskManagement() {
+            const currentLoss = initialBankroll - bankroll;
+            const lossPercentage = (currentLoss / initialBankroll * 100);
+            
+            if (lossPercentage >= lossLimitPercentage && !sessionEnded && lossLimitPercentage > 0) {
+                endSession();
+            }
+        }
+
+        // Pause session
+        function pauseSession() {
+            isPaused = true;
+            document.getElementById('pauseOverlay').classList.remove('hidden');
+            updateDisplay();
+        }
+
+        // Resume session
+        function resumeSession() {
+            isPaused = false;
+            document.getElementById('pauseOverlay').classList.add('hidden');
+            updateDisplay();
+        }
+
+        // End session
+        function endSession() {
+            sessionEnded = true;
+            suspendBetting = true;
+            activeBet = null;
+            
+            // Show session end overlay
+            const overlay = document.getElementById('pauseOverlay');
+            const content = overlay.querySelector('.pause-content');
+            content.innerHTML = `
+                <h2>🛑 ${t('sessionEnded')}</h2>
+                <p>${t('sessionEndedDescription')}</p>
+                <button class="resume-btn" onclick="resetAll()">🔄 ${t('resetAllData')}</button>
+            `;
+            overlay.classList.remove('hidden');
+            updateDisplay();
+        }
+
+        // Reset all data
+        function resetAll() {
+            if (!sessionEnded && !confirm(t('confirmReset'))) return;
+            
+            history = [];
+            bankroll = initialBankroll;
+            bankrollHistory = [{ round: 0, amount: initialBankroll }];
+            betAmount = initialBetAmount;
+            patternVerified = false;
+            verificationCount = 0;
+            consecutiveLosses = 0;
+            martingaleActive = false;
+            tiePending = false;
+            suspendBetting = false;
+            consecutiveTies = 0;
+            lastNonTieRound = null;
+            activeBet = null;
+            selectedPlayerScore = null;
+            selectedBankerScore = null;
+            isPaused = false;
+            sessionEnded = false;
+            
+            // Update loss limit amount based on current settings
+            lossLimitAmount = initialBankroll * (lossLimitPercentage / 100);
+            
+            // Reset UI
+            document.querySelectorAll('.score-btn.selected').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.getElementById('resultDisplay').classList.add('hidden');
+            document.getElementById('pauseOverlay').classList.add('hidden');
+            
+            updateDisplay();
+        }
+
+        // Set currency function
+        function setCurrency(currencyCode) {
+            currentCurrency = currencyCode;
+            const currency = currencies[currencyCode];
+            
+            // Update initial values
+            initialBankroll = currency.initialFunds;
+            initialBetAmount = currency.initialBet;
+            
+            // Reset game state
+            resetAll();
+            
+            // Update UI - ここを修正
+            document.getElementById('currencyLabel').textContent = currency.name[currentLanguage];
+            // ヘッダー部分の通貨表示も更新する
+            const headerCurrencyDisplay = document.getElementById('currentCurrencyDisplay');
+            if (headerCurrencyDisplay) {
+                const currencyText = headerCurrencyDisplay.querySelector('span:last-child');
+                if (currencyText) {
+                    currencyText.textContent = currency.name[currentLanguage];
+                }
+            }
+            document.getElementById('initialFundsInput').value = initialBankroll;
+            
+            updateDisplay();
+        }
+
+        // PWA installation
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installPrompt').classList.remove('hidden');
+        });
+
+        document.getElementById('installBtn').addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+                document.getElementById('installPrompt').classList.add('hidden');
+            }
+        });
+
+        document.getElementById('closeInstall').addEventListener('click', () => {
+            document.getElementById('installPrompt').classList.add('hidden');
+        });
+
+        // Enhanced event listeners
+        document.getElementById('calculateBtn').addEventListener('click', calculateResult);
+        document.getElementById('resetBtn').addEventListener('click', resetAll);
+        document.getElementById('pauseBtn').addEventListener('click', pauseSession);
+        document.getElementById('stopBtn').addEventListener('click', endSession);
+        document.getElementById('resumeBtn').addEventListener('click', resumeSession);
+        
+        // Enhanced slider with real-time popup
+        document.getElementById('lossLimitSlider').addEventListener('input', (e) => {
+            const percentage = parseInt(e.target.value);
+            lossLimitPercentage = percentage;
+            lossLimitAmount = initialBankroll * (percentage / 100);
+            updateLossLimitDisplay();
+            updateRiskDisplay();
+        });
+        
+        // Settings modal functionality
+        document.getElementById('settingsBtn').addEventListener('click', () => {
+            document.getElementById('currencySelect').value = currentCurrency;
+            document.getElementById('languageSelect').value = currentLanguage;
+            document.getElementById('initialFundsInput').value = initialBankroll;
+            document.getElementById('verificationCountInput').value = requiredVerifications;
+            document.getElementById('lossLimitSlider').value = lossLimitPercentage;
+            updateLossLimitDisplay();
+            document.getElementById('settingsModal').classList.remove('hidden');
+            
+            // モーダル表示後に一番上にスクロール
+            setTimeout(() => {
+                const modalContent = document.querySelector('.settings-content');
+                if (modalContent) {
+                    modalContent.scrollTop = 0;
+                }
+            }, 100);
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('settingsModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('settingsModal')) {
+                document.getElementById('settingsModal').classList.add('hidden');
+            }
+        });
+
+        document.getElementById('applySettings').addEventListener('click', () => {
+            const newCurrency = document.getElementById('currencySelect').value;
+            const newLanguage = document.getElementById('languageSelect').value;
+            const newInitialBankroll = parseInt(document.getElementById('initialFundsInput').value);
+            const newRequiredVerifications = parseInt(document.getElementById('verificationCountInput').value);
+            const newLossLimitPercentage = parseInt(document.getElementById('lossLimitSlider').value);
+            
+            // Apply currency change
+            if (newCurrency !== currentCurrency) {
+                setCurrency(newCurrency);
+            }
+            
+            // Apply language change
+            if (newLanguage !== currentLanguage) {
+                currentLanguage = newLanguage;
+            }
+            
+            // Update bankroll and loss limit if initial funds changed
+            if (newInitialBankroll !== initialBankroll) {
+                initialBankroll = newInitialBankroll;
+                bankroll = initialBankroll;
+                bankrollHistory = [{ round: 0, amount: initialBankroll }];
+            }
+            
+            // Update other settings
+            requiredVerifications = newRequiredVerifications;
+            lossLimitPercentage = newLossLimitPercentage;
+            lossLimitAmount = initialBankroll * (lossLimitPercentage / 100);
+            
+            document.getElementById('settingsModal').classList.add('hidden');
+            updateUIText();
+            updateDisplay();
+        });
+
+        document.getElementById('cancelSettings').addEventListener('click', () => {
+            document.getElementById('settingsModal').classList.add('hidden');
+        });
+
+        // Chart resize handler
+        window.addEventListener('resize', () => {
+            setTimeout(updateChart, 100);
+        });
+
+        // Initialize app
+        setupScoreButtons();
+        updateUIText();
+        updateDisplay();
+        
+        // Service Worker registration for PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('data:text/javascript;base64,Y29uc3QgQ0FDSEVfTkFNRSA9ICdiYWNjYXJhdC1hZHZpc29yLXYxJzsKY29uc3QgdXJsc1RvQ2FjaGUgPSBbCiAgJy8nLAogICcvaW5kZXguaHRtbCcKXTsKCnNlbGYuYWRkRXZlbnRMaXN0ZW5lcignaW5zdGFsbCcsIGV2ZW50ID0+IHsKICBldmVudC53YWl0VW50aWwoCiAgICBjYWNoZXMub3BlbihDQUNIRV9OQU1FKQogICAgICAudGhlbihjYWNoZSA9PiBjYWNoZS5hZGRBbGwodXJsc1RvQ2FjaGUpKQogICk7Cn0pOwoKc2VsZi5hZGRFdmVudExpc3RlbmVyKCdmZXRjaCcsIGV2ZW50ID0+IHsKICBldmVudC5yZXNwb25kV2l0aCgKICAgIGNhY2hlcy5tYXRjaChldmVudC5yZXF1ZXN0KQogICAgICAudGhlbihyZXNwb25zZSA9PiB7CiAgICAgICAgcmV0dXJuIHJlc3BvbnNlIHx8IGZldGNoKGV2ZW50LnJlcXVlc3QpOwogICAgICB9KQogICk7Cn0pOw==');
+        }
+    </script>
+</body>
+</html>
