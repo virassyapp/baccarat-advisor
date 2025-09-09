@@ -1230,6 +1230,29 @@ body.light-mode {
   color: var(--label-color) !important;
 }
 
+
+/* === ライトモード専用 見やすさ改善 === */
+
+/* ライトモード時の「現在の資金」 */
+body.light-mode .funds-amount {
+    color: #22c55e; /* 薄めのグリーン */
+    text-shadow: 0 0 3px rgba(0, 0, 0, 0.4);
+}
+
+/* ライトモード時の「結果履歴」 */
+body.light-mode .history-item {
+    background: rgba(255,255,255,0.9); /* 明るい背景 */
+    color: #1a202c; /* 濃い文字色 */
+    border: 1px solid rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+}
+
+body.light-mode .history-item:hover {
+    background: #ffffff;
+    transform: translateX(5px);
+    border-color: rgba(0,0,0,0.25);
+}
+
 </style>
     <meta name="color-scheme" content="dark light">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -2193,7 +2216,7 @@ body.light-mode {
                     <span>${item.round} : ${item.winner}</span>
                     <span>${formatCurrency(item.funds)}</span>
                 `;
-                container.appendChild(div);
+                container.prepend(div);
             });
         }
 
