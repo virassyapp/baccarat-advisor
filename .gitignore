@@ -1,1 +1,5 @@
 .vercel
+BK/
+github_pat_*
+deepseek_html_*.html
+.DS_Store
