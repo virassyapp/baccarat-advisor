@@ -1397,6 +1397,8 @@ body.light-mode .history-item:hover {
                 <button id="themeToggle" class="settings-button">🌙</button>
             </div>
             <div class="funds-display">
+            <!-- Googleログインボタンをここに追加 -->
+            <button id="google-login" class="settings-button">Googleログイン</button>
                 <span>💰</span>
                 <span id="currentFundsLabel">現在の資金:</span>
                 <span class="funds-amount" id="fundsAmount">¥100,000</span>
@@ -1582,6 +1584,8 @@ body.light-mode .history-item:hover {
     </div>
 
     <script>
+        // Supabaseクライアント初期化を既存コードの先頭に追加
+        const supabase = window.supabase.createClient('https://ybqbpxgcycttmcwjiyxq.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...');  
         // Complete translation object
         const translations = {
             ja: {
@@ -2970,6 +2974,19 @@ body.light-mode .history-item:hover {
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('data:text/javascript;base64,Y29uc3QgQ0FDSEVfTkFNRSA9ICdiYWNjYXJhdC1hZHZpc29yLXYxJzsKY29uc3QgdXJsc1RvQ2FjaGUgPSBbCiAgJy8nLAogICcvaW5kZXguaHRtbCcKXTsKCnNlbGYuYWRkRXZlbnRMaXN0ZW5lcignaW5zdGFsbCcsIGV2ZW50ID0+IHsKICBldmVudC53YWl0VW50aWwoCiAgICBjYWNoZXMub3BlbihDQUNIRV9OQU1FKQogICAgICAudGhlbihjYWNoZSA9PiBjYWNoZS5hZGRBbGwodXJsc1RvQ2FjaGUpKQogICk7Cn0pOwoKc2VsZi5hZGRFdmVudExpc3RlbmVyKCdmZXRjaCcsIGV2ZW50ID0+IHsKICBldmVudC5yZXNwb25kV2l0aCgKICAgIGNhY2hlcy5tYXRjaChldmVudC5yZXF1ZXN0KQogICAgICAudGhlbihyZXNwb25zZSA9PiB7CiAgICAgICAgcmV0dXJuIHJlc3BvbnNlIHx8IGZldGNoKGV2ZW50LnJlcXVlc3QpOwogICAgICB9KQogICk7Cn0pOw==');
         }
+          // Googleログインボタンのイベントリスナーを追加
+    document.getElementById('google-login').addEventListener('click', async () => {
+        const { data, error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: { redirectTo: window.location.origin + '/index.html' }
+        });
+        if (error) {
+            console.error('ログインエラー:', error.message);
+            alert('ログインエラー: ' + error.message);
+        } else {
+            console.log('ログイン開始:', data);
+        }
+    });
     
 // Theme toggle
 const themeToggle = document.getElementById("themeToggle");
