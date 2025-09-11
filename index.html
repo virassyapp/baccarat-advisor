@@ -3019,6 +3019,15 @@ document.getElementById('google-login').addEventListener('click', async () => {
       window.location.href = url; // Stripe Checkout にリダイレクト
     });
 </script>
-  
+<script>
+    document.getElementById('checkout-button').addEventListener('click', () => {
+      // サブスク登録ページやStripe Checkoutなどにリダイレクト
+      // 例：Stripe CheckoutのURLに移動する場合
+      window.location.href = "https://example.com/checkout"; 
+      // またはモーダルを表示するなどの処理をここに記述
+      console.log("サブスク登録ボタンがクリックされました");
+    });
+  </script>
+    
 </body>
 </html>
