@@ -17,8 +17,8 @@ export default async function handler(req, res) {
         },
       ],
       mode: 'subscription',
-      success_url: process.env.SUCCESS_URL || 'https://baccarat-advisor-tau.vercel.app/success',
-      cancel_url: process.env.CANCEL_URL || 'https://baccarat-advisor-tau.vercel.app/cancel',
+      success_url: encodeURI(`${process.env.SUCCESS_URL}?session_id={CHECKOUT_SESSION_ID}`),
+      cancel_url: encodeURI(process.env.CANCEL_URL),
     });
 
     res.status(200).json({ url: session.url });
