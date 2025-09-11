@@ -3014,18 +3014,17 @@ document.getElementById('google-login').addEventListener('click', async () => {
 <script>
     const checkoutButton = document.getElementById('checkout-button');
     checkoutButton.addEventListener('click', async () => {
-      const response = await fetch('/api/create-checkout-session', { method: 'POST' });
-      const { url } = await response.json();
-      window.location.href = url; // Stripe Checkout にリダイレクト
-    });
-</script>
-<script>
-    document.getElementById('checkout-button').addEventListener('click', () => {
-      // サブスク登録ページやStripe Checkoutなどにリダイレクト
-      // 例：Stripe CheckoutのURLに移動する場合
-      window.location.href = "https://example.com/checkout"; 
-      // またはモーダルを表示するなどの処理をここに記述
-      console.log("サブスク登録ボタンがクリックされました");
+      try {
+        const response = await fetch('/api/create-checkout-session', { method: 'POST' });
+        if (!response.ok) {
+          throw new Error('Checkout セッションの作成に失敗しました');
+        }
+        const { url } = await response.json();
+        window.location.href = url; // Stripe Checkout にリダイレクト
+      } catch (error) {
+        console.error('エラー:', error);
+        alert('チェックアウトに失敗しました。コンソールを確認してください。');
+      }
     });
   </script>
     
