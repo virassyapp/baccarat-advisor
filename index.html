@@ -1394,6 +1394,7 @@ body.light-mode .history-item:hover {
                     </div>
                 </div>
                 <button class="settings-button" id="settingsBtn">⚙️</button>
+                <button id="checkout-button">サブスクに登録する</button>
 <button id="google-login" class="settings-button">Googleログイン</button>
                 <button id="themeToggle" class="settings-button">🌙</button>
             </div>
@@ -3010,5 +3011,14 @@ document.getElementById('google-login').addEventListener('click', async () => {
 });
 </script>
 
+<script>
+    const checkoutButton = document.getElementById('checkout-button');
+    checkoutButton.addEventListener('click', async () => {
+      const response = await fetch('/api/create-checkout-session', { method: 'POST' });
+      const { url } = await response.json();
+      window.location.href = url; // Stripe Checkout にリダイレクト
+    });
+</script>
+  
 </body>
 </html>
