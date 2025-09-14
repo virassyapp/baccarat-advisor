@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "echo \"No dev script needed\"",
-    "build": "mkdir -p public && cp index.html style.css public/",
+    "build": "echo \"No build needed\"",
     "start": "echo \"No start needed\"",
     "lint": "echo \"No lint needed\""
   },
