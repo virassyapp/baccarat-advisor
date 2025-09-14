@@ -10,7 +10,7 @@
     { "src": "/(.*)", "dest": "/public/$1" }
   ],
   "env": {
-    "SUPABASE_URL": "@SUPABASE_URL",
+    "SUPABASE_URL": "https://ybqbpxgcycttmcwjiyxq.supabase.co",
     "SUPABASE_SERVICE_ROLE_KEY": "@SUPABASE_SERVICE_ROLE_KEY",
     "STRIPE_SECRET_KEY": "@STRIPE_SECRET_KEY",
     "STRIPE_WEBHOOK_SECRET": "@STRIPE_WEBHOOK_SECRET",
