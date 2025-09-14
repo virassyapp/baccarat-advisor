@@ -8,6 +8,7 @@
       "maxDuration": 30
     }
   },
+  "buildCommand": null,
   "outputDirectory": "public",
   "routes": [
     {
@@ -17,7 +18,7 @@
     },
     {
       "src": "/api/webhook",
-      "dest": "/api/webhook.js", 
+      "dest": "/api/webhook.js",
       "methods": ["POST"]
     },
     {
