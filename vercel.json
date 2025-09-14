@@ -27,7 +27,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/public/$1"
+      "dest": "/index.html"  // これを変更
     }
   ],
   "functions": {
