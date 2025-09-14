@@ -1,19 +1,13 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build"
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "api/create-checkout-session.js": {
+      "maxDuration": 30
     },
-    {
-      "src": "api/create-checkout-session.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/webhook.js",
-      "use": "@vercel/node"
+    "api/webhook.js": {
+      "maxDuration": 30
     }
-  ],
+  },
   "routes": [
     {
       "src": "/api/create-checkout-session",
@@ -30,14 +24,6 @@
       "dest": "/public/$1"
     }
   ],
-  "functions": {
-    "api/create-checkout-session.js": {
-      "maxDuration": 30
-    },
-    "api/webhook.js": {
-      "maxDuration": 30
-    }
-  },
   "env": {
     "SUPABASE_URL": "@supabase_url",
     "SUPABASE_SERVICE_ROLE_KEY": "@supabase_service_role_key",
