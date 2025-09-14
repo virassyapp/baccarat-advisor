@@ -1,28 +1,18 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "version": 2,
   "functions": {
     "api/create-checkout-session.js": {
       "maxDuration": 30
     },
     "api/webhook.js": {
       "maxDuration": 30
+    },
+    "api/*.js": {
+      "runtime": "@vercel/node",
+      "maxDuration": 30
     }
   },
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build"
-    },
-    {
-      "src": "api/create-checkout-session.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/webhook.js",
-      "use": "@vercel/node"
-    }
-  ],
+  "buildCommand": "npm run build",
   "outputDirectory": "public",
   "routes": [
     {
@@ -36,18 +26,22 @@
       "methods": ["POST"]
     },
     {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
       "src": "/(.*)",
       "dest": "/public/$1"
     }
   ],
   "env": {
-    "SUPABASE_URL": "@SUPABASE_URL",
-    "SUPABASE_SERVICE_ROLE_KEY": "@SUPABASE_SERVICE_ROLE_KEY",
-    "STRIPE_SECRET_KEY": "@STRIPE_SECRET_KEY",
-    "STRIPE_WEBHOOK_SECRET": "@STRIPE_WEBHOOK_SECRET",
-    "STRIPE_PRICE_ID": "@STRIPE_PRICE_ID",
-    "SUCCESS_URL": "@SUCCESS_URL",
-    "CANCEL_URL": "@CANCEL_URL",
-    "STRIPE_PUBLISHABLE_KEY": "@STRIPE_PUBLISHABLE_KEY"
+    "SUPABASE_URL": "@supabase_url",
+    "SUPABASE_SERVICE_ROLE_KEY": "@supabase_service_role_key",
+    "STRIPE_SECRET_KEY": "@stripe_secret_key",
+    "STRIPE_WEBHOOK_SECRET": "@stripe_webhook_secret",
+    "STRIPE_PRICE_ID": "@stripe_price_id",
+    "SUCCESS_URL": "@success_url",
+    "CANCEL_URL": "@cancel_url",
+    "STRIPE_PUBLISHABLE_KEY": "@stripe_publishable_key"
   }
 }
