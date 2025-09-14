@@ -6,13 +6,8 @@
     },
     "api/webhook.js": {
       "maxDuration": 30
-    },
-    "api/*.js": {
-      "runtime": "@vercel/node",
-      "maxDuration": 30
     }
   },
-  "buildCommand": "npm run build",
   "outputDirectory": "public",
   "routes": [
     {
@@ -22,7 +17,7 @@
     },
     {
       "src": "/api/webhook",
-      "dest": "/api/webhook.js",
+      "dest": "/api/webhook.js", 
       "methods": ["POST"]
     },
     {
@@ -33,15 +28,5 @@
       "src": "/(.*)",
       "dest": "/public/$1"
     }
-  ],
-  "env": {
-    "SUPABASE_URL": "@supabase_url",
-    "SUPABASE_SERVICE_ROLE_KEY": "@supabase_service_role_key",
-    "STRIPE_SECRET_KEY": "@stripe_secret_key",
-    "STRIPE_WEBHOOK_SECRET": "@stripe_webhook_secret",
-    "STRIPE_PRICE_ID": "@stripe_price_id",
-    "SUCCESS_URL": "@success_url",
-    "CANCEL_URL": "@cancel_url",
-    "STRIPE_PUBLISHABLE_KEY": "@stripe_publishable_key"
-  }
+  ]
 }
