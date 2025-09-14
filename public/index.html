@@ -1754,41 +1754,131 @@ if (themeToggle) {
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+// 既存のGoogle認証スクリプト部分を以下に置き換えてください
+
+// Supabaseクライアントの初期化（変更なし）
 const supabase = window.supabase.createClient(
   'https://ybqbpxgcycttmcwjiyxq.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlicWJweGdjeWN0dG1jd2ppeXhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc0MTc2MTcsImV4cCI6MjA3Mjk5MzYxN30.jQwgOe9ZMluJbjlb8tkLHRwPQHgp7mEcPmHL9T0QvYo' // あなたのanonキー
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlicWJweGdjeWN0dG1jd2ppeXhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc0MTc2MTcsImV4cCI6MjA3Mjk5MzYxN30.jQwgOe9ZMluJbjlb8tkLHRwPQHgp7mEcPmHL9T0QvYo'
 );
 
-document.getElementById('google-login').addEventListener('click', async () => {
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: { redirectTo: window.location.origin + '/index.html' }
-  });
-  if (error) {
-    console.error('ログインエラー:', error.message);
-    alert('ログインエラー: ' + error.message);
-  } else {
-    console.log('ログイン開始:', data);
+// 認証状態の監視
+supabase.auth.onAuthStateChange((event, session) => {
+  console.log('認証状態変更:', event, session);
+  
+  if (event === 'SIGNED_IN') {
+    // ログイン成功時の処理
+    hideAuthOverlay();
+    console.log('ログイン成功:', session.user);
+  } else if (event === 'SIGNED_OUT') {
+    // ログアウト時の処理
+    showAuthOverlay();
   }
 });
-</script>
 
-<script>
-    const checkoutButton = document.getElementById('checkout-button');
-    checkoutButton.addEventListener('click', async () => {
-      try {
-        const response = await fetch('/api/create-checkout-session', { method: 'POST' });
-        if (!response.ok) {
-          throw new Error('Checkout セッションの作成に失敗しました');
+// ページ読み込み時の認証チェック
+async function checkAuthStatus() {
+  try {
+    const { data: { session }, error } = await supabase.auth.getSession();
+    
+    if (error) {
+      console.error('セッション取得エラー:', error);
+      showAuthOverlay();
+      return;
+    }
+
+    if (session) {
+      console.log('既存セッション確認:', session.user);
+      hideAuthOverlay();
+    } else {
+      showAuthOverlay();
+    }
+  } catch (error) {
+    console.error('認証チェックエラー:', error);
+    showAuthOverlay();
+  }
+}
+
+// 認証オーバーレイを表示
+function showAuthOverlay() {
+  document.getElementById('authOverlay').classList.remove('hidden');
+  document.getElementById('appContent').classList.add('hidden');
+}
+
+// 認証オーバーレイを非表示
+function hideAuthOverlay() {
+  document.getElementById('authOverlay').classList.add('hidden');
+  document.getElementById('appContent').classList.remove('hidden');
+}
+
+// Googleログインボタンのイベントリスナー（修正版）
+document.getElementById('googleLoginBtn').addEventListener('click', async () => {
+  console.log('Googleログインボタンがクリックされました');
+  
+  try {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/index.html`,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
         }
-        const { url } = await response.json();
-        window.location.href = url; // Stripe Checkout にリダイレクト
-      } catch (error) {
-        console.error('エラー:', error);
-        alert('チェックアウトに失敗しました。コンソールを確認してください。');
       }
     });
-  </script>
+
+    if (error) {
+      console.error('ログインエラー:', error);
+      alert('ログインエラー: ' + error.message);
+    } else {
+      console.log('OAuth認証開始:', data);
+      // この時点ではリダイレクトが発生するため、ここでは何もしない
+    }
+  } catch (error) {
+    console.error('予期しないエラー:', error);
+    alert('予期しないエラーが発生しました: ' + error.message);
+  }
+});
+
+// ヘッダーのGoogleログインボタン（既存）
+document.getElementById('google-login').addEventListener('click', async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+  
+  if (session) {
+    // ログアウト処理
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error('ログアウトエラー:', error);
+      alert('ログアウトエラー: ' + error.message);
+    } else {
+      console.log('ログアウト成功');
+      showAuthOverlay();
+    }
+  } else {
+    // ログイン処理
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/index.html`
+      }
+    });
     
-</body>
-</html>
+    if (error) {
+      console.error('ログインエラー:', error.message);
+      alert('ログインエラー: ' + error.message);
+    }
+  }
+});
+
+// ページ読み込み時に認証状態をチェック
+window.addEventListener('DOMContentLoaded', () => {
+  checkAuthStatus();
+});
+
+// URLパラメータから認証情報を処理（OAuth リダイレクト後）
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.has('code') || urlParams.has('access_token')) {
+  console.log('OAuth リダイレクト検出、認証処理中...');
+  // Supabaseが自動的に処理するため、明示的な処理は不要
+  // 認証状態変更イベントで処理される
+}
