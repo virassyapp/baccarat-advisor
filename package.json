@@ -1,17 +1,10 @@
 {
   "name": "baccarat-strategy-advisor",
   "version": "1.0.0",
-  "description": "バカラ戦略アドバイザー with Stripe subscription",
-  "main": "index.html",
-  "scripts": {
-    "dev": "vercel dev",
-    "build": "echo 'Build complete'",
-    "start": "vercel dev"
-  },
+  "type": "module",
   "dependencies": {
     "stripe": "^14.21.0",
-    "@supabase/supabase-js": "^2.39.7",
-    "micro": "^10.0.1"
+    "@supabase/supabase-js": "^2.39.7"
   },
   "engines": {
     "node": ">=18.0.0"

@@ -52,12 +52,8 @@ export default async function handler(req, res) {
       .eq('id', userId)
       .single();
 
-    if (userError) {
+    if (userError || !user) {
       console.error('User fetch error:', userError);
-      return res.status(400).json({ error: 'User not found' });
-    }
-
-    if (!user) {
       return res.status(400).json({ error: 'User not found' });
     }
 
@@ -87,6 +83,11 @@ export default async function handler(req, res) {
       }
     }
 
+    // サクセスURLとキャンセルURLの設定
+    const baseUrl = req.headers.origin || 
+                    req.headers.referer?.replace(/\/$/, '') || 
+                    `https://${req.headers.host}`;
+
     // Checkout Sessionの作成
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -94,12 +95,12 @@ export default async function handler(req, res) {
       line_items: [
         {
           price_data: {
-            currency: 'usd',
+            currency: 'jpy',
             product_data: {
-              name: 'バカラ戦略アドバイザー',
+              name: 'バカラ戦略アドバイザー プレミアム',
               description: '高度な戦略アドバイス、リスク管理、詳細な分析機能',
             },
-            unit_amount: 9.9, // $9.9
+            unit_amount: 2980, // 2,980円
             recurring: {
               interval: 'month',
             },
@@ -108,8 +109,8 @@ export default async function handler(req, res) {
         },
       ],
       mode: 'subscription',
-      success_url: `${req.headers.origin || 'http://localhost:3000'}/?session_id={CHECKOUT_SESSION_ID}&success=true`,
-      cancel_url: `${req.headers.origin || 'http://localhost:3000'}/?canceled=true`,
+      success_url: `${baseUrl}?session_id={CHECKOUT_SESSION_ID}&success=true`,
+      cancel_url: `${baseUrl}?canceled=true`,
       metadata: {
         userId: userId,
       },
@@ -126,7 +127,7 @@ export default async function handler(req, res) {
     console.error('Checkout session creation error:', error);
     return res.status(500).json({
       error: 'Failed to create checkout session',
-      message: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      message: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
     });
   }
 }
