@@ -437,9 +437,10 @@
                     .single();
 
                 if (error) {
+                    // エラーが発生した場合（ユーザーが存在しない場合など）はサブスクリプション未登録とみなす
                     console.error('サブスクリプション状態の取得エラー:', error);
                     showAuthOverlay();
-                    showLoginSection();
+                    showSubscriptionSection();
                     return;
                 }
 
@@ -454,7 +455,7 @@
             } catch (error) {
                 console.error('サブスクリプションチェックエラー:', error);
                 showAuthOverlay();
-                showLoginSection();
+                showSubscriptionSection();
             }
         }
 
