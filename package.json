@@ -1,22 +1,19 @@
 {
-  "name": "baccarat-advisor",
+  "name": "baccarat-strategy-advisor",
   "version": "1.0.0",
-  "private": true,
+  "description": "バカラ戦略アドバイザー with Stripe subscription",
+  "main": "index.html",
   "scripts": {
-    "dev": "echo \"No dev script needed\"",
-    "build": "echo \"Static files already in public directory\"",
-    "start": "echo \"No start needed\"",
-    "lint": "echo \"No lint needed\""
+    "dev": "vercel dev",
+    "build": "echo 'Build complete'",
+    "start": "vercel dev"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.0.0",
-    "micro": "^9.4.1",
-    "stripe": "^12.0.0"
-  },
-  "devDependencies": {
-    "eslint": "^8.56.0"
+    "stripe": "^14.21.0",
+    "@supabase/supabase-js": "^2.39.7",
+    "micro": "^10.0.1"
   },
   "engines": {
-    "node": ">=18.x"
+    "node": ">=18.0.0"
   }
 }

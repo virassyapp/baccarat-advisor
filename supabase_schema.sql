@@ -1,5 +1,3 @@
--- バカラ戦略アドバイザー用データベーススキーマ（簡略版）
-
 -- ユーザーテーブル
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -27,12 +25,12 @@ CREATE POLICY "Users can view own data" ON users
 
 -- トリガー関数: updated_at自動更新
 CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $
+RETURNS TRIGGER AS $$
 BEGIN
     NEW.updated_at = NOW();
     RETURN NEW;
 END;
-$ language 'plpgsql';
+$$ LANGUAGE plpgsql;
 
 -- トリガー設定
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
@@ -40,13 +38,13 @@ CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
 
 -- ユーザー作成時に自動でusersテーブルにレコード作成する関数
 CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS TRIGGER AS $
+RETURNS TRIGGER AS $$
 BEGIN
     INSERT INTO public.users (id, email)
-    VALUES (new.id, new.email);
-    RETURN new;
+    VALUES (NEW.id, NEW.email);
+    RETURN NEW;
 END;
-$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- 新規ユーザー作成トリガー
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
@@ -56,7 +54,7 @@ CREATE TRIGGER on_auth_user_created
 
 -- サブスクリプション状態確認用関数
 CREATE OR REPLACE FUNCTION check_user_subscription(user_uuid UUID)
-RETURNS BOOLEAN AS $
+RETURNS BOOLEAN AS $$
 BEGIN
     RETURN EXISTS (
         SELECT 1 
@@ -65,8 +63,9 @@ BEGIN
         AND is_subscribed = TRUE
     );
 END;
-$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- コメント
 COMMENT ON TABLE users IS 'ユーザー基本情報とサブスクリプション状態';
 COMMENT ON COLUMN users.stripe_customer_id IS 'StripeのCustomer ID';
 COMMENT ON COLUMN users.stripe_subscription_id IS 'StripeのSubscription ID';

@@ -221,7 +221,7 @@
                     </div>
                     <div class="language-selector">
                         <div class="current-selector">
-                            <span>🌍</span>
+                            <span>🌐</span>
                             <span id="currentLang">日本語</span>
                         </div>
                     </div>
@@ -610,7 +610,7 @@
             }
         }
 
-        // Handle subscription
+        // Handle subscription - 修正版
         async function handleSubscription() {
             if (!isAuthenticated || !currentUser) {
                 alert('ログインが必要です');
@@ -630,7 +630,7 @@
                     throw new Error('認証セッションが見つかりません');
                 }
 
-                // Call backend to create checkout session
+                // Call API to create checkout session
                 const response = await fetch('/api/create-checkout-session', {
                     method: 'POST',
                     headers: {
@@ -642,16 +642,21 @@
                     })
                 });
 
-                const data = await response.json();
-
                 if (!response.ok) {
-                    throw new Error(data.error || 'チェックアウトセッションの作成に失敗しました');
+                    const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+                    debugLog('APIレスポンスエラー', { status: response.status, error: errorData });
+                    throw new Error(errorData.error || `HTTP ${response.status}`);
                 }
 
+                const data = await response.json();
                 debugLog('チェックアウトセッション作成成功', data);
                 
                 // Redirect to Stripe Checkout
-                window.location.href = data.url;
+                if (data.url) {
+                    window.location.href = data.url;
+                } else {
+                    throw new Error('チェックアウトURLが返されませんでした');
+                }
 
             } catch (error) {
                 debugLog('サブスクリプション処理エラー', error);
@@ -736,8 +741,9 @@
         function checkPaymentSuccess() {
             const urlParams = new URLSearchParams(window.location.search);
             const sessionId = urlParams.get('session_id');
+            const success = urlParams.get('success');
             
-            if (sessionId) {
+            if (sessionId && success === 'true') {
                 debugLog('支払い成功パラメータ検出', sessionId);
                 // Clear URL parameters
                 window.history.replaceState({}, document.title, window.location.pathname);
@@ -746,7 +752,6 @@
             }
         }
 
-        // Initialize when DOM is ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => {
                 debugLog('DOMContentLoaded イベント');
@@ -761,7 +766,7 @@
             checkPaymentSuccess();
         }
 
-        // 基本的なアプリケーション機能（既存コードから簡素化版）
+        // 基本的なアプリケーション機能（既存コードから簡略化版）
         let history = [];
         let bankroll = 100000;
         let selectedPlayerScore = null;
@@ -922,6 +927,3 @@
 
         console.log('=== サブスクリプション対応 バカラ戦略アドバイザー ===');
         console.log('手動テスト関数: window.authDebug');
-    </script>
-</body>
-</html>
