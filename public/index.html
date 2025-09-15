@@ -160,7 +160,7 @@
                     <div class="currency-selector">
                         <div class="current-selector" id="currentCurrencyDisplay">
                             <span>💱</span>
-                            <span id="currencyLabel">日本円</span>
+                            <span id="headerCurrencyLabel">日本円</span>
                         </div>
                     </div>
                     <div class="language-selector">
@@ -348,6 +348,322 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+
+        // Supabaseクライアントの初期化
+        const supabase = window.supabase.createClient(
+            'https://ybqbpxgcycttmcwjiyxq.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlicWJweGdjeWN0dG1jd2ppeXhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc0MTc2MTcsImV4cCI6MjA3Mjk5MzYxN30.jQwgOe9ZMluJbjlb8tkLHRwPQHgp7mEcPmHL9T0QvYo'
+        );
+
+        // Global state
+        let currentUser = null;
+        let isAuthenticated = false;
+
+        // Debug function
+        function debugLog(message, data = null) {
+            console.log(`[Auth Debug] ${message}`, data || '');
+        }
+
+        // Show/hide auth overlay
+        function showAuthOverlay() {
+            debugLog('認証オーバーレイを表示');
+            document.getElementById('authOverlay').classList.remove('hidden');
+            document.getElementById('appContent').classList.add('hidden');
+        }
+
+        function hideAuthOverlay() {
+            debugLog('認証オーバーレイを非表示');
+            document.getElementById('authOverlay').classList.add('hidden');
+            document.getElementById('appContent').classList.remove('hidden');
+        }
+
+        // ログインセクションを表示
+        function showLoginSection() {
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('subscriptionSection').classList.add('hidden');
+            document.getElementById('verificationSection').classList.add('hidden');
+        }
+
+        // サブスクリプションセクションを表示
+        function showSubscriptionSection() {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('subscriptionSection').classList.remove('hidden');
+            document.getElementById('verificationSection').classList.add('hidden');
+        }
+
+        // 認証検証セクションを表示
+        function showVerificationSection() {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('subscriptionSection').classList.add('hidden');
+            document.getElementById('verificationSection').classList.remove('hidden');
+        }
+
+        // Update authentication state
+        async function updateAuthState(user) {
+            currentUser = user;
+            isAuthenticated = !!user;
+            
+            debugLog('認証状態更新', { isAuthenticated, userId: user?.id });
+            
+            const headerLoginBtn = document.getElementById('google-login');
+            if (headerLoginBtn) {
+                headerLoginBtn.textContent = isAuthenticated ? 'ログアウト' : 'Googleログイン';
+            }
+            
+            if (isAuthenticated) {
+                // サブスクリプション状態をチェック
+                await checkSubscriptionStatus();
+            } else {
+                showAuthOverlay();
+                showLoginSection();
+            }
+        }
+
+        // サブスクリプション状態をチェック
+        async function checkSubscriptionStatus() {
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    showAuthOverlay();
+                    showLoginSection();
+                    return;
+                }
+
+                // Supabaseからユーザーのサブスクリプション状態を取得
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('is_subscribed')
+                    .eq('id', user.id)
+                    .single();
+
+                if (error) {
+                    console.error('サブスクリプション状態の取得エラー:', error);
+                    showAuthOverlay();
+                    showLoginSection();
+                    return;
+                }
+
+                if (data && data.is_subscribed) {
+                    // サブスクリプション済みの場合
+                    hideAuthOverlay();
+                } else {
+                    // サブスクリプション未登録の場合
+                    showAuthOverlay();
+                    showSubscriptionSection();
+                }
+            } catch (error) {
+                console.error('サブスクリプションチェックエラー:', error);
+                showAuthOverlay();
+                showLoginSection();
+            }
+        }
+
+        // Auth state change listener
+        supabase.auth.onAuthStateChange((event, session) => {
+            debugLog('認証状態変更イベント', { event, hasSession: !!session });
+            
+            switch (event) {
+                case 'SIGNED_IN':
+                    debugLog('ログイン成功', session?.user);
+                    updateAuthState(session?.user);
+                    break;
+                    
+                case 'SIGNED_OUT':
+                    debugLog('ログアウト');
+                    updateAuthState(null);
+                    break;
+                    
+                default:
+                    debugLog('その他の認証イベント', { event, session });
+            }
+        });
+
+        // Initialize authentication
+        async function initializeAuth() {
+            debugLog('初期認証状態チェック開始');
+            
+            try {
+                // Check for auth tokens in URL hash
+                const hashParams = new URLSearchParams(window.location.hash.substring(1));
+                const accessToken = hashParams.get('access_token');
+                const refreshToken = hashParams.get('refresh_token');
+                
+                if (accessToken) {
+                    debugLog('URLから認証トークン検出');
+                    
+                    const { data, error } = await supabase.auth.setSession({
+                        access_token: accessToken,
+                        refresh_token: refreshToken
+                    });
+                    
+                    if (error) {
+                        debugLog('セッション設定エラー', error);
+                    } else {
+                        debugLog('セッション設定成功', data.user);
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                        return;
+                    }
+                }
+                
+                // Check existing session
+                const { data: { session }, error } = await supabase.auth.getSession();
+                
+                if (error) {
+                    debugLog('セッション取得エラー', error);
+                    updateAuthState(null);
+                    return;
+                }
+                
+                if (session && session.user) {
+                    debugLog('既存セッション確認', session.user);
+                    updateAuthState(session.user);
+                } else {
+                    debugLog('セッションなし - ログイン画面表示');
+                    updateAuthState(null);
+                }
+            } catch (error) {
+                debugLog('初期化エラー', error);
+                updateAuthState(null);
+            }
+        }
+
+        // Perform Google login
+        async function performGoogleLogin() {
+            debugLog('Googleログイン開始');
+            debugLog('現在のURL', window.location.href);
+            
+            try {
+                const { data, error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: window.location.origin + window.location.pathname,
+                        queryParams: {
+                            access_type: 'offline',
+                            prompt: 'consent',
+                        }
+                    }
+                });
+
+                if (error) {
+                    debugLog('OAuth開始エラー', error);
+                    alert('ログインエラー: ' + error.message);
+                    return;
+                }
+                
+                debugLog('OAuth開始成功 - リダイレクト中', data);
+                
+            } catch (error) {
+                debugLog('予期しないログインエラー', error);
+                alert('予期しないエラーが発生しました: ' + error.message);
+            }
+        }
+
+        // Perform logout
+        async function performLogout() {
+            debugLog('ログアウト開始');
+            
+            try {
+                const { error } = await supabase.auth.signOut();
+                
+                if (error) {
+                    debugLog('ログアウトエラー', error);
+                    alert('ログアウトエラー: ' + error.message);
+                    return;
+                }
+                
+                debugLog('ログアウト成功');
+                
+            } catch (error) {
+                debugLog('予期しないログアウトエラー', error);
+                alert('予期しないエラーが発生しました: ' + error.message);
+            }
+        }
+
+        // サブスクリプションボタンのイベントリスナー
+        document.getElementById('subscribeBtn').addEventListener('click', async () => {
+            try {
+                showVerificationSection();
+                
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    alert('ログインしてください');
+                    showLoginSection();
+                    return;
+                }
+
+                // Checkoutセッションを作成
+                const response = await fetch('/api/create-checkout-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userId: user.id }),
+                });
+
+                const session = await response.json();
+
+                if (session.error) {
+                    throw new Error(session.error);
+                }
+
+                // Stripe Checkoutにリダイレクト
+                window.location.href = session.url;
+            } catch (error) {
+                console.error('サブスクリプションエラー:', error);
+                alert('サブスクリプションの開始に失敗しました: ' + error.message);
+                showSubscriptionSection();
+            }
+        });
+
+        // Setup event listeners
+        function setupAuthEventListeners() {
+            debugLog('イベントリスナー設定開始');
+            
+            // Main login button
+            const mainLoginBtn = document.getElementById('googleLoginBtn');
+            if (mainLoginBtn) {
+                mainLoginBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    debugLog('メインログインボタンクリック');
+                    performGoogleLogin();
+                });
+                debugLog('メインログインボタンリスナー設定完了');
+            } else {
+                debugLog('メインログインボタンが見つからない');
+            }
+            
+            // Header login/logout button
+            const headerLoginBtn = document.getElementById('google-login');
+            if (headerLoginBtn) {
+                headerLoginBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    debugLog('ヘッダーログインボタンクリック', { isAuthenticated });
+                    
+                    if (isAuthenticated) {
+                        performLogout();
+                    } else {
+                        performGoogleLogin();
+                    }
+                });
+                debugLog('ヘッダーログインボタンリスナー設定完了');
+            } else {
+                debugLog('ヘッダーログインボタンが見つからない');
+            }
+        }
+
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                debugLog('DOMContentLoaded イベント');
+                setupAuthEventListeners();
+                initializeAuth();
+            });
+        } else {
+            debugLog('DOM already ready - 即座に初期化');
+            setupAuthEventListeners();
+            initializeAuth();
+        }
+        
         // Complete translation object
         const translations = {
             ja: {
@@ -937,7 +1253,7 @@
             
             // 通貨表示も更新（言語変更時に通貨名も変更されるため）
             const currency = currencies[currentCurrency];
-            document.getElementById('currencyLabel').textContent = currency.name[currentLanguage];
+            document.getElementById('headerCurrencyLabel').textContent = currency.name[currentLanguage];
             
             // ヘッダー部分の通貨表示も更新
             const headerCurrencyDisplay = document.getElementById('currentCurrencyDisplay');
@@ -1751,17 +2067,6 @@ if (themeToggle) {
 }
 
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-// 既存のGoogle認証スクリプト部分を以下に置き換えてください
-
-// Supabaseクライアントの初期化（変更なし）
-const supabase = window.supabase.createClient(
-  'https://ybqbpxgcycttmcwjiyxq.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlicWJweGdjeWN0dG1jd2ppeXhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc0MTc2MTcsImV4cCI6MjA3Mjk5MzYxN30.jQwgOe9ZMluJbjlb8tkLHRwPQHgp7mEcPmHL9T0QvYo'
-);
-
 // Global state
 let currentUser = null;
 let isAuthenticated = false;
@@ -1782,25 +2087,6 @@ function hideAuthOverlay() {
   debugLog('認証オーバーレイを非表示');
   document.getElementById('authOverlay').classList.add('hidden');
   document.getElementById('appContent').classList.remove('hidden');
-}
-
-// Update authentication state
-function updateAuthState(user) {
-  currentUser = user;
-  isAuthenticated = !!user;
-  
-  debugLog('認証状態更新', { isAuthenticated, userId: user?.id });
-  
-  const headerLoginBtn = document.getElementById('google-login');
-  if (headerLoginBtn) {
-    headerLoginBtn.textContent = isAuthenticated ? 'ログアウト' : 'Googleログイン';
-  }
-  
-  if (isAuthenticated) {
-    hideAuthOverlay();
-  } else {
-    showAuthOverlay();
-  }
 }
 
 // Auth state change listener
