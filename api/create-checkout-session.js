@@ -1,5 +1,5 @@
-import Stripe from 'stripe';
-import { createClient } from '@supabase/supabase-js';
+const Stripe = require('stripe');
+const { createClient } = require('@supabase/supabase-js');
 
 // 環境変数の検証
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -21,7 +21,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // CORSヘッダーの設定
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -100,7 +100,7 @@ export default async function handler(req, res) {
               name: 'バカラ戦略アドバイザー プレミアム',
               description: '高度な戦略アドバイス、リスク管理、詳細な分析機能',
             },
-            unit_amount: 2980, // 2,980円
+            unit_amount: 9.9, // $9.9
             recurring: {
               interval: 'month',
             },
@@ -130,4 +130,4 @@ export default async function handler(req, res) {
       message: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
     });
   }
-}
+};
