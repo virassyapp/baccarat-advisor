@@ -170,7 +170,7 @@
                         </div>
                     </div>
                     <button class="settings-button" id="settingsBtn">⚙️</button>
-                    <button id="checkout-button">サブスクに登録する</button>
+                    <button id="checkout-button" class="settings-button" style="display: none;">サブスクに登録する</button>
                     <button class="settings-button" id="google-login">Googleログイン</button>
                     <button class="settings-button" id="themeToggle">🌙</button>
                 </div>
@@ -399,79 +399,70 @@
         }
 
         // Update authentication state
-async function updateAuthState(user) {
-    currentUser = user;
-    isAuthenticated = !!user;
-    
-    debugLog('認証状態更新', { isAuthenticated, userId: user?.id });
-    
-    const headerLoginBtn = document.getElementById('google-login');
-    if (headerLoginBtn) {
-        headerLoginBtn.textContent = isAuthenticated ? 'ログアウト' : 'Googleログイン';
-    }
-    
-    // サブスクリプションボタンの表示制御を追加
-    const checkoutButton = document.getElementById('checkout-button');
-    if (checkoutButton) {
-        checkoutButton.style.display = isAuthenticated ? 'block' : 'none';
-    }
-    
-    if (isAuthenticated) {
-        // サブスクリプション状態をチェック
-        await checkSubscriptionStatus();
-    } else {
-        showAuthOverlay();
-        showLoginSection();
-    }
-}
-
-    // サブスクリプション状態をチェック
-    async function checkSubscriptionStatus() {
-        try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                showAuthOverlay();
-                showLoginSection();
-                return;
+        async function updateAuthState(user) {
+            currentUser = user;
+            isAuthenticated = !!user;
+            
+            debugLog('認証状態更新', { isAuthenticated, userId: user?.id });
+            
+            const headerLoginBtn = document.getElementById('google-login');
+            if (headerLoginBtn) {
+                headerLoginBtn.textContent = isAuthenticated ? 'ログアウト' : 'Googleログイン';
             }
-
-            // Supabaseからユーザーのサブスクリプション状態を取得
-            const { data, error } = await supabase
-                .from('users')
-                .select('is_subscribed')
-                .eq('id', user.id)
-                .single();
-
-            if (error) {
-                console.error('サブスクリプション状態の取得エラー:', error);
-                showAuthOverlay();
-                showSubscriptionSection();
-                return;
-            }
-
-            if (data && data.is_subscribed) {
-                // サブスクリプション済みの場合
-                hideAuthOverlay();
-                // サブスクリプションボタンを非表示
-                const checkoutButton = document.getElementById('checkout-button');
-                if (checkoutButton) {
+            
+            // サブスクリプションボタンの表示制御
+            const checkoutButton = document.getElementById('checkout-button');
+            if (checkoutButton) {
+                if (isAuthenticated) {
+                    // サブスクリプション状態をチェック
+                    const isSubscribed = await checkSubscriptionStatus();
+                    checkoutButton.style.display = isSubscribed ? 'none' : 'block';
+                } else {
                     checkoutButton.style.display = 'none';
                 }
-            } else {
-                // サブスクリプション未登録の場合
-                hideAuthOverlay(); // メインアプリを表示
-                // サブスクリプションボタンを表示
-                const checkoutButton = document.getElementById('checkout-button');
-                if (checkoutButton) {
-                    checkoutButton.style.display = 'block';
-                }
             }
-        } catch (error) {
-            console.error('サブスクリプションチェックエラー:', error);
-            hideAuthOverlay(); // エラー時もメインアプリを表示
+            
+            if (isAuthenticated) {
+                // サブスクリプション状態をチェックしてオーバーレイ表示を制御
+                const isSubscribed = await checkSubscriptionStatus();
+                if (isSubscribed) {
+                    hideAuthOverlay();
+                } else {
+                    // サブスクリプション未登録でもメインアプリを表示
+                    hideAuthOverlay();
+                }
+            } else {
+                showAuthOverlay();
+                showLoginSection();
+            }
         }
 
-    }
+        // サブスクリプション状態をチェック（booleanを返す）
+        async function checkSubscriptionStatus() {
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    return false;
+                }
+
+                // Supabaseからユーザーのサブスクリプション状態を取得
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('is_subscribed')
+                    .eq('id', user.id)
+                    .single();
+
+                if (error) {
+                    console.error('サブスクリプション状態の取得エラー:', error);
+                    return false;
+                }
+
+                return data && data.is_subscribed;
+            } catch (error) {
+                console.error('サブスクリプションチェックエラー:', error);
+                return false;
+            }
+        }
 
         // Auth state change listener
         supabase.auth.onAuthStateChange((event, session) => {
@@ -594,37 +585,64 @@ async function updateAuthState(user) {
             }
         }
 
-                // サブスクリプションボタンのイベントリスナー
-        document.getElementById('checkout-button').addEventListener('click', async () => {
-            try {
-                const { data: { user } } = await supabase.auth.getUser();
-                if (!user) {
-                    alert('ログインしてください');
-                    return;
+            // サブスクリプションボタンのイベントリスナー設定関数
+            function setupCheckoutButtonListener() {
+                const checkoutButton = document.getElementById('checkout-button');
+                if (checkoutButton) {
+                    checkoutButton.addEventListener('click', async () => {
+                        console.log('サブスクリプションボタンがクリックされました');
+                        try {
+                            const { data: { user }, error: userError } = await supabase.auth.getUser();
+                            if (userError || !user) {
+                                alert('ログインしてください');
+                                return;
+                            }
+
+                            console.log('ユーザーID:', user.id);
+
+                            // Checkoutセッションを作成
+                            const response = await fetch('/api/create-checkout-session', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ userId: user.id }),
+                            });
+
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+
+                            const session = await response.json();
+                            console.log('セッション応答:', session);
+
+                            if (session.error) {
+                                throw new Error(session.error);
+                            }
+
+                            if (session.url) {
+                                // Stripe Checkoutにリダイレクト
+                                console.log('Stripeにリダイレクトします:', session.url);
+                                window.location.href = session.url;
+                            } else {
+                                throw new Error('セッションURLがありません');
+                            }
+                        } catch (error) {
+                            console.error('サブスクリプションエラー:', error);
+                            alert('サブスクリプションの開始に失敗しました: ' + error.message);
+                        }
+                    });
+                } else {
+                    console.error('チェックアウトボタンが見つかりません');
                 }
-
-                // Checkoutセッションを作成
-                const response = await fetch('/api/create-checkout-session', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ userId: user.id }),
-                });
-
-                const session = await response.json();
-
-                if (session.error) {
-                    throw new Error(session.error);
-                }
-
-                // Stripe Checkoutにリダイレクト
-                window.location.href = session.url;
-            } catch (error) {
-                console.error('サブスクリプションエラー:', error);
-                alert('サブスクリプションの開始に失敗しました: ' + error.message);
             }
-        });
+
+            // DOMの読み込みが完了したらイベントリスナーを設定
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', setupCheckoutButtonListener);
+            } else {
+                setupCheckoutButtonListener();
+            }
 
         // Setup event listeners
         function setupAuthEventListeners() {
