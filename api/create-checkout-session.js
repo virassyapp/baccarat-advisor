@@ -22,10 +22,10 @@ const supabase = createClient(
 );
 
 module.exports = async function handler(req, res) {
-  // CORSヘッダーの設定
+  // CORSヘッダーの設定（より詳細に）
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-client-info, apikey');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();

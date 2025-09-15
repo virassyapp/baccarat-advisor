@@ -399,65 +399,79 @@
         }
 
         // Update authentication state
-        async function updateAuthState(user) {
-            currentUser = user;
-            isAuthenticated = !!user;
-            
-            debugLog('認証状態更新', { isAuthenticated, userId: user?.id });
-            
-            const headerLoginBtn = document.getElementById('google-login');
-            if (headerLoginBtn) {
-                headerLoginBtn.textContent = isAuthenticated ? 'ログアウト' : 'Googleログイン';
-            }
-            
-            if (isAuthenticated) {
-                // サブスクリプション状態をチェック
-                await checkSubscriptionStatus();
-            } else {
+async function updateAuthState(user) {
+    currentUser = user;
+    isAuthenticated = !!user;
+    
+    debugLog('認証状態更新', { isAuthenticated, userId: user?.id });
+    
+    const headerLoginBtn = document.getElementById('google-login');
+    if (headerLoginBtn) {
+        headerLoginBtn.textContent = isAuthenticated ? 'ログアウト' : 'Googleログイン';
+    }
+    
+    // サブスクリプションボタンの表示制御を追加
+    const checkoutButton = document.getElementById('checkout-button');
+    if (checkoutButton) {
+        checkoutButton.style.display = isAuthenticated ? 'block' : 'none';
+    }
+    
+    if (isAuthenticated) {
+        // サブスクリプション状態をチェック
+        await checkSubscriptionStatus();
+    } else {
+        showAuthOverlay();
+        showLoginSection();
+    }
+}
+
+    // サブスクリプション状態をチェック
+    async function checkSubscriptionStatus() {
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
                 showAuthOverlay();
                 showLoginSection();
+                return;
             }
-        }
 
-        // サブスクリプション状態をチェック
-        async function checkSubscriptionStatus() {
-            try {
-                const { data: { user } } = await supabase.auth.getUser();
-                if (!user) {
-                    showAuthOverlay();
-                    showLoginSection();
-                    return;
-                }
+            // Supabaseからユーザーのサブスクリプション状態を取得
+            const { data, error } = await supabase
+                .from('users')
+                .select('is_subscribed')
+                .eq('id', user.id)
+                .single();
 
-                // Supabaseからユーザーのサブスクリプション状態を取得
-                const { data, error } = await supabase
-                    .from('users')
-                    .select('is_subscribed')
-                    .eq('id', user.id)
-                    .single();
-
-                if (error) {
-                    // エラーが発生した場合（ユーザーが存在しない場合など）はサブスクリプション未登録とみなす
-                    console.error('サブスクリプション状態の取得エラー:', error);
-                    showAuthOverlay();
-                    showSubscriptionSection();
-                    return;
-                }
-
-                if (data && data.is_subscribed) {
-                    // サブスクリプション済みの場合
-                    hideAuthOverlay();
-                } else {
-                    // サブスクリプション未登録の場合
-                    showAuthOverlay();
-                    showSubscriptionSection();
-                }
-            } catch (error) {
-                console.error('サブスクリプションチェックエラー:', error);
+            if (error) {
+                console.error('サブスクリプション状態の取得エラー:', error);
                 showAuthOverlay();
                 showSubscriptionSection();
+                return;
             }
+
+            if (data && data.is_subscribed) {
+                // サブスクリプション済みの場合
+                hideAuthOverlay();
+                // サブスクリプションボタンを非表示
+                const checkoutButton = document.getElementById('checkout-button');
+                if (checkoutButton) {
+                    checkoutButton.style.display = 'none';
+                }
+            } else {
+                // サブスクリプション未登録の場合
+                hideAuthOverlay(); // メインアプリを表示
+                // サブスクリプションボタンを表示
+                const checkoutButton = document.getElementById('checkout-button');
+                if (checkoutButton) {
+                    checkoutButton.style.display = 'block';
+                }
+            }
+        } catch (error) {
+            console.error('サブスクリプションチェックエラー:', error);
+            hideAuthOverlay(); // エラー時もメインアプリを表示
         }
+
+    }
 
         // Auth state change listener
         supabase.auth.onAuthStateChange((event, session) => {
@@ -580,15 +594,12 @@
             }
         }
 
-        // サブスクリプションボタンのイベントリスナー
-        document.getElementById('subscribeBtn').addEventListener('click', async () => {
+                // サブスクリプションボタンのイベントリスナー
+        document.getElementById('checkout-button').addEventListener('click', async () => {
             try {
-                showVerificationSection();
-                
                 const { data: { user } } = await supabase.auth.getUser();
                 if (!user) {
                     alert('ログインしてください');
-                    showLoginSection();
                     return;
                 }
 
@@ -612,7 +623,6 @@
             } catch (error) {
                 console.error('サブスクリプションエラー:', error);
                 alert('サブスクリプションの開始に失敗しました: ' + error.message);
-                showSubscriptionSection();
             }
         });
 
