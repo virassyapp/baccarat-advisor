@@ -4,7 +4,6 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>バカラ戦略アドバイザー</title>
-    <!-- 外部CSSファイル -->
     <link href="style.css" rel="stylesheet"/>
     <meta content="dark light" name="color-scheme"/>
     <meta content="black" name="apple-mobile-web-app-status-bar-style"/>
@@ -14,16 +13,20 @@
         <div class="auth-container">
             <h2 class="auth-title" id="authTitle">バカラ戦略アドバイザー</h2>
             <p class="auth-description" id="authDescription">プレミアム機能をご利用いただくには、Googleアカウントでのログインとサブスクリプションの登録が必要です。</p>
+            
             <div id="loginSection">
                 <button class="auth-button google" id="googleLoginBtn">Googleでログイン</button>
             </div>
+            
             <div class="hidden" id="subscriptionSection">
                 <p class="auth-description" id="subscriptionDescription">サブスクリプションに登録して全ての機能を解放しましょう</p>
                 <button class="auth-button" id="subscribeBtn">サブスクリプションに登録</button>
             </div>
+            
             <div class="hidden" id="verificationSection">
                 <p class="auth-description" id="verificationDescription">お支払いの確認中です。数秒お待ちください...</p>
                 <div class="loading-spinner"></div>
+                <button class="auth-button" id="manualRefreshBtn" style="margin-top: 15px; display: none;">手動で確認</button>
             </div>
         </div>
     </div>
@@ -348,8 +351,177 @@
         // Global state
         let currentUser = null;
         let isAuthenticated = false;
+        let checkingSubscription = false;
 
-        // Show/hide auth overlay
+        // 決済後のパラメータ処理
+        async function handlePostPayment() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sessionId = urlParams.get('session_id');
+            const success = urlParams.get('success');
+            const cancelled = urlParams.get('cancelled');
+
+            if (success === 'true' || sessionId) {
+                console.log('Payment successful, verifying subscription...');
+                
+                // 認証確認画面を表示
+                showAuthOverlay();
+                showVerificationSection();
+                
+                // URLパラメータをクリア
+                window.history.replaceState({}, document.title, window.location.pathname);
+                
+                // 段階的にサブスクリプション状態をチェック
+                await verifySubscriptionWithRetry();
+                
+            } else if (cancelled === 'true') {
+                console.log('Payment cancelled');
+                showAuthOverlay();
+                showSubscriptionSection();
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
+
+        // リトライ付きサブスクリプション確認
+        async function verifySubscriptionWithRetry(maxAttempts = 6) {
+            for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+                console.log(`Subscription check attempt ${attempt}/${maxAttempts}`);
+                
+                const isSubscribed = await checkSubscriptionStatus();
+                
+                if (isSubscribed) {
+                    console.log('Subscription confirmed successfully');
+                    hideAuthOverlay();
+                    return true;
+                }
+                
+                if (attempt < maxAttempts) {
+                    // 待機時間を徐々に増加（2秒、4秒、6秒...）
+                    const waitTime = attempt * 2000;
+                    console.log(`Waiting ${waitTime}ms before next attempt...`);
+                    await new Promise(resolve => setTimeout(resolve, waitTime));
+                } else {
+                    // 最後の試行で失敗した場合、手動確認ボタンを表示
+                    console.log('Auto-verification failed, showing manual refresh option');
+                    document.getElementById('manualRefreshBtn').style.display = 'block';
+                    document.getElementById('verificationDescription').textContent = 
+                        'サブスクリプション確認に時間がかかっています。手動で確認してください。';
+                }
+            }
+            return false;
+        }
+
+        // 改善されたサブスクリプション状態チェック
+        async function checkSubscriptionStatus() {
+            if (checkingSubscription) return false;
+            checkingSubscription = true;
+
+            try {
+                // まず認証状態を確認
+                const { data: { user }, error: userError } = await supabase.auth.getUser();
+                if (userError || !user) {
+                    console.error('User not authenticated:', userError);
+                    return false;
+                }
+
+                // データベースから最新の状態を取得
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('is_subscribed, subscription_status, updated_at')
+                    .eq('id', user.id)
+                    .single();
+
+                if (error) {
+                    console.error('Database query error:', error);
+                    
+                    // レコードが存在しない場合は作成を試行
+                    if (error.code === 'PGRST116') {
+                        console.log('User record not found, creating...');
+                        await createUserRecord(user);
+                        return false; // 次回のチェックで確認
+                    }
+                    return false;
+                }
+
+                console.log('Current subscription data:', data);
+                
+                // サブスクリプション状態を確認
+                const isSubscribed = data && (
+                    data.is_subscribed === true || 
+                    data.subscription_status === 'active'
+                );
+
+                return isSubscribed;
+
+            } catch (error) {
+                console.error('Subscription check failed:', error);
+                return false;
+            } finally {
+                checkingSubscription = false;
+            }
+        }
+
+        // ユーザーレコード作成
+        async function createUserRecord(user) {
+            try {
+                const { error } = await supabase
+                    .from('users')
+                    .insert([
+                        {
+                            id: user.id,
+                            email: user.email,
+                            is_subscribed: false,
+                            subscription_status: 'inactive',
+                            created_at: new Date().toISOString(),
+                            updated_at: new Date().toISOString()
+                        }
+                    ]);
+
+                if (error) {
+                    console.error('Failed to create user record:', error);
+                } else {
+                    console.log('User record created successfully');
+                }
+            } catch (error) {
+                console.error('Error creating user record:', error);
+            }
+        }
+
+        // 手動でサブスクリプション状態を更新（開発/テスト用）
+        async function manualSubscriptionUpdate() {
+            try {
+                const { data: { user }, error: userError } = await supabase.auth.getUser();
+                if (userError || !user) {
+                    alert('ユーザー認証エラー');
+                    return false;
+                }
+
+                const { error } = await supabase
+                    .from('users')
+                    .upsert({ 
+                        id: user.id,
+                        email: user.email,
+                        is_subscribed: true,
+                        subscription_status: 'active',
+                        updated_at: new Date().toISOString()
+                    });
+
+                if (error) {
+                    console.error('Manual update error:', error);
+                    alert('手動更新に失敗しました: ' + error.message);
+                    return false;
+                }
+
+                console.log('Manual subscription update successful');
+                hideAuthOverlay();
+                return true;
+            } catch (error) {
+                console.error('Manual update failed:', error);
+                alert('予期しないエラーが発生しました');
+                return false;
+            }
+        }
+
+        // 表示制御関数
         function showAuthOverlay() {
             document.getElementById('authOverlay').classList.remove('hidden');
             document.getElementById('appContent').classList.add('hidden');
@@ -360,28 +532,28 @@
             document.getElementById('appContent').classList.remove('hidden');
         }
 
-        // ログインセクションを表示
         function showLoginSection() {
             document.getElementById('loginSection').classList.remove('hidden');
             document.getElementById('subscriptionSection').classList.add('hidden');
             document.getElementById('verificationSection').classList.add('hidden');
         }
 
-        // サブスクリプションセクションを表示
         function showSubscriptionSection() {
             document.getElementById('loginSection').classList.add('hidden');
             document.getElementById('subscriptionSection').classList.remove('hidden');
             document.getElementById('verificationSection').classList.add('hidden');
         }
 
-        // 認証検証セクションを表示
         function showVerificationSection() {
             document.getElementById('loginSection').classList.add('hidden');
             document.getElementById('subscriptionSection').classList.add('hidden');
             document.getElementById('verificationSection').classList.remove('hidden');
+            // 手動確認ボタンを非表示に戻す
+            document.getElementById('manualRefreshBtn').style.display = 'none';
+            document.getElementById('verificationDescription').textContent = 'お支払いの確認中です。数秒お待ちください...';
         }
 
-        // Update authentication state
+        // 認証状態の更新
         async function updateAuthState(user) {
             currentUser = user;
             isAuthenticated = !!user;
@@ -391,11 +563,9 @@
                 headerLoginBtn.textContent = isAuthenticated ? 'ログアウト' : 'Googleログイン';
             }
             
-            // サブスクリプションボタンの表示制御
             const checkoutButton = document.getElementById('checkout-button');
             if (checkoutButton) {
                 if (isAuthenticated) {
-                    // サブスクリプション状態をチェック
                     const isSubscribed = await checkSubscriptionStatus();
                     checkoutButton.style.display = isSubscribed ? 'none' : 'block';
                 } else {
@@ -404,12 +574,10 @@
             }
             
             if (isAuthenticated) {
-                // サブスクリプション状態をチェックしてオーバーレイ表示を制御
                 const isSubscribed = await checkSubscriptionStatus();
                 if (isSubscribed) {
                     hideAuthOverlay();
                 } else {
-                    // サブスクリプション未登録の場合は登録画面を表示
                     showAuthOverlay();
                     showSubscriptionSection();
                 }
@@ -419,83 +587,7 @@
             }
         }
 
-        // サブスクリプション状態をチェック（booleanを返す）
-        async function checkSubscriptionStatus() {
-            try {
-                const { data: { user } } = await supabase.auth.getUser();
-                if (!user) {
-                    return false;
-                }
-
-                // Supabaseからユーザーのサブスクリプション状態を取得
-                const { data, error } = await supabase
-                    .from('users')
-                    .select('is_subscribed')
-                    .eq('id', user.id)
-                    .single();
-
-                if (error) {
-                    return false;
-                }
-
-                return data && data.is_subscribed;
-            } catch (error) {
-                return false;
-            }
-        }
-
-        // Auth state change listener
-        supabase.auth.onAuthStateChange((event, session) => {
-            switch (event) {
-                case 'SIGNED_IN':
-                    updateAuthState(session?.user);
-                    break;
-                    
-                case 'SIGNED_OUT':
-                    updateAuthState(null);
-                    break;
-            }
-        });
-
-        // Initialize authentication
-        async function initializeAuth() {
-            try {
-                // Check for auth tokens in URL hash
-                const hashParams = new URLSearchParams(window.location.hash.substring(1));
-                const accessToken = hashParams.get('access_token');
-                const refreshToken = hashParams.get('refresh_token');
-                
-                if (accessToken) {
-                    const { data, error } = await supabase.auth.setSession({
-                        access_token: accessToken,
-                        refresh_token: refreshToken
-                    });
-                    
-                    if (!error) {
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                        return;
-                    }
-                }
-                
-                // Check existing session
-                const { data: { session }, error } = await supabase.auth.getSession();
-                
-                if (error) {
-                    updateAuthState(null);
-                    return;
-                }
-                
-                if (session && session.user) {
-                    updateAuthState(session.user);
-                } else {
-                    updateAuthState(null);
-                }
-            } catch (error) {
-                updateAuthState(null);
-            }
-        }
-
-        // Perform Google login
+        // Googleログイン実行
         async function performGoogleLogin() {
             try {
                 const { data, error } = await supabase.auth.signInWithOAuth({
@@ -510,31 +602,30 @@
                 });
 
                 if (error) {
+                    console.error('Login error:', error);
                     alert('ログインエラー: ' + error.message);
-                    return;
                 }
-                
             } catch (error) {
+                console.error('Login failed:', error);
                 alert('予期しないエラーが発生しました: ' + error.message);
             }
         }
 
-        // Perform logout
+        // ログアウト実行
         async function performLogout() {
             try {
                 const { error } = await supabase.auth.signOut();
-                
                 if (error) {
+                    console.error('Logout error:', error);
                     alert('ログアウトエラー: ' + error.message);
-                    return;
                 }
-                
             } catch (error) {
+                console.error('Logout failed:', error);
                 alert('予期しないエラーが発生しました: ' + error.message);
             }
         }
 
-        // Stripe Checkout処理
+        // Stripeサブスクリプション処理
         async function handleSubscription() {
             try {
                 const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -543,39 +634,11 @@
                     return;
                 }
 
-                console.log('User data:', user); // デバッグ用
+                console.log('Initiating subscription for user:', user.email);
 
-                // まずSupabaseのusersテーブルにユーザーを作成/更新
-                const { data: existingUser, error: fetchError } = await supabase
-                    .from('users')
-                    .select('*')
-                    .eq('id', user.id)
-                    .single();
+                // ユーザーレコードが存在するか確認・作成
+                await createUserRecord(user);
 
-                if (fetchError && fetchError.code !== 'PGRST116') {
-                    console.error('User fetch error:', fetchError);
-                }
-
-                if (!existingUser) {
-                    // ユーザーが存在しない場合は作成
-                    const { error: insertError } = await supabase
-                        .from('users')
-                        .insert([
-                            {
-                                id: user.id,
-                                email: user.email,
-                                created_at: new Date().toISOString(),
-                                is_subscribed: false
-                            }
-                        ]);
-
-                    if (insertError) {
-                        console.error('User insert error:', insertError);
-                        throw new Error('ユーザーの作成に失敗しました: ' + insertError.message);
-                    }
-                }
-
-                // Checkoutセッションを作成
                 const response = await fetch('/api/create-checkout-session', {
                     method: 'POST',
                     headers: {
@@ -583,58 +646,85 @@
                     },
                     body: JSON.stringify({ 
                         userId: user.id,
-                        email: user.email // emailも明示的に送信
+                        email: user.email
                     }),
                 });
 
-                const responseText = await response.text();
-                console.log('API Response:', responseText); // デバッグ用
-
                 if (!response.ok) {
-                    let errorMessage = `HTTP error! status: ${response.status}`;
-                    try {
-                        const errorData = JSON.parse(responseText);
-                        errorMessage += ` - ${errorData.error || errorData.message || 'Unknown error'}`;
-                    } catch (e) {
-                        errorMessage += ` - ${responseText}`;
-                    }
-                    throw new Error(errorMessage);
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
                 }
 
-                const session = JSON.parse(responseText);
+                const session = await response.json();
 
                 if (session.error) {
                     throw new Error(session.error);
                 }
 
                 if (session.url) {
-                    // Stripe Checkoutにリダイレクト
+                    // Stripe Checkoutページへリダイレクト
                     window.location.href = session.url;
                 } else {
                     throw new Error('セッションURLがありません');
                 }
             } catch (error) {
-                console.error('Subscription error:', error); // デバッグ用
+                console.error('Subscription error:', error);
                 alert('サブスクリプションの開始に失敗しました: ' + error.message);
             }
         }
 
-        // Setup event listeners
+        // 認証状態変更の監視
+        supabase.auth.onAuthStateChange((event, session) => {
+            console.log('Auth state changed:', event, session?.user?.email);
+            
+            switch (event) {
+                case 'SIGNED_IN':
+                    updateAuthState(session?.user);
+                    break;
+                case 'SIGNED_OUT':
+                    updateAuthState(null);
+                    break;
+            }
+        });
+
+        // 初期化処理
+        async function initializeAuth() {
+            try {
+                // 決済後のパラメータをチェック
+                await handlePostPayment();
+                
+                // 既存セッションをチェック
+                const { data: { session }, error } = await supabase.auth.getSession();
+                
+                if (error) {
+                    console.error('Session check error:', error);
+                    updateAuthState(null);
+                    return;
+                }
+                
+                if (session && session.user) {
+                    updateAuthState(session.user);
+                } else {
+                    updateAuthState(null);
+                }
+            } catch (error) {
+                console.error('Auth initialization error:', error);
+                updateAuthState(null);
+            }
+        }
+
+        // イベントリスナーの設定
         function setupAuthEventListeners() {
-            // Main login button
+            // メインログインボタン
             const mainLoginBtn = document.getElementById('googleLoginBtn');
             if (mainLoginBtn) {
-                mainLoginBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    performGoogleLogin();
-                });
+                mainLoginBtn.addEventListener('click', performGoogleLogin);
             }
             
-            // Header login/logout button
+            // ヘッダーログイン/ログアウトボタン
             const headerLoginBtn = document.getElementById('google-login');
             if (headerLoginBtn) {
-                headerLoginBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
+                headerLoginBtn.addEventListener('click', () => {
                     if (isAuthenticated) {
                         performLogout();
                     } else {
@@ -643,26 +733,39 @@
                 });
             }
 
-            // Subscription button in auth overlay
+            // サブスクリプションボタン（オーバーレイ内）
             const subscribeBtn = document.getElementById('subscribeBtn');
             if (subscribeBtn) {
-                subscribeBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    handleSubscription();
-                });
+                subscribeBtn.addEventListener('click', handleSubscription);
             }
 
-            // Checkout button in header
+            // サブスクリプションボタン（ヘッダー）
             const checkoutButton = document.getElementById('checkout-button');
             if (checkoutButton) {
-                checkoutButton.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    handleSubscription();
+                checkoutButton.addEventListener('click', handleSubscription);
+            }
+
+            // 手動確認ボタン
+            const manualRefreshBtn = document.getElementById('manualRefreshBtn');
+            if (manualRefreshBtn) {
+                manualRefreshBtn.addEventListener('click', async () => {
+                    showVerificationSection(); // スピナーを再表示
+                    const isSubscribed = await checkSubscriptionStatus();
+                    if (isSubscribed) {
+                        hideAuthOverlay();
+                    } else {
+                        // 開発環境用：手動更新オプション
+                        if (confirm('サブスクリプション状態を手動で更新しますか？（開発用）')) {
+                            await manualSubscriptionUpdate();
+                        } else {
+                            showSubscriptionSection();
+                        }
+                    }
                 });
             }
         }
 
-        // Initialize when DOM is ready
+        // DOM読み込み完了時に初期化
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => {
                 setupAuthEventListeners();

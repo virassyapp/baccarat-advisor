@@ -1,174 +1,100 @@
-const Stripe = require('stripe');
+// /api/create-checkout-session.js
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { createClient } = require('@supabase/supabase-js');
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2023-10-16',
-});
-
 const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
 export default async function handler(req, res) {
-  // CORSヘッダーの設定
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-client-info, apikey');
-
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  try {
-    // 環境変数の確認
-    if (!process.env.STRIPE_SECRET_KEY) {
-      return res.status(500).json({ error: 'STRIPE_SECRET_KEY not configured' });
-    }
-    if (!process.env.SUPABASE_URL) {
-      return res.status(500).json({ error: 'SUPABASE_URL not configured' });
-    }
-    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      return res.status(500).json({ error: 'SUPABASE_SERVICE_ROLE_KEY not configured' });
+    if (req.method !== 'POST') {
+        return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    // リクエストボディの検証
-    const { userId, email } = req.body;
-    
-    if (!userId) {
-      return res.status(400).json({ error: 'User ID is required' });
-    }
-
-    console.log('Creating checkout session for user:', userId, email);
-
-    // usersテーブルが存在するかチェック
-    let user;
     try {
-      const { data, error: userError } = await supabase
-        .from('users')
-        .select('id, email, stripe_customer_id')
-        .eq('id', userId)
-        .single();
+        const { userId, email } = req.body;
 
-      if (userError && userError.code === 'PGRST116') {
-        // ユーザーが見つからない場合は作成
-        const { data: newUser, error: insertError } = await supabase
-          .from('users')
-          .insert([
-            {
-              id: userId,
-              email: email,
-              created_at: new Date().toISOString(),
-              is_subscribed: false
-            }
-          ])
-          .select()
-          .single();
-
-        if (insertError) {
-          console.error('User insert error:', insertError);
-          return res.status(500).json({ error: 'Failed to create user', details: insertError.message });
+        if (!userId || !email) {
+            return res.status(400).json({ error: 'userId and email are required' });
         }
-        user = newUser;
-      } else if (userError) {
-        console.error('User fetch error:', userError);
-        return res.status(500).json({ error: 'Database error', details: userError.message });
-      } else {
-        user = data;
-      }
-    } catch (dbError) {
-      console.error('Database connection error:', dbError);
-      return res.status(500).json({ error: 'Database connection failed', details: dbError.message });
-    }
 
-    let customerId = user.stripe_customer_id;
+        console.log('Creating checkout session for:', { userId, email });
 
-    // Stripe Customerが存在しない場合は作成
-    if (!customerId) {
-      console.log('Creating new Stripe customer for user:', userId);
-      
-      try {
-        const customer = await stripe.customers.create({
-          email: user.email || email,
-          metadata: {
-            userId: userId,
-          },
+        // Supabaseにユーザーレコードが存在するか確認
+        const { data: existingUser, error: fetchError } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', userId)
+            .single();
+
+        if (fetchError && fetchError.code !== 'PGRST116') {
+            console.error('Database fetch error:', fetchError);
+        }
+
+        // ユーザーレコードが存在しない場合は作成
+        if (!existingUser) {
+            console.log('Creating user record in database...');
+            const { error: insertError } = await supabase
+                .from('users')
+                .insert([
+                    {
+                        id: userId,
+                        email: email,
+                        is_subscribed: false,
+                        subscription_status: 'inactive',
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString()
+                    }
+                ]);
+
+            if (insertError) {
+                console.error('Failed to create user record:', insertError);
+                return res.status(500).json({ error: 'Failed to create user record' });
+            }
+        }
+
+        // Stripe Checkoutセッションを作成
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: [
+                {
+                    price_data: {
+                        currency: 'jpy',
+                        product_data: {
+                            name: 'バカラ戦略アドバイザー プレミアム',
+                            description: '高度な戦略分析とリスク管理機能へのアクセス',
+                        },
+                        unit_amount: 980, // 980円
+                    },
+                    quantity: 1,
+                },
+            ],
+            mode: 'payment', // 一回払い
+            customer_email: email,
+            metadata: {
+                userId: userId,
+                email: email
+            },
+            success_url: `${process.env.DOMAIN || req.headers.origin}?success=true&session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${process.env.DOMAIN || req.headers.origin}?cancelled=true`,
+            automatic_tax: {
+                enabled: false,
+            },
         });
 
-        customerId = customer.id;
+        console.log('Checkout session created:', session.id);
+        
+        res.status(200).json({
+            id: session.id,
+            url: session.url
+        });
 
-        // SupabaseにCustomer IDを保存
-        const { error: updateError } = await supabase
-          .from('users')
-          .update({ stripe_customer_id: customerId })
-          .eq('id', userId);
-
-        if (updateError) {
-          console.error('Failed to update customer ID:', updateError);
-        }
-      } catch (stripeError) {
-        console.error('Stripe customer creation error:', stripeError);
-        return res.status(500).json({ error: 'Failed to create Stripe customer', details: stripeError.message });
-      }
+    } catch (error) {
+        console.error('Checkout session creation error:', error);
+        res.status(500).json({ 
+            error: error.message || 'Internal server error',
+            details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
     }
-
-    // サクセスURLとキャンセルURLの設定
-    const baseUrl = req.headers.origin || 
-                    req.headers.referer?.replace(/\/$/, '') || 
-                    `https://${req.headers.host}`;
-
-    // Checkout Sessionの作成
-    try {
-      const session = await stripe.checkout.sessions.create({
-        customer: customerId,
-        payment_method_types: ['card'],
-        line_items: [
-          {
-            price_data: {
-              currency: 'usd',
-              product_data: {
-                name: 'バカラ戦略アドバイザー プレミアム',
-                description: '高度な戦略アドバイス、リスク管理、詳細な分析機能',
-              },
-              unit_amount: 990, // $9.90
-              recurring: {
-                interval: 'month',
-              },
-            },
-            quantity: 1,
-          },
-        ],
-        mode: 'subscription',
-        success_url: `${baseUrl}?session_id={CHECKOUT_SESSION_ID}&success=true`,
-        cancel_url: `${baseUrl}?canceled=true`,
-        metadata: {
-          userId: userId,
-        },
-      });
-
-      console.log('Checkout session created:', session.id);
-
-      return res.status(200).json({
-        url: session.url,
-        sessionId: session.id,
-      });
-    } catch (stripeError) {
-      console.error('Stripe session creation error:', stripeError);
-      return res.status(500).json({ 
-        error: 'Failed to create checkout session', 
-        details: stripeError.message 
-      });
-    }
-
-  } catch (error) {
-    console.error('Unexpected error:', error);
-    return res.status(500).json({
-      error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? error.message : 'Unexpected error occurred',
-    });
-  }
 }
