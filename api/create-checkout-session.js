@@ -59,18 +59,12 @@ export default async function handler(req, res) {
             payment_method_types: ['card'],
             line_items: [
                 {
-                    price_data: {
-                        currency: 'jpy',
-                        product_data: {
-                            name: 'バカラ戦略アドバイザー プレミアム',
-                            description: '高度な戦略分析とリスク管理機能へのアクセス',
-                        },
-                        unit_amount: 980, // 980円
-                    },
+                    price: 'price_1S7poRCPMV8Fb9FwVzErm4rk', // サブスクリプション価格のID
                     quantity: 1,
                 },
             ],
-            mode: 'payment', // 一回払い
+            
+            mode: 'subscription', // 一回払い
             customer_email: email,
             metadata: {
                 userId: userId,
