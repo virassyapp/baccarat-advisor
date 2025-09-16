@@ -543,20 +543,65 @@
                     return;
                 }
 
+                console.log('User data:', user); // デバッグ用
+
+                // まずSupabaseのusersテーブルにユーザーを作成/更新
+                const { data: existingUser, error: fetchError } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
+
+                if (fetchError && fetchError.code !== 'PGRST116') {
+                    console.error('User fetch error:', fetchError);
+                }
+
+                if (!existingUser) {
+                    // ユーザーが存在しない場合は作成
+                    const { error: insertError } = await supabase
+                        .from('users')
+                        .insert([
+                            {
+                                id: user.id,
+                                email: user.email,
+                                created_at: new Date().toISOString(),
+                                is_subscribed: false
+                            }
+                        ]);
+
+                    if (insertError) {
+                        console.error('User insert error:', insertError);
+                        throw new Error('ユーザーの作成に失敗しました: ' + insertError.message);
+                    }
+                }
+
                 // Checkoutセッションを作成
                 const response = await fetch('/api/create-checkout-session', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ userId: user.id }),
+                    body: JSON.stringify({ 
+                        userId: user.id,
+                        email: user.email // emailも明示的に送信
+                    }),
                 });
 
+                const responseText = await response.text();
+                console.log('API Response:', responseText); // デバッグ用
+
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    let errorMessage = `HTTP error! status: ${response.status}`;
+                    try {
+                        const errorData = JSON.parse(responseText);
+                        errorMessage += ` - ${errorData.error || errorData.message || 'Unknown error'}`;
+                    } catch (e) {
+                        errorMessage += ` - ${responseText}`;
+                    }
+                    throw new Error(errorMessage);
                 }
 
-                const session = await response.json();
+                const session = JSON.parse(responseText);
 
                 if (session.error) {
                     throw new Error(session.error);
@@ -569,6 +614,7 @@
                     throw new Error('セッションURLがありません');
                 }
             } catch (error) {
+                console.error('Subscription error:', error); // デバッグ用
                 alert('サブスクリプションの開始に失敗しました: ' + error.message);
             }
         }
@@ -2038,4 +2084,3 @@
     </script>
 </body>
 </html>
-        
