@@ -4,15 +4,6 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>バカラ戦略アドバイザー</title>
-    <!-- PWA設定 -->
-     <!--
-    <link href="data:application/json;base64,eyJuYW1lIjoi44OQ44Kr44Op5oim55Wl44Ki44OJ44OQ44Kk44K244O8Iiwic2hvcnRfbmFtZSI6IkJhY2NhcmF0QWR2aXNvciIsImRlc2NyaXB0aW9uIjoi44OQ44Kr44Op44Gu5oim55Wl44KS44K144Od44O844OI44GZ44KL5aSa6KiA6Kqe44Ki44OJ44OQ44Kk44K244O8IiwiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjNhV1IwYUQwaU1USTRJaUJvWldsbmFIUTlJakV5T0NJZ2RtbGxkMEp2ZUQwaU1DQXdJREV5T0NBeE1qZ2lJR1pwYkd3OUlpTmhObUU0TWpjaUlIaHRiRzV6UFNKb2RIUndjem92TDNkM2R5NTNNeTV2Y21jdk1qQXdNQzl6ZG1jaVBnb2dJQ0E4Y0dGMGFDQmtQU0p0TmpRZ05qUkROalFnTWpjdU5UWWdNamN1TlRZZ05qUWdOalJETVRBd0xqUTBJRFkwSURFeU9DQTJOREF4TlM0ME5DQXlOeTQxTmlBNU5pQXlOeTQxTmlBNU5pQTVOa001TmlBeE1EQXVORFFnTmpRZ01UQTRJRFkwSURFeU9VTTNOQ0V4TURndU5EUWdNamN1TlRZZ01UQXdMalEwSURJM0xqVTJJRFkwSURFMklEWTBJajQ4TDNOMlp6ND0iLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCIsInNpemVzIjoiMTI4eDEyOCJ9XSwic3RhcnRfdXJsIjoiLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwidGhlbWVfY29sb3IiOiIjMWIyYzNlIiwiYmFja2dyb3VuZF9jb2xvciI6IiMwZjQ3MmEifQ==" rel="manifest"/>
-    <meta content="#1b2c3e" name="theme-color"/>
-    <meta content="yes" name="mobile-web-app-capable"/>
-    <meta content="yes" name="apple-mobile-web-app-capable"/>
-    <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
-    <meta content="バカラアドバイザー" name="apple-mobile-web-app-title"/>
-    -->
     <!-- 外部CSSファイル -->
     <link href="style.css" rel="stylesheet"/>
     <meta content="dark light" name="color-scheme"/>
@@ -41,14 +32,14 @@
         <!-- ここに元のHTMLコンテンツ全体を保持 -->
         <div class="pause-overlay hidden" id="pauseOverlay">
             <div class="pause-content">
-                <h2>⏸️ 一時停止中</h2>
+                <h2>⸸️ 一時停止中</h2>
                 <p>リスク管理により取引が一時停止されています</p>
                 <button class="resume-btn" id="resumeBtn">▶️ 再開</button>
             </div>
         </div>
 
         <div class="install-prompt hidden" id="installPrompt">
-            <span>📱 ホーム画面にアプリを追加</span>
+            <span>📱 ホーム画面にアプリを追加 </span>
             <button id="installBtn">インストール</button>
             <button class="close-btn" id="closeInstall">×</button>
         </div>
@@ -77,7 +68,7 @@
                 <!-- Language Section -->
                 <div class="settings-section">
                     <div class="section-title">
-                        <span>🌍</span>
+                        <span>🌐</span>
                         <span id="languageSectionTitle">言語設定</span>
                     </div>
                     <div class="input-group">
@@ -165,7 +156,7 @@
                     </div>
                     <div class="language-selector">
                         <div class="current-selector">
-                            <span>🌍</span>
+                            <span>🌐</span>
                             <span id="currentLang">日本語</span>
                         </div>
                     </div>
@@ -270,7 +261,7 @@
                         </div>
                         <div class="control-buttons">
                             <button class="button btn-pause" id="pauseBtn">
-                                <span>⏸️</span>
+                                <span>⸸️</span>
                                 <span id="pauseText">休憩</span>
                             </button>
                             <button class="button btn-stop" id="stopBtn">
@@ -348,7 +339,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-
         // Supabaseクライアントの初期化
         const supabase = window.supabase.createClient(
             'https://ybqbpxgcycttmcwjiyxq.supabase.co',
@@ -359,20 +349,13 @@
         let currentUser = null;
         let isAuthenticated = false;
 
-        // Debug function
-        function debugLog(message, data = null) {
-            console.log(`[Auth Debug] ${message}`, data || '');
-        }
-
         // Show/hide auth overlay
         function showAuthOverlay() {
-            debugLog('認証オーバーレイを表示');
             document.getElementById('authOverlay').classList.remove('hidden');
             document.getElementById('appContent').classList.add('hidden');
         }
 
         function hideAuthOverlay() {
-            debugLog('認証オーバーレイを非表示');
             document.getElementById('authOverlay').classList.add('hidden');
             document.getElementById('appContent').classList.remove('hidden');
         }
@@ -403,8 +386,6 @@
             currentUser = user;
             isAuthenticated = !!user;
             
-            debugLog('認証状態更新', { isAuthenticated, userId: user?.id });
-            
             const headerLoginBtn = document.getElementById('google-login');
             if (headerLoginBtn) {
                 headerLoginBtn.textContent = isAuthenticated ? 'ログアウト' : 'Googleログイン';
@@ -428,8 +409,9 @@
                 if (isSubscribed) {
                     hideAuthOverlay();
                 } else {
-                    // サブスクリプション未登録でもメインアプリを表示
-                    hideAuthOverlay();
+                    // サブスクリプション未登録の場合は登録画面を表示
+                    showAuthOverlay();
+                    showSubscriptionSection();
                 }
             } else {
                 showAuthOverlay();
@@ -453,41 +435,30 @@
                     .single();
 
                 if (error) {
-                    console.error('サブスクリプション状態の取得エラー:', error);
                     return false;
                 }
 
                 return data && data.is_subscribed;
             } catch (error) {
-                console.error('サブスクリプションチェックエラー:', error);
                 return false;
             }
         }
 
         // Auth state change listener
         supabase.auth.onAuthStateChange((event, session) => {
-            debugLog('認証状態変更イベント', { event, hasSession: !!session });
-            
             switch (event) {
                 case 'SIGNED_IN':
-                    debugLog('ログイン成功', session?.user);
                     updateAuthState(session?.user);
                     break;
                     
                 case 'SIGNED_OUT':
-                    debugLog('ログアウト');
                     updateAuthState(null);
                     break;
-                    
-                default:
-                    debugLog('その他の認証イベント', { event, session });
             }
         });
 
         // Initialize authentication
         async function initializeAuth() {
-            debugLog('初期認証状態チェック開始');
-            
             try {
                 // Check for auth tokens in URL hash
                 const hashParams = new URLSearchParams(window.location.hash.substring(1));
@@ -495,17 +466,12 @@
                 const refreshToken = hashParams.get('refresh_token');
                 
                 if (accessToken) {
-                    debugLog('URLから認証トークン検出');
-                    
                     const { data, error } = await supabase.auth.setSession({
                         access_token: accessToken,
                         refresh_token: refreshToken
                     });
                     
-                    if (error) {
-                        debugLog('セッション設定エラー', error);
-                    } else {
-                        debugLog('セッション設定成功', data.user);
+                    if (!error) {
                         window.history.replaceState({}, document.title, window.location.pathname);
                         return;
                     }
@@ -515,29 +481,22 @@
                 const { data: { session }, error } = await supabase.auth.getSession();
                 
                 if (error) {
-                    debugLog('セッション取得エラー', error);
                     updateAuthState(null);
                     return;
                 }
                 
                 if (session && session.user) {
-                    debugLog('既存セッション確認', session.user);
                     updateAuthState(session.user);
                 } else {
-                    debugLog('セッションなし - ログイン画面表示');
                     updateAuthState(null);
                 }
             } catch (error) {
-                debugLog('初期化エラー', error);
                 updateAuthState(null);
             }
         }
 
         // Perform Google login
         async function performGoogleLogin() {
-            debugLog('Googleログイン開始');
-            debugLog('現在のURL', window.location.href);
-            
             try {
                 const { data, error } = await supabase.auth.signInWithOAuth({
                     provider: 'google',
@@ -551,114 +510,78 @@
                 });
 
                 if (error) {
-                    debugLog('OAuth開始エラー', error);
                     alert('ログインエラー: ' + error.message);
                     return;
                 }
                 
-                debugLog('OAuth開始成功 - リダイレクト中', data);
-                
             } catch (error) {
-                debugLog('予期しないログインエラー', error);
                 alert('予期しないエラーが発生しました: ' + error.message);
             }
         }
 
         // Perform logout
         async function performLogout() {
-            debugLog('ログアウト開始');
-            
             try {
                 const { error } = await supabase.auth.signOut();
                 
                 if (error) {
-                    debugLog('ログアウトエラー', error);
                     alert('ログアウトエラー: ' + error.message);
                     return;
                 }
                 
-                debugLog('ログアウト成功');
-                
             } catch (error) {
-                debugLog('予期しないログアウトエラー', error);
                 alert('予期しないエラーが発生しました: ' + error.message);
             }
         }
 
-            // サブスクリプションボタンのイベントリスナー設定関数
-            function setupCheckoutButtonListener() {
-                const checkoutButton = document.getElementById('checkout-button');
-                if (checkoutButton) {
-                    checkoutButton.addEventListener('click', async () => {
-                        console.log('サブスクリプションボタンがクリックされました');
-                        try {
-                            const { data: { user }, error: userError } = await supabase.auth.getUser();
-                            if (userError || !user) {
-                                alert('ログインしてください');
-                                return;
-                            }
-
-                            console.log('ユーザーID:', user.id);
-
-                            // Checkoutセッションを作成
-                            const response = await fetch('/api/create-checkout-session', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({ userId: user.id }),
-                            });
-
-                            if (!response.ok) {
-                                throw new Error(`HTTP error! status: ${response.status}`);
-                            }
-
-                            const session = await response.json();
-                            console.log('セッション応答:', session);
-
-                            if (session.error) {
-                                throw new Error(session.error);
-                            }
-
-                            if (session.url) {
-                                // Stripe Checkoutにリダイレクト
-                                console.log('Stripeにリダイレクトします:', session.url);
-                                window.location.href = session.url;
-                            } else {
-                                throw new Error('セッションURLがありません');
-                            }
-                        } catch (error) {
-                            console.error('サブスクリプションエラー:', error);
-                            alert('サブスクリプションの開始に失敗しました: ' + error.message);
-                        }
-                    });
-                } else {
-                    console.error('チェックアウトボタンが見つかりません');
+        // Stripe Checkout処理
+        async function handleSubscription() {
+            try {
+                const { data: { user }, error: userError } = await supabase.auth.getUser();
+                if (userError || !user) {
+                    alert('ログインしてください');
+                    return;
                 }
-            }
 
-            // DOMの読み込みが完了したらイベントリスナーを設定
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', setupCheckoutButtonListener);
-            } else {
-                setupCheckoutButtonListener();
+                // Checkoutセッションを作成
+                const response = await fetch('/api/create-checkout-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userId: user.id }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const session = await response.json();
+
+                if (session.error) {
+                    throw new Error(session.error);
+                }
+
+                if (session.url) {
+                    // Stripe Checkoutにリダイレクト
+                    window.location.href = session.url;
+                } else {
+                    throw new Error('セッションURLがありません');
+                }
+            } catch (error) {
+                alert('サブスクリプションの開始に失敗しました: ' + error.message);
             }
+        }
 
         // Setup event listeners
         function setupAuthEventListeners() {
-            debugLog('イベントリスナー設定開始');
-            
             // Main login button
             const mainLoginBtn = document.getElementById('googleLoginBtn');
             if (mainLoginBtn) {
                 mainLoginBtn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    debugLog('メインログインボタンクリック');
                     performGoogleLogin();
                 });
-                debugLog('メインログインボタンリスナー設定完了');
-            } else {
-                debugLog('メインログインボタンが見つからない');
             }
             
             // Header login/logout button
@@ -666,29 +589,40 @@
             if (headerLoginBtn) {
                 headerLoginBtn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    debugLog('ヘッダーログインボタンクリック', { isAuthenticated });
-                    
                     if (isAuthenticated) {
                         performLogout();
                     } else {
                         performGoogleLogin();
                     }
                 });
-                debugLog('ヘッダーログインボタンリスナー設定完了');
-            } else {
-                debugLog('ヘッダーログインボタンが見つからない');
+            }
+
+            // Subscription button in auth overlay
+            const subscribeBtn = document.getElementById('subscribeBtn');
+            if (subscribeBtn) {
+                subscribeBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    handleSubscription();
+                });
+            }
+
+            // Checkout button in header
+            const checkoutButton = document.getElementById('checkout-button');
+            if (checkoutButton) {
+                checkoutButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    handleSubscription();
+                });
             }
         }
 
         // Initialize when DOM is ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => {
-                debugLog('DOMContentLoaded イベント');
                 setupAuthEventListeners();
                 initializeAuth();
             });
         } else {
-            debugLog('DOM already ready - 即座に初期化');
             setupAuthEventListeners();
             initializeAuth();
         }
@@ -765,7 +699,8 @@
                 fundsSection: "資金設定",
                 strategySection: "戦略設定",
                 riskSection: "リスク管理",
-                currencySection: "通貨設定"
+                currencySection: "通貨設定",
+                currency: "通貨"
             },
             en: {
                 title: "Baccarat Strategy Advisor",
@@ -837,7 +772,8 @@
                 fundsSection: "Funds Settings",
                 strategySection: "Strategy Settings",
                 riskSection: "Risk Management",
-                currencySection: "Currency Settings"
+                currencySection: "Currency Settings",
+                currency: "Currency"
             },
             es: {
                 title: "Asesor de Estrategia de Baccarat",
@@ -909,7 +845,8 @@
                 fundsSection: "Configuración de Fondos",
                 strategySection: "Configuración de Estrategia",
                 riskSection: "Gestión de Riesgo",
-                currencySection: "Configuración de Moneda"
+                currencySection: "Configuración de Moneda",
+                currency: "Moneda"
             },
             zh: {
                 title: "百家乐策略顾问",
@@ -981,7 +918,8 @@
                 fundsSection: "资金设置",
                 strategySection: "策略设置",
                 riskSection: "风险管理",
-                currencySection: "货币设置"
+                currencySection: "货币设置",
+                currency: "货币"
             },
             ko: {
                 title: "바카라 전략 어드바이저",
@@ -1053,7 +991,8 @@
                 fundsSection: "자금 설정",
                 strategySection: "전략 설정",
                 riskSection: "리스크 관리",
-                currencySection: "통화 설정"
+                currencySection: "통화 설정",
+                currency: "통화"
             },
             fr: {
                 title: "Conseiller Stratégique Baccarat",
@@ -1125,7 +1064,8 @@
                 fundsSection: "Paramètres de Fonds",
                 strategySection: "Paramètres de Stratégie",
                 riskSection: "Gestion des Risques",
-                currencySection: "Paramètres de Devise"
+                currencySection: "Paramètres de Devise",
+                currency: "Devise"
             }
         };
 
@@ -1145,7 +1085,7 @@
                 initialFunds: 1000,
                 initialBet: 5,
                 step: 1,
-                format: (value) => `$${value.toLocaleString("en-US")}`
+                format: (value) => `${value.toLocaleString("en-US")}`
             },
             EUR: {
                 symbol: "€",
@@ -1268,7 +1208,6 @@
             
             // Settings modal text
             document.getElementById('currencySectionTitle').textContent = t('currencySection');
-            document.getElementById('currencyLabel').textContent = t('currency');
             document.getElementById('languageSectionTitle').textContent = t('languageSection');
             document.getElementById('languageLabel').textContent = t('language');
             document.getElementById('fundsSectionTitle').textContent = t('fundsSection');
@@ -1544,7 +1483,7 @@
             ctx.strokeStyle = '#4b5563';
             ctx.lineWidth = 1;
             
-            // 水平線とY軸ラベル
+            // 水平線とYaxis
             const ySteps = 6;
             for (let i = 0; i <= ySteps; i++) {
                 const y = padding + (chartHeight * i / ySteps);
@@ -1801,6 +1740,7 @@
             
             updateDisplay();
         }
+
         // Handle tie verification
         function handleTieVerification(roundResult) {
             history.push(roundResult);
@@ -1950,8 +1890,12 @@
             // Reset game state
             resetAll();
             
-            // Update UI - ここを修正
-            document.getElementById('currencyLabel').textContent = currency.name[currentLanguage];
+            // Update UI
+            const currencyLabel = document.getElementById('currencyLabel');
+            if (currencyLabel) {
+                currencyLabel.textContent = currency.name[currentLanguage];
+            }
+            
             // ヘッダー部分の通貨表示も更新する
             const headerCurrencyDisplay = document.getElementById('currentCurrencyDisplay');
             if (headerCurrencyDisplay) {
@@ -2076,244 +2020,22 @@
         setupScoreButtons();
         updateUIText();
         updateDisplay();
-        
-        // Service Worker registration for PWA
-        
-    
-// Theme toggle
-const themeToggle = document.getElementById("themeToggle");
-if (themeToggle) {
-  const currentTheme = localStorage.getItem("theme") || "dark";
-  document.body.classList.add(currentTheme + "-mode");
-  themeToggle.textContent = currentTheme === "dark" ? "🌙" : "🌞";
-  themeToggle.addEventListener("click", () => {
-    const isDark = document.body.classList.contains("dark-mode");
-    document.body.classList.toggle("dark-mode", !isDark);
-    document.body.classList.toggle("light-mode", isDark);
-    localStorage.setItem("theme", isDark ? "light" : "dark");
-    themeToggle.textContent = isDark ? "🌞" : "🌙";
-  });
-}
+
+        // Theme toggle
+        const themeToggle = document.getElementById("themeToggle");
+        if (themeToggle) {
+            const currentTheme = localStorage.getItem("theme") || "dark";
+            document.body.classList.add(currentTheme + "-mode");
+            themeToggle.textContent = currentTheme === "dark" ? "🌙" : "🌞";
+            themeToggle.addEventListener("click", () => {
+                const isDark = document.body.classList.contains("dark-mode");
+                document.body.classList.toggle("dark-mode", !isDark);
+                document.body.classList.toggle("light-mode", isDark);
+                localStorage.setItem("theme", isDark ? "light" : "dark");
+                themeToggle.textContent = isDark ? "🌞" : "🌙";
+            });
+        }
     </script>
-    // Global state
-    let currentUser = null;
-    let isAuthenticated = false;
-
-    // Debug function
-    function debugLog(message, data = null) {
-        // UIには一切出力しない
-        if (false) {
-            console.log(`[Auth Debug] ${message}`, data || '');
-        }
-
-    console.log(`[Auth Debug] ${message}`, data || '');
-    }
-
-    // Show/hide auth overlay
-    function showAuthOverlay() {
-    debugLog('認証オーバーレイを表示');
-    document.getElementById('authOverlay').classList.remove('hidden');
-    document.getElementById('appContent').classList.add('hidden');
-    }
-
-    function hideAuthOverlay() {
-    debugLog('認証オーバーレイを非表示');
-    document.getElementById('authOverlay').classList.add('hidden');
-    document.getElementById('appContent').classList.remove('hidden');
-    }
-
-    // Auth state change listener
-    supabase.auth.onAuthStateChange((event, session) => {
-    debugLog('認証状態変更イベント', { event, hasSession: !!session });
-
-    switch (event) {
-        case 'SIGNED_IN':
-        debugLog('ログイン成功', session?.user);
-        updateAuthState(session?.user);
-        break;
+</body>
+</html>
         
-        case 'SIGNED_OUT':
-        debugLog('ログアウト');
-        updateAuthState(null);
-        break;
-        
-        default:
-        debugLog('その他の認証イベント', { event, session });
-    }
-    });
-
-    // Initialize authentication
-    async function initializeAuth() {
-    debugLog('初期認証状態チェック開始');
-
-    try {
-        // Check for auth tokens in URL hash
-        const hashParams = new URLSearchParams(window.location.hash.substring(1));
-        const accessToken = hashParams.get('access_token');
-        const refreshToken = hashParams.get('refresh_token');
-        
-        if (accessToken) {
-        debugLog('URLから認証トークン検出');
-        
-        const { data, error } = await supabase.auth.setSession({
-            access_token: accessToken,
-            refresh_token: refreshToken
-        });
-        
-        if (error) {
-            debugLog('セッション設定エラー', error);
-        } else {
-            debugLog('セッション設定成功', data.user);
-            window.history.replaceState({}, document.title, window.location.pathname);
-            return;
-        }
-        }
-        
-        // Check existing session
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (error) {
-        debugLog('セッション取得エラー', error);
-        updateAuthState(null);
-        return;
-        }
-        
-        if (session && session.user) {
-        debugLog('既存セッション確認', session.user);
-        updateAuthState(session.user);
-        } else {
-        debugLog('セッションなし - ログイン画面表示');
-        updateAuthState(null);
-        }
-    } catch (error) {
-        debugLog('初期化エラー', error);
-        updateAuthState(null);
-    }
-    }
-
-    // Perform Google login
-    async function performGoogleLogin() {
-    debugLog('Googleログイン開始');
-    debugLog('現在のURL', window.location.href);
-
-    try {
-        const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-            redirectTo: window.location.origin + window.location.pathname,
-            queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-            }
-        }
-        });
-
-        if (error) {
-        debugLog('OAuth開始エラー', error);
-        alert('ログインエラー: ' + error.message);
-        return;
-        }
-        
-        debugLog('OAuth開始成功 - リダイレクト中', data);
-        
-    } catch (error) {
-        debugLog('予期しないログインエラー', error);
-        alert('予期しないエラーが発生しました: ' + error.message);
-    }
-    }
-
-    // Perform logout
-    async function performLogout() {
-    debugLog('ログアウト開始');
-
-    try {
-        const { error } = await supabase.auth.signOut();
-        
-        if (error) {
-        debugLog('ログアウトエラー', error);
-        alert('ログアウトエラー: ' + error.message);
-        return;
-        }
-        
-        debugLog('ログアウト成功');
-        
-    } catch (error) {
-        debugLog('予期しないログアウトエラー', error);
-        alert('予期しないエラーが発生しました: ' + error.message);
-    }
-    }
-
-    // Setup event listeners
-    function setupAuthEventListeners() {
-    debugLog('イベントリスナー設定開始');
-
-    // Main login button
-    const mainLoginBtn = document.getElementById('googleLoginBtn');
-    if (mainLoginBtn) {
-        mainLoginBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        debugLog('メインログインボタンクリック');
-        performGoogleLogin();
-        });
-        debugLog('メインログインボタンリスナー設定完了');
-    } else {
-        debugLog('メインログインボタンが見つからない');
-    }
-
-    // Header login/logout button
-    const headerLoginBtn = document.getElementById('google-login');
-    if (headerLoginBtn) {
-        headerLoginBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        debugLog('ヘッダーログインボタンクリック', { isAuthenticated });
-        
-        if (isAuthenticated) {
-            performLogout();
-        } else {
-            performGoogleLogin();
-        }
-        });
-        debugLog('ヘッダーログインボタンリスナー設定完了');
-    } else {
-        debugLog('ヘッダーログインボタンが見つからない');
-    }
-    }
-
-    // Initialize when DOM is ready
-    if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        debugLog('DOMContentLoaded イベント');
-        setupAuthEventListeners();
-        initializeAuth();
-    });
-    } else {
-    debugLog('DOM already ready - 即座に初期化');
-    setupAuthEventListeners();
-    initializeAuth();
-    }
-
-    // Debug information
-    console.log('=== 認証システム初期化 ===');
-    console.log('現在のURL:', window.location.href);
-    console.log('Supabase プロジェクト URL:', 'https://ybqbpxgcycttmcwjiyxq.supabase.co');
-
-    // Manual testing functions
-    window.authDebug = {
-    getCurrentUser: () => currentUser,
-    getAuthState: () => isAuthenticated,
-    forceLogin: performGoogleLogin,
-    forceLogout: performLogout,
-    testConnection: async () => {
-        try {
-        const { data, error } = await supabase.auth.getSession();
-        console.log('接続テスト結果:', { data, error });
-        return { data, error };
-        } catch (err) {
-        console.error('接続テストエラー:', err);
-        return { error: err };
-        }
-    }
-    };
-
-    console.log('手動テスト関数: window.authDebug');
-    </script>
