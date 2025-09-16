@@ -2094,226 +2094,226 @@ if (themeToggle) {
     themeToggle.textContent = isDark ? "🌞" : "🌙";
   });
 }
-</script>
-// Global state
-let currentUser = null;
-let isAuthenticated = false;
+    </script>
+    // Global state
+    let currentUser = null;
+    let isAuthenticated = false;
 
-// Debug function
-function debugLog(message, data = null) {
-    // UIには一切出力しない
-    if (false) {
-        console.log(`[Auth Debug] ${message}`, data || '');
-    }
-
-console.log(`[Auth Debug] ${message}`, data || '');
-}
-
-// Show/hide auth overlay
-function showAuthOverlay() {
-debugLog('認証オーバーレイを表示');
-document.getElementById('authOverlay').classList.remove('hidden');
-document.getElementById('appContent').classList.add('hidden');
-}
-
-function hideAuthOverlay() {
-debugLog('認証オーバーレイを非表示');
-document.getElementById('authOverlay').classList.add('hidden');
-document.getElementById('appContent').classList.remove('hidden');
-}
-
-// Auth state change listener
-supabase.auth.onAuthStateChange((event, session) => {
-debugLog('認証状態変更イベント', { event, hasSession: !!session });
-
-switch (event) {
-    case 'SIGNED_IN':
-    debugLog('ログイン成功', session?.user);
-    updateAuthState(session?.user);
-    break;
-    
-    case 'SIGNED_OUT':
-    debugLog('ログアウト');
-    updateAuthState(null);
-    break;
-    
-    default:
-    debugLog('その他の認証イベント', { event, session });
-}
-});
-
-// Initialize authentication
-async function initializeAuth() {
-debugLog('初期認証状態チェック開始');
-
-try {
-    // Check for auth tokens in URL hash
-    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    const accessToken = hashParams.get('access_token');
-    const refreshToken = hashParams.get('refresh_token');
-    
-    if (accessToken) {
-    debugLog('URLから認証トークン検出');
-    
-    const { data, error } = await supabase.auth.setSession({
-        access_token: accessToken,
-        refresh_token: refreshToken
-    });
-    
-    if (error) {
-        debugLog('セッション設定エラー', error);
-    } else {
-        debugLog('セッション設定成功', data.user);
-        window.history.replaceState({}, document.title, window.location.pathname);
-        return;
-    }
-    }
-    
-    // Check existing session
-    const { data: { session }, error } = await supabase.auth.getSession();
-    
-    if (error) {
-    debugLog('セッション取得エラー', error);
-    updateAuthState(null);
-    return;
-    }
-    
-    if (session && session.user) {
-    debugLog('既存セッション確認', session.user);
-    updateAuthState(session.user);
-    } else {
-    debugLog('セッションなし - ログイン画面表示');
-    updateAuthState(null);
-    }
-} catch (error) {
-    debugLog('初期化エラー', error);
-    updateAuthState(null);
-}
-}
-
-// Perform Google login
-async function performGoogleLogin() {
-debugLog('Googleログイン開始');
-debugLog('現在のURL', window.location.href);
-
-try {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-        redirectTo: window.location.origin + window.location.pathname,
-        queryParams: {
-        access_type: 'offline',
-        prompt: 'consent',
+    // Debug function
+    function debugLog(message, data = null) {
+        // UIには一切出力しない
+        if (false) {
+            console.log(`[Auth Debug] ${message}`, data || '');
         }
+
+    console.log(`[Auth Debug] ${message}`, data || '');
+    }
+
+    // Show/hide auth overlay
+    function showAuthOverlay() {
+    debugLog('認証オーバーレイを表示');
+    document.getElementById('authOverlay').classList.remove('hidden');
+    document.getElementById('appContent').classList.add('hidden');
+    }
+
+    function hideAuthOverlay() {
+    debugLog('認証オーバーレイを非表示');
+    document.getElementById('authOverlay').classList.add('hidden');
+    document.getElementById('appContent').classList.remove('hidden');
+    }
+
+    // Auth state change listener
+    supabase.auth.onAuthStateChange((event, session) => {
+    debugLog('認証状態変更イベント', { event, hasSession: !!session });
+
+    switch (event) {
+        case 'SIGNED_IN':
+        debugLog('ログイン成功', session?.user);
+        updateAuthState(session?.user);
+        break;
+        
+        case 'SIGNED_OUT':
+        debugLog('ログアウト');
+        updateAuthState(null);
+        break;
+        
+        default:
+        debugLog('その他の認証イベント', { event, session });
     }
     });
 
-    if (error) {
-    debugLog('OAuth開始エラー', error);
-    alert('ログインエラー: ' + error.message);
-    return;
+    // Initialize authentication
+    async function initializeAuth() {
+    debugLog('初期認証状態チェック開始');
+
+    try {
+        // Check for auth tokens in URL hash
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const accessToken = hashParams.get('access_token');
+        const refreshToken = hashParams.get('refresh_token');
+        
+        if (accessToken) {
+        debugLog('URLから認証トークン検出');
+        
+        const { data, error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken
+        });
+        
+        if (error) {
+            debugLog('セッション設定エラー', error);
+        } else {
+            debugLog('セッション設定成功', data.user);
+            window.history.replaceState({}, document.title, window.location.pathname);
+            return;
+        }
+        }
+        
+        // Check existing session
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+        debugLog('セッション取得エラー', error);
+        updateAuthState(null);
+        return;
+        }
+        
+        if (session && session.user) {
+        debugLog('既存セッション確認', session.user);
+        updateAuthState(session.user);
+        } else {
+        debugLog('セッションなし - ログイン画面表示');
+        updateAuthState(null);
+        }
+    } catch (error) {
+        debugLog('初期化エラー', error);
+        updateAuthState(null);
     }
-    
-    debugLog('OAuth開始成功 - リダイレクト中', data);
-    
-} catch (error) {
-    debugLog('予期しないログインエラー', error);
-    alert('予期しないエラーが発生しました: ' + error.message);
-}
-}
-
-// Perform logout
-async function performLogout() {
-debugLog('ログアウト開始');
-
-try {
-    const { error } = await supabase.auth.signOut();
-    
-    if (error) {
-    debugLog('ログアウトエラー', error);
-    alert('ログアウトエラー: ' + error.message);
-    return;
     }
-    
-    debugLog('ログアウト成功');
-    
-} catch (error) {
-    debugLog('予期しないログアウトエラー', error);
-    alert('予期しないエラーが発生しました: ' + error.message);
-}
-}
 
-// Setup event listeners
-function setupAuthEventListeners() {
-debugLog('イベントリスナー設定開始');
+    // Perform Google login
+    async function performGoogleLogin() {
+    debugLog('Googleログイン開始');
+    debugLog('現在のURL', window.location.href);
 
-// Main login button
-const mainLoginBtn = document.getElementById('googleLoginBtn');
-if (mainLoginBtn) {
-    mainLoginBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    debugLog('メインログインボタンクリック');
-    performGoogleLogin();
-    });
-    debugLog('メインログインボタンリスナー設定完了');
-} else {
-    debugLog('メインログインボタンが見つからない');
-}
+    try {
+        const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+            redirectTo: window.location.origin + window.location.pathname,
+            queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+            }
+        }
+        });
 
-// Header login/logout button
-const headerLoginBtn = document.getElementById('google-login');
-if (headerLoginBtn) {
-    headerLoginBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    debugLog('ヘッダーログインボタンクリック', { isAuthenticated });
-    
-    if (isAuthenticated) {
-        performLogout();
-    } else {
+        if (error) {
+        debugLog('OAuth開始エラー', error);
+        alert('ログインエラー: ' + error.message);
+        return;
+        }
+        
+        debugLog('OAuth開始成功 - リダイレクト中', data);
+        
+    } catch (error) {
+        debugLog('予期しないログインエラー', error);
+        alert('予期しないエラーが発生しました: ' + error.message);
+    }
+    }
+
+    // Perform logout
+    async function performLogout() {
+    debugLog('ログアウト開始');
+
+    try {
+        const { error } = await supabase.auth.signOut();
+        
+        if (error) {
+        debugLog('ログアウトエラー', error);
+        alert('ログアウトエラー: ' + error.message);
+        return;
+        }
+        
+        debugLog('ログアウト成功');
+        
+    } catch (error) {
+        debugLog('予期しないログアウトエラー', error);
+        alert('予期しないエラーが発生しました: ' + error.message);
+    }
+    }
+
+    // Setup event listeners
+    function setupAuthEventListeners() {
+    debugLog('イベントリスナー設定開始');
+
+    // Main login button
+    const mainLoginBtn = document.getElementById('googleLoginBtn');
+    if (mainLoginBtn) {
+        mainLoginBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        debugLog('メインログインボタンクリック');
         performGoogleLogin();
+        });
+        debugLog('メインログインボタンリスナー設定完了');
+    } else {
+        debugLog('メインログインボタンが見つからない');
     }
-    });
-    debugLog('ヘッダーログインボタンリスナー設定完了');
-} else {
-    debugLog('ヘッダーログインボタンが見つからない');
-}
-}
 
-// Initialize when DOM is ready
-if (document.readyState === 'loading') {
-document.addEventListener('DOMContentLoaded', () => {
-    debugLog('DOMContentLoaded イベント');
+    // Header login/logout button
+    const headerLoginBtn = document.getElementById('google-login');
+    if (headerLoginBtn) {
+        headerLoginBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        debugLog('ヘッダーログインボタンクリック', { isAuthenticated });
+        
+        if (isAuthenticated) {
+            performLogout();
+        } else {
+            performGoogleLogin();
+        }
+        });
+        debugLog('ヘッダーログインボタンリスナー設定完了');
+    } else {
+        debugLog('ヘッダーログインボタンが見つからない');
+    }
+    }
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        debugLog('DOMContentLoaded イベント');
+        setupAuthEventListeners();
+        initializeAuth();
+    });
+    } else {
+    debugLog('DOM already ready - 即座に初期化');
     setupAuthEventListeners();
     initializeAuth();
-});
-} else {
-debugLog('DOM already ready - 即座に初期化');
-setupAuthEventListeners();
-initializeAuth();
-}
-
-// Debug information
-console.log('=== 認証システム初期化 ===');
-console.log('現在のURL:', window.location.href);
-console.log('Supabase プロジェクト URL:', 'https://ybqbpxgcycttmcwjiyxq.supabase.co');
-
-// Manual testing functions
-window.authDebug = {
-getCurrentUser: () => currentUser,
-getAuthState: () => isAuthenticated,
-forceLogin: performGoogleLogin,
-forceLogout: performLogout,
-testConnection: async () => {
-    try {
-    const { data, error } = await supabase.auth.getSession();
-    console.log('接続テスト結果:', { data, error });
-    return { data, error };
-    } catch (err) {
-    console.error('接続テストエラー:', err);
-    return { error: err };
     }
-}
-};
 
-console.log('手動テスト関数: window.authDebug');
-</script>
+    // Debug information
+    console.log('=== 認証システム初期化 ===');
+    console.log('現在のURL:', window.location.href);
+    console.log('Supabase プロジェクト URL:', 'https://ybqbpxgcycttmcwjiyxq.supabase.co');
+
+    // Manual testing functions
+    window.authDebug = {
+    getCurrentUser: () => currentUser,
+    getAuthState: () => isAuthenticated,
+    forceLogin: performGoogleLogin,
+    forceLogout: performLogout,
+    testConnection: async () => {
+        try {
+        const { data, error } = await supabase.auth.getSession();
+        console.log('接続テスト結果:', { data, error });
+        return { data, error };
+        } catch (err) {
+        console.error('接続テストエラー:', err);
+        return { error: err };
+        }
+    }
+    };
+
+    console.log('手動テスト関数: window.authDebug');
+    </script>
