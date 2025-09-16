@@ -21,8 +21,8 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-module.exports = async function handler(req, res) {
-  // CORSヘッダーの設定（より詳細に）
+export default async function handler(req, res) {
+  // CORSヘッダーの設定
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-client-info, apikey');
@@ -95,12 +95,12 @@ module.exports = async function handler(req, res) {
       line_items: [
         {
           price_data: {
-            currency: 'jpy',
+            currency: 'usd',  // USDに変更
             product_data: {
               name: 'バカラ戦略アドバイザー プレミアム',
               description: '高度な戦略アドバイス、リスク管理、詳細な分析機能',
             },
-            unit_amount: 9.9, // $9.9
+            unit_amount: 999,  // $9.99 = 999セント
             recurring: {
               interval: 'month',
             },
@@ -130,4 +130,4 @@ module.exports = async function handler(req, res) {
       message: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
     });
   }
-};
+}
