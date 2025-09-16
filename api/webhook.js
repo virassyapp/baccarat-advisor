@@ -212,27 +212,47 @@ async function handleCheckoutSessionCompleted(session, userId) {
   try {
     const customerId = session.customer;
     const subscriptionId = session.subscription;
+    const email = session.metadata?.email;
 
     if (!customerId || !subscriptionId) {
       throw new Error('Missing customerId or subscriptionId in session');
     }
 
-    const { error } = await supabase
+    // usersテーブルを upsert で更新または挿入
+    const { data, error } = await supabase
       .from('users')
-      .update({
+      .upsert({
+        id: userId,
+        email: email,
         is_subscribed: true,
         stripe_customer_id: customerId,
         stripe_subscription_id: subscriptionId,
-        subscription_updated_at: new Date().toISOString()
-      })
-      .eq('id', userId);
+        subscription_updated_at: new Date().toISOString(),
+        last_payment_date: new Date().toISOString()
+      }, {
+        onConflict: 'id',
+        ignoreDuplicates: false
+      });
 
     if (error) {
-      console.error('ユーザー更新エラー:', error);
-      throw new Error(`Database update failed: ${error.message}`);
+      console.error('ユーザー更新エラー (upsert):', error);
+      throw new Error(`Database upsert failed: ${error.message}`);
     }
 
-    console.log('✅ User subscription updated successfully:', userId);
+    console.log('✅ User subscription upserted successfully:', data);
+
+    // 確認用の再取得（任意）
+    const { data: verifyData, error: verifyError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (verifyError) {
+      console.error('Verification query failed:', verifyError);
+    } else {
+      console.log('Verified user data after upsert:', verifyData);
+    }
   } catch (error) {
     console.error('Error in handleCheckoutSessionCompleted:', error);
     throw error;
