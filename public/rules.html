@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">バカラパターン統計学習システム - プレイルール</title>
+    <meta name="description" id="page-description" content="バカラ統計学習システムのプレイルール説明。効果的な統計学習のためのガイドライン。">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1f36 0%, #2d3748 100%);
+            color: white;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(78, 205, 196, 0.1) 0%, transparent 50%);
+            z-index: -1;
+            animation: backgroundFlow 20s ease-in-out infinite;
+        }
+
+        @keyframes backgroundFlow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Language Switcher */
+        .language-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 12px;
+        }
+
+        .language-select {
+            background: transparent;
+            color: white;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .language-select:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .language-select:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(79, 172, 254, 0.5);
+        }
+
+        .language-select option {
+            background: #1f2937;
+            color: white;
+        }
+
+        /* Header */
+        .header {
+            padding: 60px 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-title {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+            animation: titleGlow 4s ease-in-out infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3)); }
+            50% { filter: drop-shadow(0 0 30px rgba(78, 205, 196, 0.5)); }
+        }
+
+        .hero-subtitle {
+            font-size: 24px;
+            color: #cbd5e0;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        .hero-description {
+            font-size: 18px;
+            color: #9ca3af;
+            max-width: 800px;
+            margin: 0 auto 40px;
+            line-height: 1.8;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .btn {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(16, 185, 129, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 0, 0, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Educational Notice */
+        .educational-banner {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.15) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 60px 0;
+            text-align: center;
+            backdrop-filter: blur(15px);
+        }
+
+        .educational-banner h2 {
+            color: #34d399;
+            margin-bottom: 15px;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .educational-banner p {
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        /* Features Section */
+        .features-section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 18px;
+            color: #9ca3af;
+            margin-bottom: 60px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .feature-card {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ff6b6b);
+            background-size: 300% 100%;
+            animation: borderFlow 3s ease-in-out infinite;
+        }
+
+        @keyframes borderFlow {
+            0%, 100% { background-position: 0% 0%; }
+            50% { background-position: 200% 0%; }
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .feature-title {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #e2e8f0;
+            font-weight: 700;
+        }
+
+        .feature-description {
+            color: #cbd5e0;
+            line-height: 1.6;
+        }
+
+        /* Rules Section */
+        .rules-section {
+            padding: 80px 0;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .rules-list {
+            list-style: none;
+            counter-reset: rule-counter;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .rule-item {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 30px 30px 30px 90px;
+            margin-bottom: 30px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .rule-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .rule-item::before {
+            counter-increment: rule-counter;
+            content: counter(rule-counter);
+            position: absolute;
+            left: 30px;
+            top: 30px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 800;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .rule-title {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: #e2e8f0;
+            font-weight: 600;
+        }
+
+        .rule-description {
+            color: #cbd5e0;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 60px 0;
+            background: rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: #9ca3af;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: #4facfe;
+            text-decoration: underline;
+        }
+
+        .footer-text {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .language-switcher {
+                top: 10px;
+                right: 10px;
+            }
+
+            .hero-title {
+                font-size: 36px;
+            }
+
+            .hero-subtitle {
+                font-size: 20px;
+            }
+
+            .hero-description {
+                font-size: 16px;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .rule-item {
+                padding: 25px 25px 25px 70px;
+            }
+
+            .rule-item::before {
+                left: 20px;
+                top: 25px;
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+        <select id="languageSelect" class="language-select">
+            <option value="ja">🇯🇵 日本語</option>
+            <option value="en">🇺🇸 English</option>
+            <option value="zh">🇨🇳 中文</option>
+            <option value="ko">🇰🇷 한국어</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="fr">🇫🇷 Français</option>
+        </select>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="hero-title" id="heroTitle">バカラパターン学習 - プレイルール</h1>
+            <p class="hero-subtitle" id="heroSubtitle">統計学習システムの効果적인使用方法</p>
+            <p class="hero-description" id="heroDescription">
+                バカラ統計学習システムを最大限に活用するためのプレイルールガイドです。
+                以下のルールに従って学習を進めることで、効果的な統計分析と確率論の学習が可能になります。
+            </p>
+            <div class="cta-buttons">
+                <a href="index.html" class="btn btn-secondary" id="backToHomeBtn">
+                    <span>🏠</span>
+                    <span id="backToHomeText">ホームに戻る</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- Educational Notice -->
+        <section class="educational-banner">
+            <h2 id="educationalTitle">🎓 教育目的・非賭博サービス</h2>
+            <p id="educationalDescription1">
+                <strong>本サービスは統計学習・教育目的のシミュレーションツールです。</strong>
+                実際の賭博行為や金銭の授受は一切行いません。
+            </p>
+            <p id="educationalDescription2">
+                バカラゲームのパターン分析手法を通じて、統計学、確率論、データ分析の理論を実践的に学習することができます。
+                純粋な学術目的のツールであり、オンラインカジノや賭博サイトではありません。
+            </p>
+        </section>
+
+        <!-- Rules Section -->
+        <section class="rules-section">
+            <h2 class="section-title" id="rulesTitle">プレイルール</h2>
+            <p class="section-subtitle" id="rulesSubtitle">効果的な統計学習のためのガイドライン</p>
+            
+            <ol class="rules-list">
+                <li class="rule-item">
+                    <h3 class="rule-title" id="rule1Title">資金の準備</h3>
+                    <p class="rule-description" id="rule1Description">
+                        7マーチンまでプレイできる十分な資金を準備します。例えば、初期ベット額$5で開始する場合、
+                        $1275の資金が必要です（$5→$10→$20→$40→$80→$160→$320→$640）。
+                    </p>
+                </li>
+                <li class="rule-item">
+                    <h3 class="rule-title" id="rule2Title">カジノの起動と入力</h3>
+                    <p class="rule-description" id="rule2Description">
+                        オンラインカジノを起動し、ディーラーが出したカードの最終スコアをクイック入力に打ち込みます。
+                        どのオンラインカジノサイトでも構いません。
+                    </p>
+                </li>
+                <li class="rule-item">
+                    <h3 class="rule-title" id="rule3Title">パターン検証回数の設定</h3>
+                    <p class="rule-description" id="rule3Description">
+                        上部ヘッダーから設定を開き、パターン検証回数を決定します。4回の検証が推奨されています。
+                    </p>
+                </li>
+                <li class="rule-item">
+                    <h3 class="rule-title" id="rule4Title">ベット提案の実行</h3>
+                    <p class="rule-description" id="rule4Description">
+                        クイック入力を続けると、システムがベット提案を出力します。提案された通りにプレイ中の
+                        オンラインカジノでベットを行います。
+                    </p>
+                </li>
+                <li class="rule-item">
+                    <h3 class="rule-title" id="rule5Title">ベット額の調整</h3>
+                    <p class="rule-description" id="rule5Description">
+                        提案されるベット額は決まっていますが、7マーチンまで組める資金を用意しているため、
+                        その初期ベット額でベットします（資金スタート$1275の場合は$5スタート）。
+                    </p>
+                </li>
+                <li class="rule-item">
+                    <h3 class="rule-title" id="rule6Title">ベットの継続</h3>
+                    <p class="rule-description" id="rule6Description">
+                        ベット提案が出され始めてから勝利するまでは続けます。ベット中に止めると
+                        システムが正確に読み込めなくなるためです。
+                    </p>
+                </li>
+                <li class="rule-item">
+                    <h3 class="rule-title" id="rule7Title">テーブル変更の条件</h3>
+                    <p class="rule-description" id="rule7Description">
+                        テーブルを変更する場合は、ベットしていない時のみ可能です。ベット中は変更できません。
+                    </p>
+                </li>
+                <li class="rule-item">
+                    <h3 class="rule-title" id="rule8Title">テーブル変更後の対応</h3>
+                    <p class="rule-description" id="rule8Description">
+                        テーブルを変更した場合は、システムを再起動するか設定からリセットし、
+                        最初からパターン検証を行います。
+                    </p>
+                </li>
+                <li class="rule-item">
+                    <h3 class="rule-title" id="rule9Title">パターン検証が進まない場合</h3>
+                    <p class="rule-description" id="rule9Description">
+                        パターン検証がなかなか確定せず、ベット提案が出力されない場合は、
+                        テーブルを変更することを推奨します。
+                    </p>
+                </li>
+            </ol>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="/tokushoho" class="footer-link" id="footerLink1">特定商取引法に基づく表示</a>
+                <a href="/privacy" class="footer-link" id="footerLink2">プライバシーポリシー</a>
+                <a href="/terms" class="footer-link" id="footerLink3">利用規約</a>
+                <a href="mailto:support@example.com" class="footer-link" id="footerLink4">お問い合わせ</a>
+            </div>
+            <p class="footer-text" id="footerText">
+                © 2025 統計学習システム All rights reserved. | 統計学習・教育目的のシミュレーションツール
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // 翻訳データ
+        const translations = {
+            ja: {
+                pageTitle: "バカラパターン統計学習システム - プレイルール",
+                pageDescription: "バカラ統計学習システムのプレイルール説明。効果的な統計学習のためのガイドライン。",
+                heroTitle: "バカラパターン学習 - プレイルール",
+                heroSubtitle: "統計学習システムの効果的な使用方法",
+                heroDescription: "バカラ統計学習システムを最大限に活用するためのプレイルールガイドです。以下のルールに従って学習を進めることで、効果적인統計分析と確率論の学習が可能になります。",
+                backToHomeText: "ホームに戻る",
+                educationalTitle: "🎓 教育目的・非賭博サービス",
+                educationalDescription1: "本サービスは統計学習・教育目的のシミュレーションヘッダーです。実際の賭博行為や金銭の授受は一切行いません。",
+                educationalDescription2: "バカラゲームのパターン分析手法を通じて、統計学、確率論、データ分析の理論を実践的に学習することができます。純粋な学術目的のツールであり、オンラインカジノや賭博サイトではありません。",
+                rulesTitle: "プレイルール",
+                rulesSubtitle: "効果的な統計学習のためのガイドライン",
+                rule1Title: "資金の準備",
+                rule1Description: "7マーチンまでプレイできる十分な資金を準備します。例えば、初期ベット額$5で開始する場合、$1275の資金が必要です（$5→$10→$20→$40→$80→$160→$320→$640）。",
+                rule2Title: "カジノの起動と入力",
+                rule2Description: "オンラインカジノを起動し、ディーラーが出したカードの最終スコアをクイック入力に打ち込みます。どのオンラインカジノサイトでも構いません。",
+                rule3Title: "パターン検証回数の設定",
+                rule3Description: "上部ヘッダーから設定を開き、パターン検証回数を決定します。4回の検証が推奨されています。",
+                rule4Title: "ベット提案の実行",
+                rule4Description: "クイック入力を続けると、システムがベット提案を出力します。提案された通りにプレイ中のオンラインカジノでベットを行います。",
+                rule5Title: "ベット額の調整",
+                rule5Description: "提案されるベット額は決まっていますが、7マーチンまで組める資金を用意しているため、その初期ベット額でベットします（資金スタート$1275の場合は$5スタート）。",
+                rule6Title: "ベットの継続",
+                rule6Description: "ベット提案が出され始めてから勝利するまでは続けます。ベット中に止めるとシステムが正確に読み込めなくなるためです。",
+                rule7Title: "テーブル変更の条件",
+                rule7Description: "テーブルを変更する場合は、ベットしていない時のみ可能です。ベット中は変更できません。",
+                rule8Title: "テーブル変更後の対応",
+                rule8Description: "テーブルを変更した場合は、システムを再起動するか設定からリセットし、最初からパターン検証を行います。",
+                rule9Title: "パターン検証が進まない場合",
+                rule9Description: "パターン検証がなかなか確定せず、ベット提案が出力されない場合は、テーブルを変更することを推奨します。",
+                footerLink1: "特定商取引法に基づく表示",
+                footerLink2: "プライバシーポリシー",
+                footerLink3: "利用規約",
+                footerLink4: "お問い合わせ",
+                footerText: "© 2025 統計学習システム All rights reserved. | 統計学習・教育目的のシミュレーションツール"
+            },
+            en: {
+                pageTitle: "Baccarat Pattern Learning System - Play Rules",
+                pageDescription: "Play rules for the Baccarat Statistical Learning System. Guidelines for effective statistical learning.",
+                heroTitle: "Baccarat Pattern Learning - Play Rules",
+                heroSubtitle: "Effective Usage of the Statistical Learning System",
+                heroDescription: "A play rule guide to maximize the use of the Baccarat Statistical Learning System. By following these rules, you can effectively learn statistical analysis and probability theory.",
+                backToHomeText: "Back to Home",
+                educationalTitle: "🎓 Educational Purpose - Non-Gambling Service",
+                educationalDescription1: "This service is a simulation tool for statistical learning and educational purposes. No actual gambling or monetary transactions are involved.",
+                educationalDescription2: "Through baccarat game pattern analysis methods, you can practically learn statistics, probability theory, and data analysis theory. This is a purely academic tool and not an online casino or gambling site.",
+                rulesTitle: "Play Rules",
+                rulesSubtitle: "Guidelines for Effective Statistical Learning",
+                rule1Title: "Fund Preparation",
+                rule1Description: "Prepare sufficient funds to play up to 7 marches. For example, if starting with an initial bet of $5, you will need $1275 in funds ($5→$10→$20→$40→$80→$160→$320→$640).",
+                rule2Title: "Casino Launch and Input",
+                rule2Description: "Launch an online casino and input the final score of the cards dealt by the dealer into the quick input. Any online casino site is acceptable.",
+                rule3Title: "Pattern Verification Count Setting",
+                rule3Description: "Open settings from the top header and determine the pattern verification count. 4 verifications are recommended.",
+                rule4Title: "Executing Bet Proposals",
+                rule4Description: "Continue quick input, and the system will output bet proposals. Bet according to the proposals in the online casino you are playing.",
+                rule5Title: "Bet Amount Adjustment",
+                rule5Description: "The proposed bet amount is fixed, but since you have prepared funds for up to 7 marches, bet with that initial bet amount (if starting with $1275 funds, start with $5).",
+                rule6Title: "Continuing Bets",
+                rule6Description: "Continue from when bet proposals start appearing until you win. Stopping during betting will prevent the system from reading accurately.",
+                rule7Title: "Table Change Conditions",
+                rule7Description: "You can change tables only when not betting. You cannot change during betting.",
+                rule8Title: "After Table Change",
+                rule8Description: "If you change tables, restart the system or reset from settings and perform pattern verification from the beginning.",
+                rule9Title: "When Pattern Verification Doesn't Progress",
+                rule9Description: "If pattern verification doesn't finalize and bet proposals are not output, it is recommended to change tables.",
+                footerLink1: "Commercial Transaction Act",
+                footerLink2: "Privacy Policy",
+                footerLink3: "Terms of Service",
+                footerLink4: "Contact",
+                footerText: "© 2025 Statistical Learning System All rights reserved. | Statistical Learning & Educational Simulation Tool"
+            },
+            zh: {
+                pageTitle: "百家乐模式学习系统 - 游戏规则",
+                pageDescription: "百家乐统计学习系统的游戏规则说明。有效统计学习指南。",
+                heroTitle: "百家乐模式学习 - 游戏规则",
+                heroSubtitle: "统计学习系统的有效使用方法",
+                heroDescription: "最大限度利用百家乐统计学习系统的游戏规则指南。遵循以下规则，您可以有效学习统计分析和概率论。",
+                backToHomeText: "返回首页",
+                educationalTitle: "🎓 教育目的・非赌博服务",
+                educationalDescription1: "本服务是统计学习・教育目的的模拟工具。不涉及实际赌博行为或金钱交易。",
+                educationalDescription2: "通过百家乐游戏模式分析方法，可以实践性地学习统计学、概率论、数据分析理论。这是纯粹学术目的的工具，不是在线赌场或赌博网站。",
+                rulesTitle: "游戏规则",
+                rulesSubtitle: "有效统计学习指南",
+                rule1Title: "资金准备",
+                rule1Description: "准备足够进行7次马丁格尔的资金。例如，如果初始投注额为5美元，则需要1275美元的资金（5→10→20→40→80→160→320→640美元）。",
+                rule2Title: "启动赌场和输入",
+                rule2Description: "启动在线赌场，并将庄家发出的牌的最终分数输入快速输入。任何在线赌场网站都可以。",
+                rule3Title: "模式验证次数设置",
+                rule3Description: "从顶部标题打开设置，确定模式验证次数。推荐进行4次验证。",
+                rule4Title: "执行投注建议",
+                rule4Description: "继续快速输入，系统将输出投注建议。按照建议在您正在玩的在线赌场中进行投注。",
+                rule5Title: "投注额调整",
+                rule5Description: "建议的投注额是固定的，但由于您准备了最多7次马丁格尔的资金，因此使用该初始投注额进行投注（如果起始资金为1275美元，则从5美元开始）。",
+                rule6Title: "继续投注",
+                rule6Description: "从投注建议开始出现直到获胜为止继续投注。投注中途停止会导致系统无法准确读取。",
+                rule7Title: "更换桌台条件",
+                rule7Description: "只有在未投注时才能更换桌台。投注中不能更换。",
+                rule8Title: "更换桌台后的应对",
+                rule8Description: "如果更换了桌台，请重新启动系统或从设置中重置，并从头开始进行模式验证。",
+                rule9Title: "模式验证不进展时",
+                rule9Description: "如果模式验证迟迟不确定且没有输出投注建议，建议更换桌台。",
+                footerLink1: "特定商业交易法表示",
+                footerLink2: "隐私政策",
+                footerLink3: "使用条款",
+                footerLink4: "联系我们",
+                footerText: "© 2025 统计学习系统 All rights reserved. | 统计学习・教育目的模拟工具"
+            },
+            ko: {
+                pageTitle: "바카라 패턴 학습 시스템 - 플레이 규칙",
+                pageDescription: "바카라 통계학습 시스템의 플레이 규칙 설명. 효과적인 통계학습을 위한 가이드라인.",
+                heroTitle: "바카라 패턴 학습 - 플레이 규칙",
+                heroSubtitle: "통계학습 시스템의 효과적인 사용 방법",
+                heroDescription: "바카라 통계학습 시스템을 최대한 활용하기 위한 플레이 규칙 가이드입니다. 아래 규칙에 따라 학습을 진행하면 효과적인 통계분석과 확률론 학습이 가능합니다.",
+                backToHomeText: "홈으로 돌아가기",
+                educationalTitle: "🎓 교육목적・비도박 서비스",
+                educationalDescription1: "본 서비스는 통계학습・교육목적의 시뮬레이션 도구입니다. 실제 도박행위나 금전 거래는 일체 하지 않습니다.",
+                educationalDescription2: "바카라 게임의 패턴분석 기법을 통해, 통계학, 확률론, 데이터 분석 이론을 실용적으로 학습할 수 있습니다. 순수한 학술목적의 도구이며, 온라인 카지노나 도박사이트가 아닙니다.",
+                rulesTitle: "플레이 규칙",
+                rulesSubtitle: "효과적인 통계학습을 위한 가이드라인",
+                rule1Title: "자금 준비",
+                rule1Description: "7마틴까지 플레이할 수 있는 충분한 자금을 준비합니다. 예를 들어, 초기 베팅액 $5로 시작하는 경우, $1275의 자금이 필요합니다 ($5→$10→$20→$40→$80→$160→$320→$640).",
+                rule2Title: "카지노 실행 및 입력",
+                rule2Description: "온라인 카지노를 실행하고, 딜러가 낸 카드의 최종 점수를 퀵 입력에 입력합니다. 어떤 온라인 카지노 사이트でも 괜찮습니다.",
+                rule3Title: "패턴 검증 횟수 설정",
+                rule3Description: "상단 헤더에서 설정을 열고, 패턴 검증 횟수를 결정합니다. 4회 검증이 권장됩니다.",
+                rule4Title: "베팅 제안 실행",
+                rule4Description: "퀵 입력을 계속하면, 시스템이 베팅 제안을 출력합니다. 제안된 대로 플레이 중인 온라인 카지노에서 베팅을 합니다.",
+                rule5Title: "베팅액 조정",
+                rule5Description: "제안되는 베팅액은 정해져 있지만, 7마틴까지 짤 수 있는 자금을 준비했기 때문에, 그 초기 베팅액으로 베팅합니다 (자금 시작 $1275의 경우 $5 시작).",
+                rule6Title: "베팅 계속",
+                rule6Description: "베팅 제안이 나오기 시작해서 승리할 때까지 계속합니다. 베팅 중에 멈추면 시스템이 정확하게 읽어들이지 못하기 때문입니다.",
+                rule7Title: "테이블 변경 조건",
+                rule7Description: "테이블을 변경하는 경우, 베팅하지 않을 때만 가능합니다. 베팅 중에는 변경할 수 없습니다.",
+                rule8Title: "테이블 변경 후 대응",
+                rule8Description: "테이블을 변경한 경우, 시스템을 재시작하거나 설정에서 리셋하고, 처음부터 패턴 검증을 합니다.",
+                rule9Title: "패턴 검증이 진행되지 않을 경우",
+                rule9Description: "패턴 검역이 자꾸 결정되지 않고, 베팅 제안이 출력되지 않는 경우, 테이블을 변경하는 것을 권장합니다.",
+                footerLink1: "특정상거래법에 의한 표시",
+                footerLink2: "개인정보보호정책",
+                footerLink3: "이용약관",
+                footerLink4: "문의하기",
+                footerText: "© 2025 통계학습 시스템 All rights reserved. | 통계학습・교육목적 시뮬레이션 도구"
+            },
+            es: {
+                pageTitle: "Sistema de Aprendizaje de Patrones de Baccarat - Reglas de Juego",
+                pageDescription: "Reglas de juego para el Sistema de Aprendizaje Estadístico de Baccarat. Guía para un aprendizaje estadístico efectivo.",
+                heroTitle: "Aprendizaje de Patrones de Baccarat - Reglas de Juego",
+                heroSubtitle: "Uso Efectivo del Sistema de Aprendizaje Estadístico",
+                heroDescription: "Una guía de reglas de juego para maximizar el uso del Sistema de Aprendizaje Estadístico de Baccarat. Siguiendo estas reglas, puedes aprender efectivamente análisis estadístico y teoría de probabilidades.",
+                backToHomeText: "Volver al Inicio",
+                educationalTitle: "🎓 Propósito Educativo - Servicio Sin Apuestas",
+                educationalDescription1: "Este servicio es una herramienta de simulación para aprendizaje estadístico y propósitos educativos. No involucra apuestas reales ni transacciones monetarias.",
+                educationalDescription2: "A través de métodos de análisis de patrones del juego de baccarat, puedes aprender prácticamente estadísticas, teoría de probabilidades y teoría de análisis de datos. Es una herramienta puramente académica y no un casino en línea o sitio de apuestas.",
+                rulesTitle: "Reglas de Juego",
+                rulesSubtitle: "Guía para un Aprendizaje Estadístico Efectivo",
+                rule1Title: "Preparación de Fondos",
+                rule1Description: "Prepara fondos suficientes para jugar hasta 7 marches. Por ejemplo, si comienzas con una apuesta inicial de $5, necesitarás $1275 en fondos ($5→$10→$20→$40→$80→$160→$320→$640).",
+                rule2Title: "Inicio del Casino y Entrada",
+                rule2Description: "Inicia un casino en línea e ingresa la puntuación final de las cartas repartidas por el crupier en la entrada rápida. Cualquier sitio de casino en línea es aceptable.",
+                rule3Title: "Configuración del Conteo de Verificación de Patrones",
+                rule3Description: "Abre la configuración desde el encabezado superior y determina el conteo de verificación de patrones. Se recomiendan 4 verificaciones.",
+                rule4Title: "Ejecución de Propuestas de Apuesta",
+                rule4Description: "Continúa la entrada rápida y el sistema generará propuestas de apuesta. Apuesta según las propuestas en el casino en línea donde estés jugando.",
+                rule5Title: "Ajuste del Monto de Apuesta",
+                rule5Description: "El monto de apuesta propuesto es fijo, pero como has preparado fondos para hasta 7 marches, apuesta con ese monto inicial (si comienzas con $1275 en fondos, comienza con $5).",
+                rule6Title: "Continuación de Apuestas",
+                rule6Description: "Continúa desde cuando comienzan a aparecer propuestas de apuesta hasta que ganes. Detenerse durante las apuestas evitará que el sistema lea con precisión.",
+                rule7Title: "Condiciones de Cambio de Mesa",
+                rule7Description: "Puedes cambiar de mesa solo cuando no estés apostando. No puedes cambiar durante las apuestas.",
+                rule8Title: "Después del Cambio de Mesa",
+                rule8Description: "If you change tables, reinicia el sistema o restablece desde la configuración y realiza la verificación de patrones desde el principio.",
+                rule9Title: "Cuando la Verificación de Patrones no Progresa",
+                rule9Description: "Si la verificación de patrones no se finaliza y no se generan propuestas de apuesta, se recomienda cambiar de mesa.",
+                footerLink1: "Ley de Transacciones Comerciales",
+                footerLink2: "Política de Privacidad",
+                footerLink3: "Términos de Servicio",
+                footerLink4: "Contacto",
+                footerText: "© 2025 Sistema de Aprendizaje Estadístico Todos los derechos reservados. | Herramienta de Simulación de Aprendizaje Estadístico y Educativo"
+            },
+            fr: {
+                pageTitle: "Système d'Apprentissage des Motifs de Baccarat - Règles de Jeu",
+                pageDescription: "Règles de jeu pour le Système d'Apprentissage Statistique de Baccarat. Guide pour un apprentissage statistique efficace.",
+                heroTitle: "Apprentissage des Motifs de Baccarat - Règles de Jeu",
+                heroSubtitle: "Utilisation Efficace du Système d'Apprentissage Statistique",
+                heroDescription: "Un guide des règles de jeu pour maximiser l'utilisation du Système d'Apprentissage Statistique de Baccarat. En suivant ces règles, vous pouvez apprendre efficacement l'analyse statistique et la théorie des probabilités.",
+                backToHomeText: "Retour à l'Accueil",
+                educationalTitle: "🎓 Objectif Éducatif - Service Sans Jeu",
+                educationalDescription1: "Ce service est un outil de simulation à des fins d'apprentissage statistique et éducatives. Aucun jeu réel ni transaction monétaire impliqué.",
+                educationalDescription2: "Grâce aux méthodes d'analyse des motifs du jeu de baccarat, vous pouvez apprendre pratiquement les statistiques, la théorie des probabilités et la théorie de l'analyse de données. Il s'agit d'un outil purement académique et non d'un casino en ligne ou d'un site de jeu.",
+                rulesTitle: "Règles de Jeu",
+                rulesSubtitle: "Guide pour un Apprentissage Statistique Efectif",
+                rule1Title: "Préparation des Fonds",
+                rule1Description: "Préparez des fonds suffisants pour jouer jusqu'à 7 marches. Par exemple, si vous commencez avec une mise initiale de 5$, vous aurez besoin de 1275$ de fonds (5$→10$→20$→40$→80$→160$→320$→640$).",
+                rule2Title: "Lancement du Casino et Saisie",
+                rule2Description: "Lancez un casino en ligne et saisissez le score final des cartes distribuées par le croupier dans la saisie rapide. N'importe quel site de casino en ligne est acceptable.",
+                rule3Title: "Paramétrage du Nombre de Vérifications de Motif",
+                rule3Description: "Ouvrez les paramètres depuis l'en-tête supérieur et déterminez le nombre de vérifications de motif. 4 vérifications sont recommandées.",
+                rule4Title: "Exécution des Propositions de Mise",
+                rule4Description: "Continuez la saisie rapide et le système générera des propositions de mise. Misez selon les propositions dans le casino en ligne où vous jouez.",
+                rule5Title: "Ajustement du Montant de Mise",
+                rule5Description: "Le montant de mise proposé est fixe, mais comme vous avez préparé des fonds pour jusqu'à 7 marches, misez avec ce montant initial (si vous commencez avec 1275$ de fonds, commencez avec 5$).",
+                rule6Title: "Poursuite des Mises",
+                rule6Description: "Continuez dès que les propositions de mise commencent à apparaître jusqu'à ce que vous gagniez. S'arrêter pendant les mises empêchera le système de lire avec précision.",
+                rule7Title: "Conditions de Changement de Table",
+                rule7Description: "Vous pouvez changer de table uniquement lorsque vous ne misez pas. Vous ne pouvez pas changer pendant les mises.",
+                rule8Title: "Après le Changement de Table",
+                rule8Description: "Si vous changez de table, redémarrez le système ou réinitialisez depuis les paramètres et effectuez la vérification de motif depuis le début.",
+                rule9Title: "Lorsque la Vérification de Motif ne Progresse Pas",
+                rule9Description: "Si la vérification de motif ne se finalise pas et que les propositions de mise ne sont pas générées, il est recommandé de changer de table.",
+                footerLink1: "Loi sur les Transactions Commerciales",
+                footerLink2: "Politique de Confidentialité",
+                footerLink3: "Conditions de Service",
+                footerLink4: "Contact",
+                footerText: "© 2025 Système d'Apprentissage Statistique Tous droits réservés. | Outil de Simulation d'Apprentissage Statistique et Éducatif"
+            }
+        };
+
+        // 言語切り替え機能
+        function changeLanguage(lang) {
+            const translation = translations[lang];
+            if (!translation) return;
+
+            // ページタイトルとメタ情報を更新
+            document.title = translation.pageTitle;
+            document.getElementById('page-title').textContent = translation.pageTitle;
+            document.getElementById('page-description').setAttribute('content', translation.pageDescription);
+
+            // 各要素を更新
+            const elements = {
+                'heroTitle': 'heroTitle',
+                'heroSubtitle': 'heroSubtitle',
+                'heroDescription': 'heroDescription',
+                'backToHomeText': 'backToHomeText',
+                'educationalTitle': 'educationalTitle',
+                'educationalDescription1': 'educationalDescription1',
+                'educationalDescription2': 'educationalDescription2',
+                'rulesTitle': 'rulesTitle',
+                'rulesSubtitle': 'rulesSubtitle',
+                'rule1Title': 'rule1Title',
+                'rule1Description': 'rule1Description',
+                'rule2Title': 'rule2Title',
+                'rule2Description': 'rule2Description',
+                'rule3Title': 'rule3Title',
+                'rule3Description': 'rule3Description',
+                'rule4Title': 'rule4Title',
+                'rule4Description': 'rule4Description',
+                'rule5Title': 'rule5Title',
+                'rule5Description': 'rule5Description',
+                'rule6Title': 'rule6Title',
+                'rule6Description': 'rule6Description',
+                'rule7Title': 'rule7Title',
+                'rule7Description': 'rule7Description',
+                'rule8Title': 'rule8Title',
+                'rule8Description': 'rule8Description',
+                'rule9Title': 'rule9Title',
+                'rule9Description': 'rule9Description',
+                'footerLink1': 'footerLink1',
+                'footerLink2': 'footerLink2',
+                'footerLink3': 'footerLink3',
+                'footerLink4': 'footerLink4',
+                'footerText': 'footerText'
+            };
+
+            // 各要素のテキストを更新
+            Object.keys(elements).forEach(elementId => {
+                const element = document.getElementById(elementId);
+                if (element && translation[elements[elementId]]) {
+                    element.textContent = translation[elements[elementId]];
+                }
+            });
+
+            // 言語選択を保存
+            localStorage.setItem('selectedLanguage', lang);
+            
+            // HTML lang属性を更新
+            document.documentElement.lang = lang;
+        }
+
+        // ページ読み込み時の処理
+        document.addEventListener('DOMContentLoaded', function() {
+            const languageSelect = document.getElementById('languageSelect');
+            
+            // 保存された言語を復元
+            const savedLanguage = localStorage.getItem('selectedLanguage') || 'ja';
+            languageSelect.value = savedLanguage;
+            changeLanguage(savedLanguage);
+
+            // 言語変更イベントリスナーを追加
+            languageSelect.addEventListener('change', function() {
+                changeLanguage(this.value);
+            });
+        });
+    </script>
+</body>
+</html>
