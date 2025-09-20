@@ -166,6 +166,7 @@
                     <button class="settings-button" id="settingsBtn">⚙️</button>
                     <button id="checkout-button" class="settings-button" style="display: none;">サブスクに登録する</button>
                     <button class="settings-button" id="google-login">Googleログイン</button>
+                    <button class="settings-button" id="rulesBtn">📖 ルール</button>
                     <button class="settings-button" id="themeToggle">🌙</button>
                 </div>
                 <div class="funds-display">
@@ -849,7 +850,8 @@
                 strategySection: "戦略設定",
                 riskSection: "リスク管理",
                 currencySection: "通貨設定",
-                currency: "通貨"
+                currency: "通貨",
+                rulesButton: "ルール"
             },
             en: {
                 title: "Baccarat Strategy Advisor",
@@ -922,7 +924,8 @@
                 strategySection: "Strategy Settings",
                 riskSection: "Risk Management",
                 currencySection: "Currency Settings",
-                currency: "Currency"
+                currency: "Currency",
+                rulesButton: "Rules"
             },
             es: {
                 title: "Asesor de Estrategia de Baccarat",
@@ -995,7 +998,8 @@
                 strategySection: "Configuración de Estrategia",
                 riskSection: "Gestión de Riesgo",
                 currencySection: "Configuración de Moneda",
-                currency: "Moneda"
+                currency: "Moneda",
+                rulesButton: "Reglas"
             },
             zh: {
                 title: "百家乐策略顾问",
@@ -1068,7 +1072,8 @@
                 strategySection: "策略设置",
                 riskSection: "风险管理",
                 currencySection: "货币设置",
-                currency: "货币"
+                currency: "货币",
+                rulesButton: "规则"
             },
             ko: {
                 title: "바카라 전략 어드바이저",
@@ -1141,7 +1146,8 @@
                 strategySection: "전략 설정",
                 riskSection: "리스크 관리",
                 currencySection: "통화 설정",
-                currency: "통화"
+                currency: "통화",
+                rulesButton: "규칙"
             },
             fr: {
                 title: "Conseiller Stratégique Baccarat",
@@ -1214,7 +1220,8 @@
                 strategySection: "Paramètres de Stratégie",
                 riskSection: "Gestion des Risques",
                 currencySection: "Paramètres de Devise",
-                currency: "Devise"
+                currency: "Devise",
+                rulesButton: "Règles"
             }
         };
 
@@ -1234,7 +1241,7 @@
                 initialFunds: 1000,
                 initialBet: 5,
                 step: 1,
-                format: (value) => `${value.toLocaleString("en-US")}`
+                format: (value) => `$${value.toLocaleString("en-US")}`  // $記号を追加
             },
             EUR: {
                 symbol: "€",
@@ -1242,7 +1249,7 @@
                 initialFunds: 900,
                 initialBet: 5,
                 step: 1,
-                format: (value) => `€${value.toLocaleString("de-DE")}`
+                format: (value) => `€${value.toLocaleString("de-DE")}`  // €記号を追加
             },
             KRW: {
                 symbol: "₩",
@@ -1258,7 +1265,7 @@
                 initialFunds: 7000,
                 initialBet: 35,
                 step: 1,
-                format: (value) => `¥${value.toLocaleString("zh-CN")}`
+                format: (value) => `¥${value.toLocaleString("zh-CN")}`  // ¥記号を追加
             }
         };
 
@@ -1354,6 +1361,7 @@
             document.getElementById('fundsProgressTitle').textContent = '📈 ' + t('fundsProgress');
             document.getElementById('gameHistoryTitle').textContent = '📋 ' + t('gameHistory');
             document.getElementById('chartPlaceholder').textContent = t('chartPlaceholder');
+            document.getElementById('rulesBtn').textContent = t('rulesButton');
             
             // Settings modal text
             document.getElementById('currencySectionTitle').textContent = t('currencySection');
@@ -1367,6 +1375,7 @@
             document.getElementById('lossLimitPercentLabel').textContent = t('lossLimitPercent');
             document.getElementById('applyText').textContent = t('apply');
             document.getElementById('cancelText').textContent = t('cancel');
+        
             
             // 通貨表示も更新（言語変更時に通貨名も変更されるため）
             const currency = currencies[currentCurrency];
@@ -2086,6 +2095,11 @@
         document.getElementById('pauseBtn').addEventListener('click', pauseSession);
         document.getElementById('stopBtn').addEventListener('click', endSession);
         document.getElementById('resumeBtn').addEventListener('click', resumeSession);
+
+         // ルールボタンのイベントリスナーを追加
+        document.getElementById('rulesBtn').addEventListener('click', () => {
+            window.location.href = 'rules.html';
+        });
         
         // Enhanced slider with real-time popup
         document.getElementById('lossLimitSlider').addEventListener('input', (e) => {
