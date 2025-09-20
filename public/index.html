@@ -11,22 +11,22 @@
 <body>
     <div class="auth-overlay" id="authOverlay">
         <div class="auth-container">
-            <h2 class="auth-title" id="authTitle">バカラ戦略アドバイザー</h2>
-            <p class="auth-description" id="authDescription">プレミアム機能をご利用いただくには、Googleアカウントでのログインとサブスクリプションの登録が必要です。</p>
-            
+            <h2 class="auth-title" id="authTitle">Baccarat Advisor</h2>
+            <p class="auth-description" id="authDescription">To access premium features, you need to log in with your Google account and subscribe
+            </p>           
             <div id="loginSection">
-                <button class="auth-button google" id="googleLoginBtn">Googleでログイン</button>
+                <button class="auth-button google" id="googleLoginBtn">GoogleLogin</button>
             </div>
             
             <div class="hidden" id="subscriptionSection">
-                <p class="auth-description" id="subscriptionDescription">サブスクリプションに登録して全ての機能を解放しましょう</p>
-                <button class="auth-button" id="subscribeBtn">サブスクリプションに登録</button>
+                <p class="auth-description" id="subscriptionDescription">Subscribe to unlock all features</p>
+                <button class="auth-button" id="subscribeBtn">Subscribe</button>
             </div>
             
             <div class="hidden" id="verificationSection">
-                <p class="auth-description" id="verificationDescription">お支払いの確認中です。数秒お待ちください...</p>
+                <p class="auth-description" id="verificationDescription">Payment is being verified. Please wait a few seconds...</p>
                 <div class="loading-spinner"></div>
-                <button class="auth-button" id="manualRefreshBtn" style="margin-top: 15px; display: none;">手動で確認</button>
+                <button class="auth-button" id="manualRefreshBtn" style="margin-top: 15px; display: none;">Verify manually</button>
             </div>
         </div>
     </div>
@@ -561,7 +561,7 @@
             
             const headerLoginBtn = document.getElementById('google-login');
             if (headerLoginBtn) {
-                headerLoginBtn.textContent = isAuthenticated ? 'ログアウト' : 'Googleログイン';
+                headerLoginBtn.textContent = isAuthenticated ? 'Logout' : 'Google Login';
             }
             
             const checkoutButton = document.getElementById('checkout-button');
