@@ -1334,6 +1334,19 @@ body.light-mode .history-item:hover {
     box-shadow: 0 8px 25px rgba(234, 67, 53, 0.5);
 }
 
+/* ここにセカンダリボタンのスタイルを追加 */
+.auth-button.secondary {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+    border: 1px solid #374151;
+    box-shadow: 0 4px 15px rgba(107, 114, 128, 0.4);
+}
+
+.auth-button.secondary:hover {
+    background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(107, 114, 128, 0.6);
+}
+
 .hidden {
     display: none !important;
 }

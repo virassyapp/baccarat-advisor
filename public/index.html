@@ -21,6 +21,7 @@
             <div class="hidden" id="subscriptionSection">
                 <p class="auth-description" id="subscriptionDescription">Subscribe to unlock all features</p>
                 <button class="auth-button" id="subscribeBtn">Subscribe</button>
+                <button class="auth-button secondary" id="backToLoginBtn" style="margin-top: 10px;">Back to Google Login</button>
             </div>
             
             <div class="hidden" id="verificationSection">
@@ -35,7 +36,7 @@
         <!-- ここに元のHTMLコンテンツ全体を保持 -->
         <div class="pause-overlay hidden" id="pauseOverlay">
             <div class="pause-content">
-                <h2>⸸️ 一時停止中</h2>
+                <h2>⏸️ 一時停止中</h2>
                 <p>リスク管理により取引が一時停止されています</p>
                 <button class="resume-btn" id="resumeBtn">▶️ 再開</button>
             </div>
@@ -265,7 +266,7 @@
                         </div>
                         <div class="control-buttons">
                             <button class="button btn-pause" id="pauseBtn">
-                                <span>⸸️</span>
+                                <span>⏸️</span>
                                 <span id="pauseText">休憩</span>
                             </button>
                             <button class="button btn-stop" id="stopBtn">
@@ -554,6 +555,23 @@
             document.getElementById('verificationDescription').textContent = 'お支払いの確認中です。数秒お待ちください...';
         }
 
+        // Googleログインページに戻る関数
+        async function backToGoogleLogin() {
+            try {
+                // 現在のユーザーをログアウト
+                const { error } = await supabase.auth.signOut();
+                if (error) {
+                    console.error('Logout error:', error);
+                }
+                // ログイン画面に戻る
+                showLoginSection();
+            } catch (error) {
+                console.error('Back to login failed:', error);
+                // エラーが発生してもログイン画面は表示する
+                showLoginSection();
+            }
+        }
+
         // 認証状態の更新
         async function updateAuthState(user) {
             currentUser = user;
@@ -744,6 +762,12 @@
             const checkoutButton = document.getElementById('checkout-button');
             if (checkoutButton) {
                 checkoutButton.addEventListener('click', handleSubscription);
+            }
+
+            // Back to Google Login ボタン（新規追加）
+            const backToLoginBtn = document.getElementById('backToLoginBtn');
+            if (backToLoginBtn) {
+                backToLoginBtn.addEventListener('click', backToGoogleLogin);
             }
 
             // 手動確認ボタン
@@ -1241,7 +1265,7 @@
                 initialFunds: 1000,
                 initialBet: 5,
                 step: 1,
-                format: (value) => `$${value.toLocaleString("en-US")}`  // $記号を追加
+                format: (value) => `${value.toLocaleString("en-US")}`  // $記号を追加
             },
             EUR: {
                 symbol: "€",
@@ -2199,5 +2223,7 @@
             });
         }
     </script>
+
+
 </body>
 </html>
