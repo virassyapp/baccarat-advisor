@@ -1,0 +1,16 @@
+{
+    "name": "baccarat-advisor",
+    "version": "1.0.0",
+    "description": "Baccarat Statistical Learning System",
+    "scripts": {
+      "build": "echo 'No build step required'",
+      "dev": "vercel dev"
+    },
+    "dependencies": {
+      "@supabase/supabase-js": "^2.39.7",
+      "micro": "^10.0.1"
+    },
+    "devDependencies": {
+      "@vercel/node": "^3.0.0"
+    }
+  }
