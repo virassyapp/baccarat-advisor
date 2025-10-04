@@ -1,0 +1,45 @@
+{
+    "version": 2,
+    "buildCommand": "echo 'No build step required'",
+    "builds": [
+      {
+        "src": "api/**/*.js",
+        "use": "@vercel/node"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/api/create-checkout-session",
+        "dest": "/api/create-checkout-session.js",
+        "methods": ["POST", "OPTIONS"]
+      },
+      {
+        "src": "/api/webhook",
+        "dest": "/api/webhook.js",
+        "methods": ["POST"]
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/public/$1"
+      }
+    ],
+    "headers": [
+      {
+        "source": "/api/(.*)",
+        "headers": [
+          {
+            "key": "X-Content-Type-Options",
+            "value": "nosniff"
+          },
+          {
+            "key": "X-Frame-Options",
+            "value": "DENY"
+          },
+          {
+            "key": "X-XSS-Protection",
+            "value": "1; mode=block"
+          }
+        ]
+      }
+    ]
+  }

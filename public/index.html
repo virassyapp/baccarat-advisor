@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>バカラ戦略アドバイザー</title>
+    <link href="assets/css/main.css" rel="stylesheet"/>
+    <link href="assets/css/components.css" rel="stylesheet"/>
+    <link href="assets/css/auth.css" rel="stylesheet"/>
+    <meta content="dark light" name="color-scheme"/>
+    <meta content="black" name="apple-mobile-web-app-status-bar-style"/>
+</head>
+<body>
+    <!-- Auth Overlay -->
+    <div class="auth-overlay" id="authOverlay">
+        <div class="auth-container">
+            <h2 class="auth-title" id="authTitle">Baccarat Advisor</h2>
+            <p class="auth-description" id="authDescription">
+                To access premium features, you need to log in with your Google account and subscribe
+            </p>           
+            <div id="loginSection">
+                <button class="auth-button google" id="googleLoginBtn">Google Login</button>
+            </div>
+            
+            <div class="hidden" id="subscriptionSection">
+                <p class="auth-description" id="subscriptionDescription">Subscribe to unlock all features</p>
+                <button class="auth-button" id="subscribeBtn">Subscribe</button>
+                <button class="auth-button secondary" id="backToLoginBtn" style="margin-top: 10px;">Back to Google Login</button>
+            </div>
+            
+            <div class="hidden" id="verificationSection">
+                <p class="auth-description" id="verificationDescription">Payment is being verified. Please wait a few seconds...</p>
+                <div class="loading-spinner"></div>
+                <button class="auth-button" id="manualRefreshBtn" style="margin-top: 15px; display: none;">Verify manually</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Content -->
+    <div class="hidden" id="appContent">
+        <!-- Pause Overlay -->
+        <div class="pause-overlay hidden" id="pauseOverlay">
+            <div class="pause-content">
+                <h2>⏸️ 一時停止中</h2>
+                <p>リスク管理により取引が一時停止されています</p>
+                <button class="resume-btn" id="resumeBtn">▶️ 再開</button>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div class="settings-modal hidden" id="settingsModal">
+            <div class="settings-content">
+                <h3 class="settings-title">⚙️ 設定</h3>
+                
+                <!-- Currency Section -->
+                <div class="settings-section">
+                    <div class="section-title">
+                        <span>💱</span>
+                        <span id="currencySectionTitle">通貨設定</span>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label" id="currencyLabel">通貨</label>
+                        <select class="select-field" id="currencySelect">
+                            <option value="JPY">🇯🇵 日本円</option>
+                            <option value="USD">🇺🇸 US Dollar</option>
+                            <option value="EUR">🇪🇺 Euro</option>
+                            <option value="KRW">🇰🇷 韓国ウォン</option>
+                            <option value="CNY">🇨🇳 人民元</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Language Section -->
+                <div class="settings-section">
+                    <div class="section-title">
+                        <span>🌐</span>
+                        <span id="languageSectionTitle">言語設定</span>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label" id="languageLabel">言語</label>
+                        <select class="select-field" id="languageSelect">
+                            <option value="ja">🇯🇵 日本語</option>
+                            <option value="en">🇺🇸 English</option>
+                            <option value="es">🇪🇸 Español</option>
+                            <option value="zh">🇨🇳 中文</option>
+                            <option value="ko">🇰🇷 한국어</option>
+                            <option value="fr">🇫🇷 Français</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Funds Section -->
+                <div class="settings-section">
+                    <div class="section-title">
+                        <span>💰</span>
+                        <span id="fundsSectionTitle">資金設定</span>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label" id="initialFundsLabel">初期資金</label>
+                        <input class="input-field" id="initialFundsInput" min="1000" step="1000" type="number" value="100000"/>
+                    </div>
+                </div>
+
+                <!-- Strategy Section -->
+                <div class="settings-section">
+                    <div class="section-title">
+                        <span>🎯</span>
+                        <span id="strategySectionTitle">戦略設定</span>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label" id="verificationCountLabel">パターン検証回数</label>
+                        <input class="input-field" id="verificationCountInput" max="10" min="1" type="number" value="4"/>
+                    </div>
+                </div>
+
+                <!-- Risk Management Section -->
+                <div class="settings-section">
+                    <div class="section-title">
+                        <span>🛡️</span>
+                        <span id="riskSectionTitle">リスク管理</span>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label" id="lossLimitPercentLabel">損失限度 (%)</label>
+                        <div class="enhanced-slider-container">
+                            <input class="enhanced-slider" id="lossLimitSlider" max="100" min="0" step="1" type="range" value="20"/>
+                            <div class="slider-value-popup" id="sliderValuePopup">20%</div>
+                        </div>
+                        <div class="slider-labels">
+                            <span id="noLimitText">0% (無制限)</span>
+                            <span id="currentLossLimitPercent">20%</span>
+                            <span>100%</span>
+                        </div>
+                        <div class="current-limit-display" id="currentLimitDisplay">
+                            損失限度: ¥20,000 (20%)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-buttons-grid">
+                    <button class="settings-btn btn-apply" id="applySettings">
+                        <span>✅</span>
+                        <span id="applyText">適用</span>
+                    </button>
+                    <button class="settings-btn btn-cancel" id="cancelSettings">
+                        <span>❌</span>
+                        <span id="cancelText">キャンセル</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <h1 class="title" id="appTitle">バカラ戦略アドバイザー</h1>
+                    <div class="currency-selector">
+                        <div class="current-selector" id="currentCurrencyDisplay">
+                            <span>💱</span>
+                            <span id="headerCurrencyLabel">日本円</span>
+                        </div>
+                    </div>
+                    <div class="language-selector">
+                        <div class="current-selector">
+                            <span>🌐</span>
+                            <span id="currentLang">日本語</span>
+                        </div>
+                    </div>
+                    <button class="settings-button" id="settingsBtn">⚙️</button>
+                    <button id="checkout-button" class="settings-button" style="display: none;">サブスクに登録する</button>
+                    <button class="settings-button" id="google-login">Googleログイン</button>
+                    <button class="settings-button" id="rulesBtn">📖 ルール</button>
+                </div>
+                <div class="funds-display">
+                    <span>💰</span>
+                    <span id="currentFundsLabel">現在の資金:</span>
+                    <span class="funds-amount" id="fundsAmount">¥100,000</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="main-content">
+                <!-- Left Panel -->
+                <div>
+                    <!-- Quick Input -->
+                    <div class="card">
+                        <h3 class="card-title">
+                            <span>⚡</span>
+                            <span id="quickInputTitle">クイック入力</span>
+                        </h3>
+                        <div class="quick-input-grid">
+                            <div class="score-section">
+                                <div class="score-label" id="playerLabel">プレイヤー</div>
+                                <div class="score-grid">
+                                    <button class="score-btn" data-player="0">0</button>
+                                    <button class="score-btn" data-player="1">1</button>
+                                    <button class="score-btn" data-player="2">2</button>
+                                    <button class="score-btn" data-player="3">3</button>
+                                    <button class="score-btn" data-player="4">4</button>
+                                    <button class="score-btn" data-player="5">5</button>
+                                    <button class="score-btn" data-player="6">6</button>
+                                    <button class="score-btn" data-player="7">7</button>
+                                    <button class="score-btn" data-player="8">8</button>
+                                    <button class="score-btn" data-player="9">9</button>
+                                </div>
+                            </div>
+                            <div class="score-section">
+                                <div class="score-label" id="bankerLabel">バンカー</div>
+                                <div class="score-grid">
+                                    <button class="score-btn" data-banker="0">0</button>
+                                    <button class="score-btn" data-banker="1">1</button>
+                                    <button class="score-btn" data-banker="2">2</button>
+                                    <button class="score-btn" data-banker="3">3</button>
+                                    <button class="score-btn" data-banker="4">4</button>
+                                    <button class="score-btn" data-banker="5">5</button>
+                                    <button class="score-btn" data-banker="6">6</button>
+                                    <button class="score-btn" data-banker="7">7</button>
+                                    <button class="score-btn" data-banker="8">8</button>
+                                    <button class="score-btn" data-banker="9">9</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="result-display hidden" id="resultDisplay">
+                            <div class="result-row">
+                                <span id="winnerLabel">勝者:</span>
+                                <span id="winnerValue"></span>
+                            </div>
+                            <div class="result-row">
+                                <span id="scoreDiffLabel">スコア差:</span>
+                                <span id="scoreDiffValue"></span>
+                            </div>
+                        </div>
+                        <button class="calculate-btn" id="calculateBtn">
+                            <span>🧮</span>
+                            <span id="calculateText">結果計算</span>
+                        </button>
+                    </div>
+
+                    <!-- Risk Management -->
+                    <div class="card risk-card">
+                        <h3 class="card-title">
+                            <span>🛡️</span>
+                            <span id="riskManagementTitle">リスク管理</span>
+                        </h3>
+                        <div class="risk-display">
+                            <div class="risk-item">
+                                <div class="risk-label" id="fundsRatioLabel">資金比率</div>
+                                <div class="risk-value risk-percentage" id="fundsRatio">100.0%</div>
+                            </div>
+                            <div class="risk-item">
+                                <div class="risk-label" id="riskLevelLabel">リスクレベル</div>
+                                <div class="risk-level risk-safe" id="riskLevel">安全</div>
+                            </div>
+                        </div>
+                        <div class="loss-limit-control">
+                            <div class="risk-input">
+                                <label id="lossLimitLabel">損失限度:</label>
+                                <span id="lossLimitDisplay">¥20,000 (20%)</span>
+                            </div>
+                        </div>
+                        <div class="risk-controls">
+                            <div class="risk-input">
+                                <label id="currentLossLabel">現在の損失:</label>
+                                <span id="currentLoss" style="color: #10b981; font-weight: bold;">¥0</span>
+                            </div>
+                        </div>
+                        <div class="control-buttons">
+                            <button class="button btn-pause" id="pauseBtn">
+                                <span>⏸️</span>
+                                <span id="pauseText">休憩</span>
+                            </button>
+                            <button class="button btn-stop" id="stopBtn">
+                                <span>🛑</span>
+                                <span id="stopText">終了</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Bet Suggestion -->
+                    <div class="card">
+                        <h3 class="card-title">
+                            <span>🎯</span>
+                            <span id="betSuggestionTitle">次回ベット提案</span>
+                        </h3>
+                        <div class="suggestion-box">
+                            <div class="suggestion-text" id="suggestionText">データ不足</div>
+                        </div>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="card">
+                        <h3 class="card-title" id="statusTitle">📊 ステータス</h3>
+                        <div class="status-item">
+                            <span id="strategyVerificationLabel">戦略検証:</span>
+                            <span class="status-badge status-verifying" id="verificationStatus">初期確認中</span>
+                        </div>
+                        <div class="status-item">
+                            <span id="martingaleLabel">マーチンゲール:</span>
+                            <span class="status-badge status-inactive" id="martingaleStatus">無効</span>
+                        </div>
+                        <div class="status-item">
+                            <span id="consecutiveLossesLabel">連続敗北:</span>
+                            <span id="consecutiveLossesCount" style="color: #ef4444; font-weight: bold;">0回</span>
+                        </div>
+                        <div class="status-item">
+                            <span id="currentBetLabel">現在のベット額:</span>
+                            <span id="currentBetAmount" style="color: #f59e0b; font-weight: bold;">¥500</span>
+                        </div>
+                        <div class="status-item hidden" id="tieStatusItem">
+                            <span id="tieStatusLabel">タイ状況:</span>
+                            <span class="status-badge" id="tieStatusValue" style="background: #581c87; color: #a855f7;"></span>
+                        </div>
+                    </div>
+
+                    <!-- Reset Button -->
+                    <button class="button" id="resetBtn" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);">
+                        <span>🔄</span>
+                        <span id="resetText">全データリセット</span>
+                    </button>
+                </div>
+
+                <!-- Right Panel -->
+                <div>
+                    <!-- Chart -->
+                    <div class="card">
+                        <h3 class="card-title" id="fundsProgressTitle">📈 資金推移</h3>
+                        <div class="chart-container" id="chartContainer">
+                            <canvas class="chart-canvas" id="fundsChart"></canvas>
+                            <span id="chartPlaceholder" style="position: absolute;">チャートはここに表示されます</span>
+                        </div>
+                    </div>
+
+                    <!-- Game History -->
+                    <div class="card">
+                        <h3 class="card-title" id="gameHistoryTitle">📋 結果履歴</h3>
+                        <div class="history-container" id="historyContainer">
+                            <div class="history-empty" id="historyEmpty">まだ履歴がありません</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/translations.js"></script>
+    <script src="assets/js/utils/helpers.js"></script>
+    <script src="assets/js/utils/api.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/payment.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script>
+        // Supabaseクライアントの初期化
+        const supabase = window.supabase.createClient(
+            'https://ybqbpxgcycttmcwjiyxq.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlicWJweGdjeWN0dG1jd2ppeXhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc0MTc2MTcsImV4cCI6MjA3Mjk5MzYxN30.jQwgOe9ZMluJbjlb8tkLHRwPQHgp7mEcPmHL9T0QvYo'
+        );
+
+        // AuthManager初期化
+        const authManager = new AuthManager(supabase);
+
+        // イベントリスナー設定
+        document.addEventListener('DOMContentLoaded', () => {
+            // Auth関連
+            document.getElementById('googleLoginBtn')?.addEventListener('click', () => authManager.signInWithGoogle());
+            document.getElementById('google-login')?.addEventListener('click', () => {
+                if (authManager.isAuthenticated) {
+                    authManager.signOut();
+                } else {
+                    authManager.signInWithGoogle();
+                }
+            });
+            
+            // サブスクリプションボタンを通貨選択モーダルに変更
+            document.getElementById('subscribeBtn')?.addEventListener('click', 
+            () => showCurrencySelector(authManager));
+            
+            document.getElementById('checkout-button')?.addEventListener('click', 
+            () => showCurrencySelector(authManager));
+            
+            document.getElementById('backToLoginBtn')?.addEventListener('click', () => backToGoogleLogin(authManager));
+            document.getElementById('manualRefreshBtn')?.addEventListener('click', async () => {
+                showVerificationSection();
+                const { isSubscribed } = await checkUserSubscription(authManager.supabase, authManager.currentUser?.id);
+                if (isSubscribed) {
+                    hideAuthOverlay();
+                } else {
+                    if (confirm('サブスクリプション状態を手動で更新しますか?(開発用)')) {
+                        await manualSubscriptionUpdate(authManager);
+                    } else {
+                        showSubscriptionSection();
+                    }
+                }
+            });
+
+            // 認証初期化
+            authManager.initialize();
+        });
+    </script>
+</body>
+</html>
