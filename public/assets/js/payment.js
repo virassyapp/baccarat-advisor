@@ -42,13 +42,15 @@ function showCurrencySelector(authManager) {
     const currencies = [
         { code: 'btc', name: 'Bitcoin', symbol: '₿' },
         { code: 'eth', name: 'Ethereum', symbol: 'Ξ' },
-        { code: 'usdt', name: 'Tether', symbol: '₮' },
+        { code: 'usdterc20', name: 'Tether (ERC20)', symbol: '₮' },
+        { code: 'usdttrc20', name: 'Tether (TRC20)', symbol: '₮' },
         { code: 'usdc', name: 'USD Coin', symbol: '$' },
         { code: 'ltc', name: 'Litecoin', symbol: 'Ł' },
         { code: 'trx', name: 'Tron', symbol: 'T' },
         { code: 'bnb', name: 'Binance Coin', symbol: 'BNB' },
         { code: 'sol', name: 'Solana', symbol: 'SOL' }
     ];
+
 
     // モーダルHTML生成
     const modalHTML = `
