@@ -30,9 +30,33 @@ let sessionEnded = false;
 let lossLimitPercentage = 20;
 let lossLimitAmount = initialBankroll * (lossLimitPercentage / 100);
 
-// 通貨フォーマット
-function formatCurrency(amount) {
-    return formatCurrency(amount, currentCurrency);
+// 通貨フォーマット（修正版）
+function formatCurrency(amount, currency) {
+    // デフォルト引数を使用
+    const currencyCode = currency || currentCurrency;
+    const currencyConfig = CURRENCIES[currencyCode];
+    
+    if (!currencyConfig) {
+        return amount.toLocaleString();
+    }
+    
+    // 暗号通貨の場合
+    if (currencyConfig.isCrypto) {
+        return `${currencyConfig.symbol}${amount.toFixed(currencyConfig.decimals)}`;
+    }
+    
+    // 法定通貨の場合
+    try {
+        return new Intl.NumberFormat('ja-JP', {
+            style: 'currency',
+            currency: currencyCode.toUpperCase(),
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(amount);
+    } catch (error) {
+        // フォールバック
+        return `${currencyConfig.symbol}${amount.toLocaleString()}`;
+    }
 }
 
 // 翻訳取得
