@@ -51,7 +51,6 @@ function showCurrencySelector(authManager) {
         { code: 'sol', name: 'Solana', symbol: 'SOL' }
     ];
 
-
     // モーダルHTML生成
     const modalHTML = `
         <div class="currency-modal" id="currencyModal">

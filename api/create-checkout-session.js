@@ -46,7 +46,7 @@ export default async function handler(req, res) {
         const domain = process.env.DOMAIN || req.headers.origin || 'https://baccarat-advisor-tau.vercel.app';
         
         const invoiceData = {
-            price_amount: 9.9,
+            price_amount: 10,
             price_currency: 'usd',
             pay_currency: currency.toLowerCase(),
             order_id: `${userId}_${Date.now()}`,
