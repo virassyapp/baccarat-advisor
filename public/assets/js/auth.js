@@ -218,9 +218,9 @@ class AuthManager {
 
         if (daysLeft <= 7) {
             expiryInfo.style.background = 'rgba(245, 158, 11, 0.9)';
-            expiryInfo.innerHTML = `⚠️ サブスクは ${daysLeft} 日後に期限切れです`;
+            expiryInfo.innerHTML = `⚠️ Subscription expires in ${daysLeft} days`;
         } else {
-            expiryInfo.innerHTML = `✅ サブスク有効 (残り ${daysLeft} 日)`;
+            expiryInfo.innerHTML = `✅ Subscription active (${daysLeft} days remaining)`;
         }
 
         setTimeout(() => {
