@@ -55,8 +55,8 @@ function showCurrencySelector(authManager) {
     const modalHTML = `
         <div class="currency-modal" id="currencyModal">
             <div class="currency-modal-content">
-                <h2>支払い通貨を選択</h2>
-                <p class="modal-description">月額 $9.9 を支払う暗号通貨を選んでください</p>
+                <h2>Select Payment Currency</h2>
+                <p class="modal-description">Choose the cryptocurrency to pay the monthly $9.9 subscription.</p>
                 <div class="currency-grid">
                     ${currencies.map(currency => `
                         <button class="currency-option" data-currency="${currency.code}">
