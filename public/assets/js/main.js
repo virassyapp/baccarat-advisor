@@ -295,15 +295,86 @@ function updateChart() {
     const adjustedMax = maxAmount + amountRange * 0.1;
     const adjustedRange = adjustedMax - adjustedMin;
     
+    // 背景
     ctx.fillStyle = 'rgba(55, 65, 81, 0.8)';
     ctx.fillRect(0, 0, rect.width, rect.height);
     
-    // グリッドとデータプロット（簡略化）
+    // グリッド線
     ctx.strokeStyle = '#4b5563';
     ctx.lineWidth = 1;
     
-    // チャート描画ロジック（省略 - 既存コードと同じ）
-    // ...
+    const gridLines = 5;
+    for (let i = 0; i <= gridLines; i++) {
+        const y = padding + (chartHeight / gridLines) * i;
+        ctx.beginPath();
+        ctx.moveTo(padding, y);
+        ctx.lineTo(padding + chartWidth, y);
+        ctx.stroke();
+        
+        // Y軸ラベル
+        const value = adjustedMax - (adjustedRange / gridLines) * i;
+        ctx.fillStyle = '#9ca3af';
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText(formatChartLabel(Math.round(value), currentCurrency), padding - 10, y + 4);
+    }
+    
+    // 初期資金ライン
+    const initialY = padding + chartHeight - ((initialBankroll - adjustedMin) / adjustedRange) * chartHeight;
+    ctx.strokeStyle = '#6366f1';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 5]);
+    ctx.beginPath();
+    ctx.moveTo(padding, initialY);
+    ctx.lineTo(padding + chartWidth, initialY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    
+    // データライン
+    ctx.strokeStyle = '#10b981';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    
+    bankrollHistory.forEach((point, index) => {
+        const x = padding + (chartWidth / (bankrollHistory.length - 1)) * index;
+        const y = padding + chartHeight - ((point.amount - adjustedMin) / adjustedRange) * chartHeight;
+        
+        if (index === 0) {
+            ctx.moveTo(x, y);
+        } else {
+            ctx.lineTo(x, y);
+        }
+    });
+    
+    ctx.stroke();
+    
+    // データポイント
+    bankrollHistory.forEach((point, index) => {
+        const x = padding + (chartWidth / (bankrollHistory.length - 1)) * index;
+        const y = padding + chartHeight - ((point.amount - adjustedMin) / adjustedRange) * chartHeight;
+        
+        ctx.fillStyle = point.amount >= initialBankroll ? '#10b981' : '#ef4444';
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.strokeStyle = '#1f2937';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+    });
+    
+    // X軸ラベル
+    ctx.fillStyle = '#9ca3af';
+    ctx.font = '12px sans-serif';
+    ctx.textAlign = 'center';
+    
+    const labelInterval = Math.max(1, Math.floor(bankrollHistory.length / 10));
+    bankrollHistory.forEach((point, index) => {
+        if (index % labelInterval === 0 || index === bankrollHistory.length - 1) {
+            const x = padding + (chartWidth / (bankrollHistory.length - 1)) * index;
+            ctx.fillText(`R${point.round}`, x, rect.height - padding + 20);
+        }
+    });
 }
 
 function setupScoreButtons() {
