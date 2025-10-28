@@ -1,7 +1,7 @@
 // /public/assets/js/payment.js
 
 /**
- * サブスクリプション作成（通貨選択付き）
+ * サブスクリプション作成(通貨選択付き)
  */
 async function handleSubscription(authManager, selectedCurrency = 'btc') {
     try {
@@ -126,7 +126,7 @@ async function createUserIfNotExists(supabase, user) {
 }
 
 /**
- * 手動サブスクリプション更新（開発/テスト用）
+ * 手動サブスクリプション更新(開発/テスト用)
  */
 async function manualSubscriptionUpdate(authManager) {
     try {
