@@ -56,7 +56,7 @@ function showCurrencySelector(authManager) {
         <div class="currency-modal" id="currencyModal">
             <div class="currency-modal-content">
                 <h2>Select Payment Currency</h2>
-                <p class="modal-description">Choose the cryptocurrency to pay the monthly $9.9 subscription.</p>
+                <p class="modal-description">Choose the cryptocurrency to pay the monthly $500 subscription.</p>
                 <div class="currency-grid">
                     ${currencies.map(currency => `
                         <button class="currency-option" data-currency="${currency.code}">
