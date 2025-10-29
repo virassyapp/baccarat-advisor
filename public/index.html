@@ -73,7 +73,7 @@
                 <!-- Language Section -->
                 <div class="settings-section">
                     <div class="section-title">
-                        <span>🌐</span>
+                        <span>🌍</span>
                         <span id="languageSectionTitle">言語設定</span>
                     </div>
                     <div class="input-group">
@@ -162,7 +162,7 @@
                     </div>
                     <div class="language-selector">
                         <div class="current-selector">
-                            <span>🌐</span>
+                            <span>🌍</span>
                             <span id="currentLang">日本語</span>
                         </div>
                     </div>
@@ -299,13 +299,25 @@
                             <span id="martingaleLabel">マーチンゲール:</span>
                             <span class="status-badge status-inactive" id="martingaleStatus">無効</span>
                         </div>
-                        <div class="status-item">
-                            <span id="consecutiveLossesLabel">連続敗北:</span>
-                            <span id="consecutiveLossesCount" style="color: #ef4444; font-weight: bold;">0回</span>
+                        <!-- 🆕 改善されたマーチンレベル表示 -->
+                        <div class="status-item martingale-level-display">
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span id="consecutiveLossesLabel" style="font-weight: 600; color: #e2e8f0;">連続敗北 / マーチン段階:</span>
+                                    <span id="consecutiveLossesCount" class="martingale-counter">0回</span>
+                                </div>
+                                <div class="martingale-info">
+                                    <span>💡</span>
+                                    <span>最大8段階まで自動マーチンゲール</span>
+                                </div>
+                                <div class="martingale-progress-bar">
+                                    <div class="martingale-progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
                         </div>
                         <div class="status-item">
                             <span id="currentBetLabel">現在のベット額:</span>
-                            <span id="currentBetAmount" style="color: #f59e0b; font-weight: bold;">¥500</span>
+                            <span id="currentBetAmount" style="color: #f59e0b; font-weight: bold; font-size: 1.1em;">¥300</span>
                         </div>
                         <div class="status-item hidden" id="tieStatusItem">
                             <span id="tieStatusLabel">タイ状況:</span>
