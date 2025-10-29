@@ -77,7 +77,8 @@ const translations = {
         unlimited: "無制限",
         martingaleLevel: "マーチン",
         martingaleStage: "段階",
-        maxMartingaleReached: "段階連続敗北したため、ベット額をリセットしました。"
+        maxMartingaleReached: "段階連続敗北したため、ベット額をリセットしました。",
+        martingaleInfo: "最大8段階まで自動マーチンゲール"
     },
     en: {
         title: "Baccarat Strategy Advisor",
@@ -155,7 +156,8 @@ const translations = {
         unlimited: "Unlimited",
         martingaleLevel: "Martingale",
         martingaleStage: "Stage",
-        maxMartingaleReached: " consecutive losses reached. Bet amount has been reset."
+        maxMartingaleReached: " consecutive losses reached. Bet amount has been reset.",
+        martingaleInfo: "Auto Martingale up to 8 stages"
     },
     es: {
         title: "Asesor de Estrategia Baccarat",
@@ -233,7 +235,8 @@ const translations = {
         unlimited: "Ilimitado",
         martingaleLevel: "Martingala",
         martingaleStage: "Etapa",
-        maxMartingaleReached: " pérdidas consecutivas alcanzadas. El monto de apuesta se ha reiniciado."
+        maxMartingaleReached: " pérdidas consecutivas alcanzadas. El monto de apuesta se ha reiniciado.",
+        martingaleInfo: "Martingala automática hasta 8 etapas"
     },
     zh: {
         title: "百家乐策略顾问",
@@ -311,7 +314,8 @@ const translations = {
         unlimited: "无限",
         martingaleLevel: "马丁",
         martingaleStage: "阶段",
-        maxMartingaleReached: "连续失败已达到。投注金额已重置。"
+        maxMartingaleReached: "连续失败已达到。投注金额已重置。",
+        martingaleInfo: "自动马丁最多8个阶段"
     },
     ko: {
         title: "바카라 전략 어드바이저",
@@ -389,7 +393,8 @@ const translations = {
         unlimited: "무제한",
         martingaleLevel: "마틴",
         martingaleStage: "단계",
-        maxMartingaleReached: "연속 패배에 도달했습니다. 베팅 금액이 재설정되었습니다."
+        maxMartingaleReached: "연속 패배에 도달했습니다. 베팅 금액이 재설정되었습니다.",
+        martingaleInfo: "최대 8단계까지 자동 마틴게일"
     },
     fr: {
         title: "Conseiller de Stratégie Baccarat",
@@ -467,7 +472,8 @@ const translations = {
         unlimited: "Illimité",
         martingaleLevel: "Martingale",
         martingaleStage: "Étape",
-        maxMartingaleReached: " pertes consécutives atteintes. Le montant du pari a été réinitialisé."
+        maxMartingaleReached: " pertes consécutives atteintes. Le montant du pari a été réinitialisé.",
+        martingaleInfo: "Martingale automatique jusqu'à 8 étapes"
     }
 };
 

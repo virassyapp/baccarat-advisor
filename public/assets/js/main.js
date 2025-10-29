@@ -102,6 +102,7 @@ function updateUIText() {
     document.getElementById('consecutiveLossesLabel').textContent = t('consecutiveLosses') + ':';
     document.getElementById('currentBetLabel').textContent = t('currentBetAmount') + ':';
     document.getElementById('tieStatusLabel').textContent = t('tieStatus') + ':';
+    document.getElementById('martingaleInfoText').textContent = t('martingaleInfo');
     document.getElementById('resetText').textContent = t('resetAllData');
     document.getElementById('fundsProgressTitle').textContent = '📈 ' + t('fundsProgress');
     document.getElementById('gameHistoryTitle').textContent = '📋 ' + t('gameHistory');
