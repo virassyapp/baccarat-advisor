@@ -105,7 +105,13 @@ const translations = {
         darkMode: "ダークモード",
         lightMode: "ライトモード",
         themeSection: "テーマ設定",
+
+        // モバイルタブ
+        mobileTabGame: "ゲーム",
+        mobileTabStats: "統計",
+        mobileTabChart: "履歴",
     },
+    
     en: {
         title: "Baccarat Strategy Advisor",
         currentFunds: "Current Funds",

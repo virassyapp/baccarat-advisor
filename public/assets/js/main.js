@@ -1021,20 +1021,20 @@ function initMobileTabs() {
 }
 
 function createMobileTabs() {
-    // タブナビゲーションを作成
+    // タブナビゲーションを作成（多言語対応）
     const tabNavHTML = `
         <div class="mobile-tab-nav" id="mobileTabNav">
             <button class="mobile-tab-btn active" data-tab="game" onclick="switchMobileTab('game')">
                 <span>🎮</span>
-                <span>ゲーム</span>
+                <span id="mobileTabGame">${t('mobileTabGame')}</span>
             </button>
             <button class="mobile-tab-btn" data-tab="stats" onclick="switchMobileTab('stats')">
                 <span>📊</span>
-                <span>統計</span>
+                <span id="mobileTabStats">${t('mobileTabStats')}</span>
             </button>
             <button class="mobile-tab-btn" data-tab="chart" onclick="switchMobileTab('chart')">
                 <span>📈</span>
-                <span>履歴</span>
+                <span id="mobileTabChart">${t('mobileTabChart')}</span>
             </button>
         </div>
     `;
