@@ -1083,6 +1083,48 @@ function createMobileTabs() {
     // 初期表示設定
     switchMobileTab('game');
 }
+// タブラベル取得関数（多言語対応）
+function getTabLabel(tabName) {
+    const labels = {
+        game: {
+            ja: 'ゲーム',
+            en: 'Game',
+            es: 'Juego',
+            zh: '游戏',
+            ko: '게임',
+            fr: 'Jeu'
+        },
+        stats: {
+            ja: '統計',
+            en: 'Stats',
+            es: 'Estadísticas',
+            zh: '统计',
+            ko: '통계',
+            fr: 'Statistiques'
+        },
+        chart: {
+            ja: '履歴',
+            en: 'History',
+            es: 'Historial',
+            zh: '历史',
+            ko: '히스토리',
+            fr: 'Historique'
+        }
+    };
+    
+    return labels[tabName][currentLanguage] || labels[tabName]['ja'];
+}
+
+// タブラベル更新関数
+function updateMobileTabLabels() {
+    const tabGame = document.getElementById('mobileTabGame');
+    const tabStats = document.getElementById('mobileTabStats');
+    const tabChart = document.getElementById('mobileTabChart');
+    
+    if (tabGame) tabGame.textContent = getTabLabel('game');
+    if (tabStats) tabStats.textContent = getTabLabel('stats');
+    if (tabChart) tabChart.textContent = getTabLabel('chart');
+}
 
 function switchMobileTab(tabName) {
     // タブボタンのアクティブ状態更新
