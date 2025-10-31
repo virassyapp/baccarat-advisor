@@ -172,9 +172,6 @@ function updateUIText() {
     document.getElementById('manualSetText').textContent = t('manualSet');
     document.getElementById('customBetAmountLabel').textContent = t('customBetAmount');
     
-    // モバイルタブラベル更新
-    updateMobileTabLabels();
-
     updateDisplay();
 }
 
@@ -382,8 +379,6 @@ function updateChart() {
     const canvas = document.getElementById('fundsChart');
     const placeholder = document.getElementById('chartPlaceholder');
     
-    if (!canvas || !placeholder) return;
-    
     if (bankrollHistory.length <= 1) {
         placeholder.style.display = 'block';
         canvas.style.display = 'none';
@@ -393,29 +388,17 @@ function updateChart() {
     placeholder.style.display = 'none';
     canvas.style.display = 'block';
     
-    // キャンバスのサイズを親要素に合わせる
-    const container = canvas.parentElement;
-    const rect = container.getBoundingClientRect();
-    
-    // モバイルの場合、より適切なサイズに調整
-    if (window.innerWidth <= 768) {
-        canvas.width = rect.width * window.devicePixelRatio;
-        canvas.height = Math.min(300, rect.height) * window.devicePixelRatio;
-        canvas.style.width = rect.width + 'px';
-        canvas.style.height = Math.min(300, rect.height) + 'px';
-    } else {
-        canvas.width = rect.width * window.devicePixelRatio;
-        canvas.height = rect.height * window.devicePixelRatio;
-        canvas.style.width = rect.width + 'px';
-        canvas.style.height = rect.height + 'px';
-    }
-    
     const ctx = canvas.getContext('2d');
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * window.devicePixelRatio;
+    canvas.height = rect.height * window.devicePixelRatio;
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = rect.height + 'px';
     ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
     
-    // チャートの実際の描画サイズ
-    const chartWidth = window.innerWidth <= 768 ? rect.width : rect.width;
-    const chartHeight = window.innerWidth <= 768 ? Math.min(300, rect.height) : rect.height
+    const padding = 60;
+    const chartWidth = rect.width - 2 * padding;
+    const chartHeight = rect.height - 2 * padding;
     
     const amounts = bankrollHistory.map(h => h.amount);
     const minAmount = Math.min(...amounts);
@@ -1038,20 +1021,20 @@ function initMobileTabs() {
 }
 
 function createMobileTabs() {
-    // タブナビゲーションを作成（多言語対応）
+    // タブナビゲーションを作成
     const tabNavHTML = `
         <div class="mobile-tab-nav" id="mobileTabNav">
             <button class="mobile-tab-btn active" data-tab="game" onclick="switchMobileTab('game')">
                 <span>🎮</span>
-                <span id="mobileTabGame">${getTabLabel('game')}</span>
+                <span>ゲーム</span>
             </button>
             <button class="mobile-tab-btn" data-tab="stats" onclick="switchMobileTab('stats')">
                 <span>📊</span>
-                <span id="mobileTabStats">${getTabLabel('stats')}</span>
+                <span>統計</span>
             </button>
             <button class="mobile-tab-btn" data-tab="chart" onclick="switchMobileTab('chart')">
                 <span>📈</span>
-                <span id="mobileTabChart">${getTabLabel('chart')}</span>
+                <span>履歴</span>
             </button>
         </div>
     `;
@@ -1101,49 +1084,6 @@ function createMobileTabs() {
     switchMobileTab('game');
 }
 
-// タブラベル取得関数（多言語対応）
-function getTabLabel(tabName) {
-    const labels = {
-        game: {
-            ja: 'ゲーム',
-            en: 'Game',
-            es: 'Juego',
-            zh: '游戏',
-            ko: '게임',
-            fr: 'Jeu'
-        },
-        stats: {
-            ja: '統計',
-            en: 'Stats',
-            es: 'Estadísticas',
-            zh: '统计',
-            ko: '통계',
-            fr: 'Statistiques'
-        },
-        chart: {
-            ja: '履歴',
-            en: 'History',
-            es: 'Historial',
-            zh: '历史',
-            ko: '히스토리',
-            fr: 'Historique'
-        }
-    };
-    
-    return labels[tabName][currentLanguage] || labels[tabName]['ja'];
-}
-
-// タブラベル更新関数
-function updateMobileTabLabels() {
-    const tabGame = document.getElementById('mobileTabGame');
-    const tabStats = document.getElementById('mobileTabStats');
-    const tabChart = document.getElementById('mobileTabChart');
-    
-    if (tabGame) tabGame.textContent = getTabLabel('game');
-    if (tabStats) tabStats.textContent = getTabLabel('stats');
-    if (tabChart) tabChart.textContent = getTabLabel('chart');
-}
-
 function switchMobileTab(tabName) {
     // タブボタンのアクティブ状態更新
     document.querySelectorAll('.mobile-tab-btn').forEach(btn => {
@@ -1168,13 +1108,6 @@ function switchMobileTab(tabName) {
         resetBtn.style.display = 'block';
     } else if (resetBtn && tabName !== 'game') {
         resetBtn.style.display = 'none';
-    }
-    
-    // チャートタブが選択された場合、チャートを再描画
-    if (tabName === 'chart') {
-        setTimeout(() => {
-            updateChart();
-        }, 100);
     }
 }
 
