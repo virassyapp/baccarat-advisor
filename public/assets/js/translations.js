@@ -111,7 +111,7 @@ const translations = {
         mobileTabStats: "統計",
         mobileTabChart: "履歴",
     },
-    
+
     en: {
         title: "Baccarat Strategy Advisor",
         currentFunds: "Current Funds",
@@ -216,6 +216,11 @@ const translations = {
         darkMode: "Dark Mode",
         lightMode: "Light Mode",
         themeSection: "Theme Settings",
+
+        // Mobile Tabs
+        mobileTabGame: "Game",
+        mobileTabStats: "Stats",
+        mobileTabChart: "History",
     },
     es: {
         title: "Asesor de Estrategia Baccarat",
@@ -318,6 +323,10 @@ const translations = {
         darkMode: "Modo Oscuro",
         lightMode: "Modo Claro",
         themeSection: "Configuración de Tema",
+  
+        mobileTabGame: "Juego",
+        mobileTabStats: "Estadísticas",
+        mobileTabChart: "Historial",
     },
     zh: {
         title: "百家乐策略顾问",
@@ -420,6 +429,10 @@ const translations = {
         darkMode: "暗色模式",
         lightMode: "亮色模式",
         themeSection: "主题设置",
+
+        mobileTabGame: "游戏",
+        mobileTabStats: "统计",
+        mobileTabChart: "历史",
     },
     ko: {
         title: "바카라 전략 어드바이저",
@@ -522,6 +535,10 @@ const translations = {
         darkMode: "다크 모드",
         lightMode: "라이트 모드",
         themeSection: "테마 설정",
+
+        mobileTabGame: "게임",
+        mobileTabStats: "통계",
+        mobileTabChart: "히스토리",
     },
     fr: {
         title: "Conseiller de Stratégie Baccarat",
@@ -624,6 +641,10 @@ const translations = {
         darkMode: "Mode Sombre",
         lightMode: "Mode Clair",
         themeSection: "Paramètres de Thème",
+
+        mobileTabGame: "Jeu",
+        mobileTabStats: "Statistiques",
+        mobileTabChart: "Historique",
     }
 };
 
