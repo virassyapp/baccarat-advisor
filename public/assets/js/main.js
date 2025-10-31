@@ -528,17 +528,14 @@ function setupScoreButtons() {
 function checkAutoCalculate() {
     if (selectedPlayerScore !== null && selectedBankerScore !== null && 
         !sessionEnded && !isPaused) {
-        // すぐに選択状態をクリア
-        selectedPlayerScore = null;
-        selectedBankerScore = null;
-        document.querySelectorAll('.score-btn.selected').forEach(btn => {
-            btn.classList.remove('selected');
-        });
-        
-        // 計算は少し遅らせる
         setTimeout(() => {
             calculateResult();
-        }, 50);
+            selectedPlayerScore = null;
+            selectedBankerScore = null;
+            document.querySelectorAll('.score-btn.selected').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+        }, 100);
     }
 }
 
