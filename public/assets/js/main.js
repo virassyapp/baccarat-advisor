@@ -1007,3 +1007,131 @@ document.addEventListener('DOMContentLoaded', () => {
     updateDisplay();
     updateStatisticsDisplay();
 });
+
+// main.js の末尾に追加 - モバイル用タブ切り替え
+
+// ========================================
+// モバイル用タブ機能（768px以下で有効化）
+// ========================================
+
+function initMobileTabs() {
+    if (window.innerWidth <= 768) {
+        createMobileTabs();
+    }
+}
+
+function createMobileTabs() {
+    // タブナビゲーションを作成
+    const tabNavHTML = `
+        <div class="mobile-tab-nav" id="mobileTabNav">
+            <button class="mobile-tab-btn active" data-tab="game" onclick="switchMobileTab('game')">
+                <span>🎮</span>
+                <span>ゲーム</span>
+            </button>
+            <button class="mobile-tab-btn" data-tab="stats" onclick="switchMobileTab('stats')">
+                <span>📊</span>
+                <span>統計</span>
+            </button>
+            <button class="mobile-tab-btn" data-tab="chart" onclick="switchMobileTab('chart')">
+                <span>📈</span>
+                <span>履歴</span>
+            </button>
+        </div>
+    `;
+    
+    // タブナビゲーションを挿入
+    const container = document.querySelector('.container');
+    if (container && !document.getElementById('mobileTabNav')) {
+        container.insertAdjacentHTML('afterbegin', tabNavHTML);
+    }
+    
+    // 各セクションにタブクラスを追加
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) {
+        const leftPanel = mainContent.children[0];
+        const rightPanel = mainContent.children[1];
+        
+        if (leftPanel) {
+            // ゲームタブ: クイック入力、リスク管理、ベット提案
+            const gameCards = [
+                leftPanel.querySelector('.card:nth-child(1)'), // クイック入力
+                leftPanel.querySelector('.risk-card'),
+                leftPanel.querySelector('.card:nth-child(3)')  // ベット提案
+            ];
+            gameCards.forEach(card => {
+                if (card) card.setAttribute('data-mobile-tab', 'game');
+            });
+            
+            // 統計タブ: ステータス、統計カード
+            const statsCards = [
+                leftPanel.querySelector('.card:nth-child(4)'), // ステータス
+                leftPanel.querySelector('.statistics-card')
+            ];
+            statsCards.forEach(card => {
+                if (card) card.setAttribute('data-mobile-tab', 'stats');
+            });
+        }
+        
+        if (rightPanel) {
+            // チャートタブ: チャートと履歴
+            Array.from(rightPanel.children).forEach(card => {
+                card.setAttribute('data-mobile-tab', 'chart');
+            });
+        }
+    }
+    
+    // 初期表示設定
+    switchMobileTab('game');
+}
+
+function switchMobileTab(tabName) {
+    // タブボタンのアクティブ状態更新
+    document.querySelectorAll('.mobile-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.tab === tabName) {
+            btn.classList.add('active');
+        }
+    });
+    
+    // カードの表示切り替え
+    document.querySelectorAll('[data-mobile-tab]').forEach(card => {
+        if (card.getAttribute('data-mobile-tab') === tabName) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+    
+    // リセットボタンは常に表示
+    const resetBtn = document.getElementById('resetBtn');
+    if (resetBtn && tabName === 'stats') {
+        resetBtn.style.display = 'block';
+    } else if (resetBtn && tabName !== 'game') {
+        resetBtn.style.display = 'none';
+    }
+}
+
+// ウィンドウリサイズ時の処理
+function handleResize() {
+    if (window.innerWidth <= 768) {
+        if (!document.getElementById('mobileTabNav')) {
+            createMobileTabs();
+        }
+    } else {
+        // デスクトップ表示に戻す
+        const tabNav = document.getElementById('mobileTabNav');
+        if (tabNav) {
+            tabNav.remove();
+        }
+        document.querySelectorAll('[data-mobile-tab]').forEach(card => {
+            card.style.display = 'block';
+        });
+    }
+}
+
+// 初期化時とリサイズ時にタブを設定
+window.addEventListener('resize', debounce(handleResize, 200));
+document.addEventListener('DOMContentLoaded', () => {
+    // 既存の初期化の後に追加
+    setTimeout(initMobileTabs, 100);
+});
