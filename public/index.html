@@ -52,6 +52,24 @@
             <div class="settings-content">
                 <h3 class="settings-title">⚙️ 設定</h3>
                 
+                <!-- Theme Section -->
+                <div class="settings-section">
+                    <div class="section-title">
+                        <span>🎨</span>
+                        <span id="themeSectionTitle">テーマ設定</span>
+                    </div>
+                    <div class="theme-switcher">
+                        <button class="theme-btn active" id="theme-dark" onclick="setTheme('dark')">
+                            <span>🌙</span>
+                            <span id="darkModeText">ダークモード</span>
+                        </button>
+                        <button class="theme-btn" id="theme-light" onclick="setTheme('light')">
+                            <span>☀️</span>
+                            <span id="lightModeText">ライトモード</span>
+                        </button>
+                    </div>
+                </div>
+                
                 <!-- Currency Section -->
                 <div class="settings-section">
                     <div class="section-title">
@@ -110,6 +128,45 @@
                     <div class="input-group">
                         <label class="input-label" id="verificationCountLabel">パターン検証回数</label>
                         <input class="input-field" id="verificationCountInput" max="10" min="1" type="number" value="4"/>
+                    </div>
+                </div>
+
+                <!-- Advanced Strategy Section -->
+                <div class="settings-section">
+                    <div class="section-title">
+                        <span>⚙️</span>
+                        <span id="advancedStrategyTitle">高度な戦略設定</span>
+                    </div>
+                    
+                    <!-- Max Martingale Level -->
+                    <div class="input-group">
+                        <label class="input-label" id="maxMartingaleLevelLabel">最大マーチンレベル</label>
+                        <input class="input-field" id="maxMartingaleLevelInput" type="number" 
+                               min="1" max="10" value="8" onchange="updateMaxMartingaleLevel()"/>
+                        <div class="input-hint">推奨: 8 段階</div>
+                    </div>
+                    
+                    <!-- Bet Amount Mode -->
+                    <div class="input-group">
+                        <label class="input-label" id="betAmountModeLabel">ベット額設定</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="betAmountMode" value="auto" checked onchange="toggleBetAmountMode()"/>
+                                <span id="autoCalculateText">自動計算</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="betAmountMode" value="manual" onchange="toggleBetAmountMode()"/>
+                                <span id="manualSetText">手動設定</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Manual Bet Amount -->
+                    <div class="input-group hidden" id="manualBetAmountGroup">
+                        <label class="input-label" id="customBetAmountLabel">カスタムベット額</label>
+                        <input class="input-field" id="manualBetAmountInput" type="number" 
+                               min="10" step="10" value="500"/>
+                        <div class="input-hint">初回ベット額を直接指定</div>
                     </div>
                 </div>
 
@@ -299,7 +356,7 @@
                             <span id="martingaleLabel">マーチンゲール:</span>
                             <span class="status-badge status-inactive" id="martingaleStatus">無効</span>
                         </div>
-                        <!-- 🆕 改善されたマーチンレベル表示 -->
+                        <!-- Martingale Level Display -->
                         <div class="status-item martingale-level-display">
                             <div style="display: flex; flex-direction: column; gap: 8px;">
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -322,6 +379,59 @@
                         <div class="status-item hidden" id="tieStatusItem">
                             <span id="tieStatusLabel">タイ状況:</span>
                             <span class="status-badge" id="tieStatusValue" style="background: #581c87; color: #a855f7;"></span>
+                        </div>
+                    </div>
+
+                    <!-- Statistics Section -->
+                    <div class="card statistics-card">
+                        <h3 class="card-title">
+                            <span>📊</span>
+                            <span id="statisticsTitle">統計情報</span>
+                        </h3>
+                        
+                        <!-- Win Rate Display -->
+                        <div class="stat-highlight">
+                            <div class="stat-label" id="winRateLabel">勝率</div>
+                            <div class="stat-value" id="winRateValue">0.0%</div>
+                        </div>
+                        
+                        <!-- Statistics Grid -->
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-label" id="totalGamesLabel">総ゲーム数</div>
+                                <div class="stat-value" id="totalGamesValue">0</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label" id="winsLabel">勝利</div>
+                                <div class="stat-value stat-wins" id="winsValue">0</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label" id="lossesLabel">敗北</div>
+                                <div class="stat-value stat-losses" id="lossesValue">0</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label" id="tiesLabel">引き分け</div>
+                                <div class="stat-value" id="tiesValue">0</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Martingale Statistics -->
+                        <div class="martingale-stats">
+                            <div class="stat-row">
+                                <span id="avgMartingaleLabel">平均マーチンレベル:</span>
+                                <span id="avgMartingaleValue" class="stat-value-inline">0.00</span>
+                            </div>
+                            <div class="stat-row">
+                                <span id="maxMartingaleReachedLabel">最大マーチン到達:</span>
+                                <span id="maxMartingaleReachedValue" class="stat-value-inline">0</span>
+                                <span id="maxMartingaleReachedUnit">回</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Session Profit -->
+                        <div class="session-profit">
+                            <div class="profit-label" id="sessionProfitLabel">セッション収支</div>
+                            <div class="profit-value" id="sessionProfitValue">¥0</div>
                         </div>
                     </div>
 

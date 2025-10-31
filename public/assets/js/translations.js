@@ -78,7 +78,33 @@ const translations = {
         martingaleLevel: "マーチン",
         martingaleStage: "段階",
         maxMartingaleReached: "段階連続敗北したため、ベット額をリセットしました。",
-        martingaleInfo: "最大8段階まで自動マーチンゲール"
+        martingaleInfo: "最大8段階まで自動マーチンゲール",
+        
+        // 統計機能
+        statistics: "統計情報",
+        winRate: "勝率",
+        totalGames: "総ゲーム数",
+        wins: "勝利",
+        losses: "敗北",
+        ties: "引き分け",
+        avgMartingaleLevel: "平均マーチンレベル",
+        maxMartingaleReachedCount: "最大マーチン到達",
+        totalProfit: "総収支",
+        sessionProfit: "セッション収支",
+        profitLoss: "損益",
+        
+        // カスタマイズ機能
+        maxMartingaleLevelSetting: "最大マーチンレベル",
+        customBetAmount: "カスタムベット額",
+        autoCalculate: "自動計算",
+        manualSet: "手動設定",
+        betAmountMode: "ベット額設定",
+        
+        // テーマ
+        theme: "テーマ",
+        darkMode: "ダークモード",
+        lightMode: "ライトモード",
+        themeSection: "テーマ設定",
     },
     en: {
         title: "Baccarat Strategy Advisor",
@@ -157,7 +183,33 @@ const translations = {
         martingaleLevel: "Martingale",
         martingaleStage: "Stage",
         maxMartingaleReached: " consecutive losses reached. Bet amount has been reset.",
-        martingaleInfo: "Auto Martingale up to 8 stages"
+        martingaleInfo: "Auto Martingale up to 8 stages",
+        
+        // Statistics
+        statistics: "Statistics",
+        winRate: "Win Rate",
+        totalGames: "Total Games",
+        wins: "Wins",
+        losses: "Losses",
+        ties: "Ties",
+        avgMartingaleLevel: "Avg Martingale Level",
+        maxMartingaleReachedCount: "Max Martingale Reached",
+        totalProfit: "Total Profit",
+        sessionProfit: "Session Profit",
+        profitLoss: "P&L",
+        
+        // Customization
+        maxMartingaleLevelSetting: "Max Martingale Level",
+        customBetAmount: "Custom Bet Amount",
+        autoCalculate: "Auto Calculate",
+        manualSet: "Manual Set",
+        betAmountMode: "Bet Amount Mode",
+        
+        // Theme
+        theme: "Theme",
+        darkMode: "Dark Mode",
+        lightMode: "Light Mode",
+        themeSection: "Theme Settings",
     },
     es: {
         title: "Asesor de Estrategia Baccarat",
@@ -236,7 +288,30 @@ const translations = {
         martingaleLevel: "Martingala",
         martingaleStage: "Etapa",
         maxMartingaleReached: " pérdidas consecutivas alcanzadas. El monto de apuesta se ha reiniciado.",
-        martingaleInfo: "Martingala automática hasta 8 etapas"
+        martingaleInfo: "Martingala automática hasta 8 etapas",
+        
+        statistics: "Estadísticas",
+        winRate: "Tasa de Victoria",
+        totalGames: "Juegos Totales",
+        wins: "Victorias",
+        losses: "Derrotas",
+        ties: "Empates",
+        avgMartingaleLevel: "Nivel Promedio Martingala",
+        maxMartingaleReachedCount: "Máximo Martingala Alcanzado",
+        totalProfit: "Beneficio Total",
+        sessionProfit: "Beneficio de Sesión",
+        profitLoss: "Ganancia/Pérdida",
+        
+        maxMartingaleLevelSetting: "Nivel Máximo Martingala",
+        customBetAmount: "Monto de Apuesta Personalizado",
+        autoCalculate: "Calcular Automáticamente",
+        manualSet: "Configuración Manual",
+        betAmountMode: "Modo de Monto de Apuesta",
+        
+        theme: "Tema",
+        darkMode: "Modo Oscuro",
+        lightMode: "Modo Claro",
+        themeSection: "Configuración de Tema",
     },
     zh: {
         title: "百家乐策略顾问",
@@ -315,7 +390,30 @@ const translations = {
         martingaleLevel: "马丁",
         martingaleStage: "阶段",
         maxMartingaleReached: "连续失败已达到。投注金额已重置。",
-        martingaleInfo: "自动马丁最多8个阶段"
+        martingaleInfo: "自动马丁最多8个阶段",
+        
+        statistics: "统计信息",
+        winRate: "胜率",
+        totalGames: "总游戏数",
+        wins: "胜利",
+        losses: "失败",
+        ties: "平局",
+        avgMartingaleLevel: "平均马丁等级",
+        maxMartingaleReachedCount: "最大马丁达到次数",
+        totalProfit: "总收益",
+        sessionProfit: "会话收益",
+        profitLoss: "盈亏",
+        
+        maxMartingaleLevelSetting: "最大马丁等级",
+        customBetAmount: "自定义投注额",
+        autoCalculate: "自动计算",
+        manualSet: "手动设置",
+        betAmountMode: "投注额模式",
+        
+        theme: "主题",
+        darkMode: "暗色模式",
+        lightMode: "亮色模式",
+        themeSection: "主题设置",
     },
     ko: {
         title: "바카라 전략 어드바이저",
@@ -394,7 +492,30 @@ const translations = {
         martingaleLevel: "마틴",
         martingaleStage: "단계",
         maxMartingaleReached: "연속 패배에 도달했습니다. 베팅 금액이 재설정되었습니다.",
-        martingaleInfo: "최대 8단계까지 자동 마틴게일"
+        martingaleInfo: "최대 8단계까지 자동 마틴게일",
+        
+        statistics: "통계 정보",
+        winRate: "승률",
+        totalGames: "총 게임 수",
+        wins: "승리",
+        losses: "패배",
+        ties: "무승부",
+        avgMartingaleLevel: "평균 마틴 레벨",
+        maxMartingaleReachedCount: "최대 마틴 도달 횟수",
+        totalProfit: "총 수익",
+        sessionProfit: "세션 수익",
+        profitLoss: "손익",
+        
+        maxMartingaleLevelSetting: "최대 마틴 레벨",
+        customBetAmount: "사용자 정의 베팅 금액",
+        autoCalculate: "자동 계산",
+        manualSet: "수동 설정",
+        betAmountMode: "베팅 금액 모드",
+        
+        theme: "테마",
+        darkMode: "다크 모드",
+        lightMode: "라이트 모드",
+        themeSection: "테마 설정",
     },
     fr: {
         title: "Conseiller de Stratégie Baccarat",
@@ -473,7 +594,30 @@ const translations = {
         martingaleLevel: "Martingale",
         martingaleStage: "Étape",
         maxMartingaleReached: " pertes consécutives atteintes. Le montant du pari a été réinitialisé.",
-        martingaleInfo: "Martingale automatique jusqu'à 8 étapes"
+        martingaleInfo: "Martingale automatique jusqu'à 8 étapes",
+        
+        statistics: "Statistiques",
+        winRate: "Taux de Victoire",
+        totalGames: "Total de Jeux",
+        wins: "Victoires",
+        losses: "Défaites",
+        ties: "Égalités",
+        avgMartingaleLevel: "Niveau Moyen Martingale",
+        maxMartingaleReachedCount: "Maximum Martingale Atteint",
+        totalProfit: "Profit Total",
+        sessionProfit: "Profit de Session",
+        profitLoss: "Gain/Perte",
+        
+        maxMartingaleLevelSetting: "Niveau Maximum Martingale",
+        customBetAmount: "Montant de Pari Personnalisé",
+        autoCalculate: "Calcul Automatique",
+        manualSet: "Configuration Manuelle",
+        betAmountMode: "Mode Montant de Pari",
+        
+        theme: "Thème",
+        darkMode: "Mode Sombre",
+        lightMode: "Mode Clair",
+        themeSection: "Paramètres de Thème",
     }
 };
 

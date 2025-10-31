@@ -13,10 +13,8 @@ async function handleSubscription(authManager, selectedCurrency = 'btc') {
 
         console.log('Initiating subscription for user:', user.email, 'Currency:', selectedCurrency);
 
-        // ユーザーレコード作成を試行
         await createUserIfNotExists(authManager.supabase, user);
 
-        // 通貨を含めてセッション作成
         const session = await createCheckoutSession(user.id, user.email, selectedCurrency);
 
         if (session.error) {
@@ -24,7 +22,6 @@ async function handleSubscription(authManager, selectedCurrency = 'btc') {
         }
 
         if (session.url) {
-            // NowPaymentsの決済ページへリダイレクト
             window.location.href = session.url;
         } else {
             throw new Error('セッションURLがありません');
@@ -51,7 +48,6 @@ function showCurrencySelector(authManager) {
         { code: 'sol', name: 'Solana', symbol: 'SOL' }
     ];
 
-    // モーダルHTML生成
     const modalHTML = `
         <div class="currency-modal" id="currencyModal">
             <div class="currency-modal-content">
@@ -71,7 +67,6 @@ function showCurrencySelector(authManager) {
         </div>
     `;
 
-    // モーダルを追加
     const existingModal = document.getElementById('currencyModal');
     if (existingModal) {
         existingModal.remove();
@@ -79,7 +74,6 @@ function showCurrencySelector(authManager) {
 
     document.body.insertAdjacentHTML('beforeend', modalHTML);
 
-    // イベントリスナー
     document.querySelectorAll('.currency-option').forEach(button => {
         button.addEventListener('click', () => {
             const selectedCurrency = button.dataset.currency;
@@ -136,7 +130,6 @@ async function manualSubscriptionUpdate(authManager) {
             return false;
         }
 
-        // 手動更新時も有効期限を設定
         const expiresAt = new Date();
         expiresAt.setMonth(expiresAt.getMonth() + 1);
 

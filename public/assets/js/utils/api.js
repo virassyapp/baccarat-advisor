@@ -1,7 +1,7 @@
 // /public/assets/js/utils/api.js
 
 /**
- * チェックアウトセッション作成（通貨選択対応）
+ * チェックアウトセッション作成(通貨選択対応)
  */
 async function createCheckoutSession(userId, email, currency = 'btc') {
     try {
@@ -30,7 +30,7 @@ async function createCheckoutSession(userId, email, currency = 'btc') {
 }
 
 /**
- * ユーザーのサブスクリプション状態確認（有効期限チェック付き）
+ * ユーザーのサブスクリプション状態確認(有効期限チェック付き)
  */
 async function checkUserSubscription(supabase, userId) {
     try {
@@ -45,7 +45,6 @@ async function checkUserSubscription(supabase, userId) {
             return { isSubscribed: false, error };
         }
 
-        // 有効期限チェック
         const now = new Date();
         const expiresAt = data.subscription_expires_at ? new Date(data.subscription_expires_at) : null;
 
@@ -54,12 +53,9 @@ async function checkUserSubscription(supabase, userId) {
 
         if (data.subscription_status === 'active' && expiresAt) {
             if (expiresAt > now) {
-                // 有効期限内
                 isSubscribed = true;
             } else {
-                // 期限切れ
                 isExpired = true;
-                // サーバー側で無効化
                 await expireUserSubscription(supabase, userId);
             }
         }

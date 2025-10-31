@@ -145,7 +145,6 @@ class AuthManager {
         const checkoutButton = document.getElementById('checkout-button');
         if (checkoutButton) {
             if (this.isAuthenticated) {
-                // 有効期限チェック付きのサブスクリプション確認
                 const { isSubscribed, isExpired, expiresAt } = await checkUserSubscription(
                     this.supabase, 
                     user.id
@@ -157,7 +156,6 @@ class AuthManager {
                     checkoutButton.style.display = 'block';
                 } else if (isSubscribed) {
                     checkoutButton.style.display = 'none';
-                    // 有効期限を表示
                     this.displayExpiryInfo(expiresAt);
                 } else {
                     checkoutButton.textContent = 'サブスクに登録する';
@@ -263,7 +261,6 @@ function showSubscriptionSection(message = null) {
     document.getElementById('subscriptionSection').classList.remove('hidden');
     document.getElementById('verificationSection').classList.add('hidden');
     
-    // カスタムメッセージがあれば表示
     if (message) {
         const descElement = document.getElementById('subscriptionDescription');
         if (descElement) {

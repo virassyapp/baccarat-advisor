@@ -1,6 +1,9 @@
-// /public/assets/js/main.js
+// /public/assets/js/main.js - Part 1/3
 
+// ========================================
 // グローバル変数
+// ========================================
+
 let currentLanguage = 'ja';
 let currentCurrency = 'JPY';
 let history = [];
@@ -8,14 +11,14 @@ let bankroll = CURRENCIES[currentCurrency].initialFunds;
 let initialBankroll = CURRENCIES[currentCurrency].initialFunds;
 let bankrollHistory = [{ round: 0, amount: CURRENCIES[currentCurrency].initialFunds }];
 
-// 🆕 動的に計算されるベット額
-let maxMartingaleLevels = 8; // 8マーチンまで対応
+// マーチンゲール設定
+let maxMartingaleLevels = 8;
 let initialBetAmount = calculateMartingaleBet(initialBankroll, maxMartingaleLevels);
 let betAmount = initialBetAmount;
 
 let patternVerified = false;
 let verificationCount = 0;
-let consecutiveLosses = 0; // 現在のマーチンレベルとして使用
+let consecutiveLosses = 0;
 let martingaleActive = false;
 let tiePending = false;
 let suspendBetting = false;
@@ -34,9 +37,29 @@ let sessionEnded = false;
 let lossLimitPercentage = 20;
 let lossLimitAmount = initialBankroll * (lossLimitPercentage / 100);
 
-// 通貨フォーマット（修正版）
+// 統計情報
+let statistics = {
+    totalGames: 0,
+    wins: 0,
+    losses: 0,
+    ties: 0,
+    martingaleLevelSum: 0,
+    maxMartingaleReachedCount: 0,
+    gameResults: []
+};
+
+// カスタマイズ設定
+let betAmountMode = 'auto';
+let manualBetAmount = null;
+
+// テーマ設定
+let currentTheme = localStorage.getItem('theme') || 'dark';
+
+// ========================================
+// 通貨フォーマット
+// ========================================
+
 function formatCurrency(amount, currency) {
-    // デフォルト引数を使用
     const currencyCode = currency || currentCurrency;
     const currencyConfig = CURRENCIES[currencyCode];
     
@@ -44,12 +67,10 @@ function formatCurrency(amount, currency) {
         return amount.toLocaleString();
     }
     
-    // 暗号通貨の場合
     if (currencyConfig.isCrypto) {
         return `${currencyConfig.symbol}${amount.toFixed(currencyConfig.decimals)}`;
     }
     
-    // 法定通貨の場合
     try {
         return new Intl.NumberFormat('ja-JP', {
             style: 'currency',
@@ -58,17 +79,22 @@ function formatCurrency(amount, currency) {
             maximumFractionDigits: 0
         }).format(amount);
     } catch (error) {
-        // フォールバック
         return `${currencyConfig.symbol}${amount.toLocaleString()}`;
     }
 }
 
+// ========================================
 // 翻訳取得
+// ========================================
+
 function t(key) {
     return getTranslation(key, currentLanguage);
 }
 
+// ========================================
 // UI更新
+// ========================================
+
 function updateUIText() {
     document.getElementById('appTitle').textContent = t('title');
     document.getElementById('currentFundsLabel').textContent = t('currentFunds') + ':';
@@ -77,7 +103,6 @@ function updateUIText() {
             ['ja', 'en', 'es', 'zh', 'ko', 'fr'].indexOf(currentLanguage)
         ];
     
-    const currency = CURRENCIES[currentCurrency];
     document.getElementById('headerCurrencyLabel').textContent = 
         getCurrencyName(currentCurrency, currentLanguage);
     
@@ -109,6 +134,18 @@ function updateUIText() {
     document.getElementById('chartPlaceholder').textContent = t('chartPlaceholder');
     document.getElementById('rulesBtn').textContent = t('rulesButton');
     
+    // 統計セクション
+    document.getElementById('statisticsTitle').textContent = t('statistics');
+    document.getElementById('winRateLabel').textContent = t('winRate');
+    document.getElementById('totalGamesLabel').textContent = t('totalGames');
+    document.getElementById('winsLabel').textContent = t('wins');
+    document.getElementById('lossesLabel').textContent = t('losses');
+    document.getElementById('tiesLabel').textContent = t('ties');
+    document.getElementById('avgMartingaleLabel').textContent = t('avgMartingaleLevel') + ':';
+    document.getElementById('maxMartingaleReachedLabel').textContent = t('maxMartingaleReachedCount') + ':';
+    document.getElementById('maxMartingaleReachedUnit').textContent = t('times');
+    document.getElementById('sessionProfitLabel').textContent = t('sessionProfit');
+    
     // 設定モーダル
     document.getElementById('currencySectionTitle').textContent = t('currencySection');
     document.getElementById('languageSectionTitle').textContent = t('languageSection');
@@ -123,6 +160,18 @@ function updateUIText() {
     document.getElementById('cancelText').textContent = t('cancel');
     document.getElementById('noLimitText').textContent = `0% (${t('unlimited')})`;
     
+    // テーマセクション
+    document.getElementById('themeSectionTitle').textContent = t('themeSection');
+    document.getElementById('darkModeText').textContent = t('darkMode');
+    document.getElementById('lightModeText').textContent = t('lightMode');
+    
+    // 高度な設定
+    document.getElementById('maxMartingaleLevelLabel').textContent = t('maxMartingaleLevelSetting');
+    document.getElementById('betAmountModeLabel').textContent = t('betAmountMode');
+    document.getElementById('autoCalculateText').textContent = t('autoCalculate');
+    document.getElementById('manualSetText').textContent = t('manualSet');
+    document.getElementById('customBetAmountLabel').textContent = t('customBetAmount');
+    
     updateDisplay();
 }
 
@@ -130,7 +179,6 @@ function updateDisplay() {
     document.getElementById('fundsAmount').textContent = formatCurrency(bankroll);
     document.getElementById('currentBetAmount').textContent = formatCurrency(betAmount);
     
-    // 🆕 マーチンレベルの表示
     const martingaleLevelText = consecutiveLosses > 0 ? 
         ` (${consecutiveLosses}${t('martingaleStage')})` : '';
     document.getElementById('consecutiveLossesCount').textContent = 
@@ -145,7 +193,6 @@ function updateDisplay() {
     updateChart();
 }
 
-// 🆕 改善されたベット提案テキスト
 function getSuggestionText() {
     if (sessionEnded) return t('sessionEnded');
     if (isPaused) return t('paused');
@@ -162,8 +209,6 @@ function getSuggestionText() {
     const suggestedBet = getSuggestedBet();
     if (suggestedBet) {
         const betStatus = martingaleActive ? t('martingaleContinue') : t('newBet');
-        
-        // 🆕 マーチンレベル表示
         const martingaleLevel = consecutiveLosses > 0 ? 
             ` [${consecutiveLosses + 1}${t('martingaleStage')}]` : '';
         
@@ -257,6 +302,58 @@ function updateRiskDisplay() {
         riskLevelElement.className = 'risk-level risk-safe';
     }
 }
+// /public/assets/js/main.js - Part 2/3
+
+// ========================================
+// 統計機能
+// ========================================
+
+function calculateStatistics() {
+    const nonTieGames = history.filter(r => r.winner !== t('tie'));
+    const tieGames = history.filter(r => r.winner === t('tie'));
+    
+    statistics.totalGames = history.length;
+    statistics.ties = tieGames.length;
+    
+    return statistics;
+}
+
+function getWinRate() {
+    if (statistics.wins + statistics.losses === 0) return 0;
+    return (statistics.wins / (statistics.wins + statistics.losses) * 100).toFixed(1);
+}
+
+function getAverageMartingaleLevel() {
+    if (statistics.totalGames === 0) return 0;
+    return (statistics.martingaleLevelSum / Math.max(statistics.wins + statistics.losses, 1)).toFixed(2);
+}
+
+function getSessionProfit() {
+    return bankroll - initialBankroll;
+}
+
+function updateStatisticsDisplay() {
+    const winRate = getWinRate();
+    const avgMartingale = getAverageMartingaleLevel();
+    const sessionProfit = getSessionProfit();
+    
+    document.getElementById('winRateValue').textContent = winRate + '%';
+    document.getElementById('totalGamesValue').textContent = statistics.totalGames;
+    document.getElementById('winsValue').textContent = statistics.wins;
+    document.getElementById('lossesValue').textContent = statistics.losses;
+    document.getElementById('tiesValue').textContent = statistics.ties;
+    document.getElementById('avgMartingaleValue').textContent = avgMartingale;
+    document.getElementById('maxMartingaleReachedValue').textContent = statistics.maxMartingaleReachedCount;
+    
+    const profitElement = document.getElementById('sessionProfitValue');
+    profitElement.textContent = formatCurrency(sessionProfit);
+    profitElement.style.color = sessionProfit >= 0 ? '#10b981' : '#ef4444';
+    profitElement.className = sessionProfit >= 0 ? 'profit-positive' : 'profit-negative';
+}
+
+// ========================================
+// 履歴・チャート更新
+// ========================================
 
 function refreshHistory() {
     const container = document.getElementById("historyContainer");
@@ -312,11 +409,9 @@ function updateChart() {
     const adjustedMax = maxAmount + amountRange * 0.1;
     const adjustedRange = adjustedMax - adjustedMin;
     
-    // 背景
     ctx.fillStyle = 'rgba(55, 65, 81, 0.8)';
     ctx.fillRect(0, 0, rect.width, rect.height);
     
-    // グリッド線
     ctx.strokeStyle = '#4b5563';
     ctx.lineWidth = 1;
     
@@ -328,7 +423,6 @@ function updateChart() {
         ctx.lineTo(padding + chartWidth, y);
         ctx.stroke();
         
-        // Y軸ラベル
         const value = adjustedMax - (adjustedRange / gridLines) * i;
         ctx.fillStyle = '#9ca3af';
         ctx.font = '12px sans-serif';
@@ -336,7 +430,6 @@ function updateChart() {
         ctx.fillText(formatChartLabel(Math.round(value), currentCurrency), padding - 10, y + 4);
     }
     
-    // 初期資金ライン
     const initialY = padding + chartHeight - ((initialBankroll - adjustedMin) / adjustedRange) * chartHeight;
     ctx.strokeStyle = '#6366f1';
     ctx.lineWidth = 2;
@@ -347,7 +440,6 @@ function updateChart() {
     ctx.stroke();
     ctx.setLineDash([]);
     
-    // データライン
     ctx.strokeStyle = '#10b981';
     ctx.lineWidth = 3;
     ctx.beginPath();
@@ -365,7 +457,6 @@ function updateChart() {
     
     ctx.stroke();
     
-    // データポイント
     bankrollHistory.forEach((point, index) => {
         const x = padding + (chartWidth / (bankrollHistory.length - 1)) * index;
         const y = padding + chartHeight - ((point.amount - adjustedMin) / adjustedRange) * chartHeight;
@@ -380,7 +471,6 @@ function updateChart() {
         ctx.stroke();
     });
     
-    // X軸ラベル
     ctx.fillStyle = '#9ca3af';
     ctx.font = '12px sans-serif';
     ctx.textAlign = 'center';
@@ -393,6 +483,10 @@ function updateChart() {
         }
     });
 }
+
+// ========================================
+// スコアボタン設定
+// ========================================
 
 function setupScoreButtons() {
     document.querySelectorAll('[data-player]').forEach(btn => {
@@ -427,6 +521,10 @@ function checkAutoCalculate() {
         }, 100);
     }
 }
+
+// ========================================
+// 結果計算とパターン検証
+// ========================================
 
 function calculateResult() {
     if (sessionEnded || isPaused) return;
@@ -562,31 +660,39 @@ function verifyPattern(currentHistory) {
     return { isVerified: false };
 }
 
-// 🆕 改善されたベット結果適用関数
+// ========================================
+// ベット結果適用（統計記録付き）
+// ========================================
+
 function applyBetResultAuto(result) {
+    statistics.martingaleLevelSum += consecutiveLosses;
+    
     if (result === 'win') {
-        bankroll += betAmount;
-        betAmount = initialBetAmount; // 初期ベット額にリセット
-        consecutiveLosses = 0; // マーチンレベルをリセット
-        martingaleActive = false;
-        patternVerified = false;
-        verificationCount = 0;
-    } else if (result === 'lose') {
-        bankroll -= betAmount;
-        consecutiveLosses += 1; // マーチンレベルを増加
+        statistics.wins += 1;
+        statistics.gameResults.push({ result: 'win', level: consecutiveLosses, amount: betAmount });
         
-        // 🆕 最大マーチンレベルチェック
+        bankroll += betAmount;
+        betAmount = betAmountMode === 'auto' ? initialBetAmount : manualBetAmount;
+        consecutiveLosses = 0;
+        martingaleActive = false;
+        
+    } else if (result === 'lose') {
+        statistics.losses += 1;
+        statistics.gameResults.push({ result: 'lose', level: consecutiveLosses, amount: betAmount });
+        
+        bankroll -= betAmount;
+        consecutiveLosses += 1;
+        
         if (consecutiveLosses >= maxMartingaleLevels) {
-            // 8マーチン失敗したらリセット
-            betAmount = initialBetAmount;
+            statistics.maxMartingaleReachedCount += 1;
+            
+            betAmount = betAmountMode === 'auto' ? initialBetAmount : manualBetAmount;
             consecutiveLosses = 0;
             martingaleActive = false;
-            patternVerified = false;
-            verificationCount = 0;
             
             alert(`${maxMartingaleLevels}${t('martingaleStage')}${t('maxMartingaleReached')}`);
         } else {
-            betAmount *= 2; // 次のマーチンレベルへ
+            betAmount *= 2;
             martingaleActive = true;
         }
     }
@@ -596,6 +702,7 @@ function applyBetResultAuto(result) {
         amount: bankroll 
     });
     
+    updateStatisticsDisplay();
     checkRiskManagement();
 }
 
@@ -607,6 +714,12 @@ function checkRiskManagement() {
         endSession();
     }
 }
+
+// /public/assets/js/main.js - Part 3/3
+
+// ========================================
+// セッション管理
+// ========================================
 
 function pauseSession() {
     isPaused = true;
@@ -636,7 +749,6 @@ function endSession() {
     updateDisplay();
 }
 
-// 🆕 改善されたリセット関数
 function resetAll() {
     if (!sessionEnded && !confirm(t('confirmReset'))) return;
     
@@ -644,8 +756,9 @@ function resetAll() {
     bankroll = initialBankroll;
     bankrollHistory = [{ round: 0, amount: initialBankroll }];
     
-    // 🆕 初期ベット額を再計算
-    initialBetAmount = calculateMartingaleBet(initialBankroll, maxMartingaleLevels);
+    initialBetAmount = betAmountMode === 'auto' 
+        ? calculateMartingaleBet(initialBankroll, maxMartingaleLevels)
+        : manualBetAmount;
     betAmount = initialBetAmount;
     
     patternVerified = false;
@@ -662,6 +775,16 @@ function resetAll() {
     isPaused = false;
     sessionEnded = false;
     
+    statistics = {
+        totalGames: 0,
+        wins: 0,
+        losses: 0,
+        ties: 0,
+        martingaleLevelSum: 0,
+        maxMartingaleReachedCount: 0,
+        gameResults: []
+    };
+    
     lossLimitAmount = initialBankroll * (lossLimitPercentage / 100);
     
     document.querySelectorAll('.score-btn.selected').forEach(btn => {
@@ -671,17 +794,18 @@ function resetAll() {
     document.getElementById('pauseOverlay').classList.add('hidden');
     
     updateDisplay();
+    updateStatisticsDisplay();
 }
 
-// 🆕 改善された通貨設定関数
 function setCurrency(currencyCode) {
     currentCurrency = currencyCode;
     const currency = CURRENCIES[currencyCode];
     
     initialBankroll = currency.initialFunds;
     
-    // 🆕 初期ベット額を再計算
-    initialBetAmount = calculateMartingaleBet(initialBankroll, maxMartingaleLevels);
+    if (betAmountMode === 'auto') {
+        initialBetAmount = calculateMartingaleBet(initialBankroll, maxMartingaleLevels);
+    }
     
     resetAll();
     
@@ -689,7 +813,70 @@ function setCurrency(currencyCode) {
     updateDisplay();
 }
 
+// ========================================
+// カスタマイズ機能
+// ========================================
+
+function toggleBetAmountMode() {
+    const mode = document.querySelector('input[name="betAmountMode"]:checked').value;
+    betAmountMode = mode;
+    
+    const manualInput = document.getElementById('manualBetAmountInput');
+    const manualGroup = document.getElementById('manualBetAmountGroup');
+    
+    if (mode === 'manual') {
+        manualGroup.classList.remove('hidden');
+        manualBetAmount = parseInt(manualInput.value) || initialBetAmount;
+        betAmount = manualBetAmount;
+    } else {
+        manualGroup.classList.add('hidden');
+        betAmount = calculateMartingaleBet(initialBankroll, maxMartingaleLevels);
+        initialBetAmount = betAmount;
+    }
+    
+    updateDisplay();
+}
+
+function updateMaxMartingaleLevel() {
+    const newLevel = parseInt(document.getElementById('maxMartingaleLevelInput').value);
+    if (newLevel >= 1 && newLevel <= 10) {
+        maxMartingaleLevels = newLevel;
+        
+        if (betAmountMode === 'auto') {
+            initialBetAmount = calculateMartingaleBet(initialBankroll, maxMartingaleLevels);
+            betAmount = initialBetAmount;
+        }
+        
+        document.getElementById('martingaleInfoText').textContent = 
+            t('martingaleInfo').replace('8', maxMartingaleLevels);
+        
+        updateDisplay();
+    }
+}
+
+// ========================================
+// テーマ切り替え
+// ========================================
+
+function setTheme(theme) {
+    currentTheme = theme;
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.getElementById(`theme-${theme}`).classList.add('active');
+}
+
+function initTheme() {
+    setTheme(currentTheme);
+}
+
+// ========================================
 // イベントリスナー設定
+// ========================================
+
 function setupEventListeners() {
     document.getElementById('calculateBtn').addEventListener('click', calculateResult);
     document.getElementById('resetBtn').addEventListener('click', resetAll);
@@ -700,13 +887,22 @@ function setupEventListeners() {
         window.location.href = 'rules.html';
     });
     
-    // 設定モーダル
     document.getElementById('settingsBtn').addEventListener('click', () => {
         document.getElementById('currencySelect').value = currentCurrency;
         document.getElementById('languageSelect').value = currentLanguage;
         document.getElementById('initialFundsInput').value = initialBankroll;
         document.getElementById('verificationCountInput').value = requiredVerifications;
         document.getElementById('lossLimitSlider').value = lossLimitPercentage;
+        document.getElementById('maxMartingaleLevelInput').value = maxMartingaleLevels;
+        
+        document.querySelector(`input[name="betAmountMode"][value="${betAmountMode}"]`).checked = true;
+        if (betAmountMode === 'manual') {
+            document.getElementById('manualBetAmountGroup').classList.remove('hidden');
+            document.getElementById('manualBetAmountInput').value = manualBetAmount || initialBetAmount;
+        } else {
+            document.getElementById('manualBetAmountGroup').classList.add('hidden');
+        }
+        
         updateLossLimitDisplay();
         document.getElementById('settingsModal').classList.remove('hidden');
     });
@@ -733,13 +929,13 @@ function setupEventListeners() {
     window.addEventListener('resize', debounce(updateChart, 100));
 }
 
-// 🆕 改善された設定適用関数
 function applySettings() {
     const newCurrency = document.getElementById('currencySelect').value;
     const newLanguage = document.getElementById('languageSelect').value;
     const newInitialBankroll = parseInt(document.getElementById('initialFundsInput').value);
     const newRequiredVerifications = parseInt(document.getElementById('verificationCountInput').value);
     const newLossLimitPercentage = parseInt(document.getElementById('lossLimitSlider').value);
+    const newMaxMartingaleLevel = parseInt(document.getElementById('maxMartingaleLevelInput').value);
     
     if (newCurrency !== currentCurrency) {
         setCurrency(newCurrency);
@@ -754,7 +950,27 @@ function applySettings() {
         bankroll = initialBankroll;
         bankrollHistory = [{ round: 0, amount: initialBankroll }];
         
-        // 🆕 初期ベット額を再計算
+        if (betAmountMode === 'auto') {
+            initialBetAmount = calculateMartingaleBet(initialBankroll, maxMartingaleLevels);
+            betAmount = initialBetAmount;
+        }
+    }
+    
+    if (newMaxMartingaleLevel !== maxMartingaleLevels) {
+        maxMartingaleLevels = newMaxMartingaleLevel;
+        if (betAmountMode === 'auto') {
+            initialBetAmount = calculateMartingaleBet(initialBankroll, maxMartingaleLevels);
+            betAmount = initialBetAmount;
+        }
+    }
+    
+    const newBetAmountMode = document.querySelector('input[name="betAmountMode"]:checked').value;
+    if (newBetAmountMode === 'manual') {
+        betAmountMode = 'manual';
+        manualBetAmount = parseInt(document.getElementById('manualBetAmountInput').value);
+        betAmount = manualBetAmount;
+    } else {
+        betAmountMode = 'auto';
         initialBetAmount = calculateMartingaleBet(initialBankroll, maxMartingaleLevels);
         betAmount = initialBetAmount;
     }
@@ -779,10 +995,15 @@ function updateLossLimitDisplay() {
     document.getElementById('sliderValuePopup').textContent = percentage + '%';
 }
 
+// ========================================
 // 初期化
+// ========================================
+
 document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
     setupScoreButtons();
     setupEventListeners();
     updateUIText();
     updateDisplay();
+    updateStatisticsDisplay();
 });
