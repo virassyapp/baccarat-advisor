@@ -691,6 +691,12 @@ function applyBetResultAuto(result) {
         betAmount = betAmountMode === 'auto' ? initialBetAmount : manualBetAmount;
         consecutiveLosses = 0;
         martingaleActive = false;
+
+                // ↓↓↓ ここから追加 ↓↓↓
+        // 勝利後、パターン検証をリセット
+        //patternVerified = false;
+        //verificationCount = 0;
+        // ↑↑↑ ここまで追加 ↑↑↑
         
     } else if (result === 'lose') {
         statistics.losses += 1;
