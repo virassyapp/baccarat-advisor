@@ -154,6 +154,15 @@ function updateUIText() {
     document.getElementById('chartPlaceholder').textContent = t('chartPlaceholder');
     document.getElementById('rulesBtn').textContent = t('rulesButton');
     
+    // 設定モーダルタイトル
+    const settingsTitle = document.querySelector('.settings-title');
+    if (settingsTitle) {
+        settingsTitle.innerHTML = '⚙️ ' + t('settings');
+    }
+    
+    // 統計セクション
+    document.getElementById('statisticsTitle').textContent = t('statistics');
+    
     // 統計セクション
     document.getElementById('statisticsTitle').textContent = t('statistics');
     document.getElementById('winRateLabel').textContent = t('winRate');
@@ -168,6 +177,7 @@ function updateUIText() {
     
     // 設定モーダル
     document.getElementById('currencySectionTitle').textContent = t('currencySection');
+    document.getElementById('currencyLabel').textContent = t('currency');
     document.getElementById('languageSectionTitle').textContent = t('languageSection');
     document.getElementById('languageLabel').textContent = t('language');
     document.getElementById('fundsSectionTitle').textContent = t('fundsSection');
