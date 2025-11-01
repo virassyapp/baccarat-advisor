@@ -193,9 +193,13 @@ function updateDisplay() {
     updateTieStatus();
     updateRiskDisplay();
     refreshHistory();
-    updateChart();
+    
+    // チャートコンテナが表示されている場合のみ更新
+    const chartContainer = document.getElementById('chartContainer');
+    if (chartContainer && chartContainer.offsetParent !== null) {
+        updateChart();
+    }
 }
-
 function getSuggestionText() {
     if (sessionEnded) return t('sessionEnded');
     if (isPaused) return t('paused');
@@ -392,7 +396,16 @@ function updateChart() {
     canvas.style.display = 'block';
     
     const ctx = canvas.getContext('2d');
-    const rect = canvas.getBoundingClientRect();
+    
+    // キャンバスの親要素から実際のサイズを取得
+    const container = canvas.parentElement;
+    const rect = container.getBoundingClientRect();
+    
+    // 親要素が非表示の場合は描画をスキップ
+    if (rect.width === 0 || rect.height === 0) {
+        return;
+    }
+    
     canvas.width = rect.width * window.devicePixelRatio;
     canvas.height = rect.height * window.devicePixelRatio;
     canvas.style.width = rect.width + 'px';
@@ -1122,6 +1135,15 @@ function switchMobileTab(tabName) {
     } else if (resetBtn && tabName !== 'game') {
         resetBtn.style.display = 'none';
     }
+    
+    // ↓↓↓ ここから追加 ↓↓↓
+    // チャートタブに切り替えた時、チャートを再描画
+    if (tabName === 'chart') {
+        setTimeout(() => {
+            updateChart();
+        }, 100);
+    }
+    // ↑↑↑ ここまで追加 ↑↑↑
 }
 
 // ウィンドウリサイズ時の処理
