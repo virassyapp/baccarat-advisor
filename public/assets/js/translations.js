@@ -110,6 +110,11 @@ const translations = {
         mobileTabGame: "ゲーム",
         mobileTabStats: "統計",
         mobileTabChart: "履歴",
+
+        // 設定モーダル追加
+        advancedStrategyTitle: "高度な戦略設定",
+        recommendedStages: "推奨: 8 段階",
+        betAmountHint: "初回ベット額を直接指定",
     },
 
     en: {
@@ -221,6 +226,11 @@ const translations = {
         mobileTabGame: "Game",
         mobileTabStats: "Stats",
         mobileTabChart: "History",
+
+        // Settings Modal
+        advancedStrategyTitle: "Advanced Strategy Settings",
+        recommendedStages: "Recommended: 8 stages",
+        betAmountHint: "Directly specify initial bet amount",
     },
     es: {
         title: "Asesor de Estrategia Baccarat",
@@ -327,6 +337,11 @@ const translations = {
         mobileTabGame: "Juego",
         mobileTabStats: "Estadísticas",
         mobileTabChart: "Historial",
+        
+        advancedStrategyTitle: "Configuración de Estrategia Avanzada",
+        recommendedStages: "Recomendado: 8 etapas",
+        betAmountHint: "Especificar directamente el monto de apuesta inicial",
+
     },
     zh: {
         title: "百家乐策略顾问",
@@ -433,6 +448,10 @@ const translations = {
         mobileTabGame: "游戏",
         mobileTabStats: "统计",
         mobileTabChart: "历史",
+
+        advancedStrategyTitle: "高级策略设置",
+        recommendedStages: "推荐: 8 阶段",
+        betAmountHint: "直接指定初始投注额",
     },
     ko: {
         title: "바카라 전략 어드바이저",
@@ -539,6 +558,10 @@ const translations = {
         mobileTabGame: "게임",
         mobileTabStats: "통계",
         mobileTabChart: "히스토리",
+
+        advancedStrategyTitle: "고급 전략 설정",
+        recommendedStages: "권장: 8 단계",
+        betAmountHint: "초기 베팅 금액 직접 지정",
     },
     fr: {
         title: "Conseiller de Stratégie Baccarat",
@@ -645,6 +668,10 @@ const translations = {
         mobileTabGame: "Jeu",
         mobileTabStats: "Statistiques",
         mobileTabChart: "Historique",
+
+        advancedStrategyTitle: "Paramètres de Stratégie Avancée",
+        recommendedStages: "Recommandé: 8 étapes",
+        betAmountHint: "Spécifier directement le montant de pari initial",
     }
 };
 

@@ -59,6 +59,26 @@ let currentTheme = localStorage.getItem('theme') || 'dark';
 // 通貨フォーマット
 // ========================================
 
+function updateCurrencyOptions() {
+    const currencySelect = document.getElementById('currencySelect');
+    if (!currencySelect) return;
+    
+    const currencies = [
+        { code: 'JPY', flag: '🇯🇵' },
+        { code: 'USD', flag: '🇺🇸' },
+        { code: 'EUR', flag: '🇪🇺' },
+        { code: 'KRW', flag: '🇰🇷' },
+        { code: 'CNY', flag: '🇨🇳' }
+    ];
+    
+    currencies.forEach((currency, index) => {
+        const option = currencySelect.options[index];
+        if (option) {
+            option.textContent = `${currency.flag} ${getCurrencyName(currency.code, currentLanguage)}`;
+        }
+    });
+}
+
 function formatCurrency(amount, currency) {
     const currencyCode = currency || currentCurrency;
     const currencyConfig = CURRENCIES[currencyCode];
@@ -166,11 +186,27 @@ function updateUIText() {
     document.getElementById('lightModeText').textContent = t('lightMode');
     
     // 高度な設定
+    const advancedTitle = document.getElementById('advancedStrategyTitle');
+    if (advancedTitle) advancedTitle.textContent = t('advancedStrategyTitle');
     document.getElementById('maxMartingaleLevelLabel').textContent = t('maxMartingaleLevelSetting');
     document.getElementById('betAmountModeLabel').textContent = t('betAmountMode');
     document.getElementById('autoCalculateText').textContent = t('autoCalculate');
     document.getElementById('manualSetText').textContent = t('manualSet');
     document.getElementById('customBetAmountLabel').textContent = t('customBetAmount');
+    
+    // マーチンゲールレベルのヒントテキストを更新
+    const martingaleHint = document.querySelector('#maxMartingaleLevelInput + .input-hint');
+    if (martingaleHint) {
+        martingaleHint.textContent = t('recommendedStages');
+    }
+    
+    // ベット額のヒントテキストを更新
+    const betHint = document.querySelector('#manualBetAmountInput + .input-hint');
+    if (betHint) {
+        betHint.textContent = t('betAmountHint');
+    }
+    
+    // 通貨セレクトオプションの更新
     
     updateDisplay();
     
