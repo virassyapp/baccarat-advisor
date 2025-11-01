@@ -1439,124 +1439,187 @@
    ============================================ */
 
 /* ============================================
-   ライトモード - 視認性大幅改善
+   ライトモード - 視認性大幅改善版
+   全てのテキストを濃く、読みやすく
    ============================================ */
 
    [data-theme="light"] {
     --bg-primary: #ffffff;
     --bg-secondary: #f8fafc;
     --bg-card: #ffffff;
-    --text-primary: #0f172a;
-    --text-secondary: #475569;
-    --text-tertiary: #64748b;
+    --text-primary: #0a0f1a;
+    --text-secondary: #1e293b;
+    --text-tertiary: #334155;
     --border-color: #cbd5e1;
     --accent-color: #2563eb;
 }
 
 [data-theme="light"] body {
-    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-    color: #0f172a;
+    background: linear-gradient(135deg, #e0e7ff 0%, #dbeafe 100%);
+    color: #0a0f1a;
 }
 
+/* ============================================
+   ヘッダー
+   ============================================ */
+
 [data-theme="light"] .header {
-    background: rgba(255, 255, 255, 0.98);
-    border-bottom: 2px solid #e2e8f0;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid #cbd5e1;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
 }
 
 [data-theme="light"] .title {
-    color: #0f172a;
-    font-weight: 700;
+    color: #0a0f1a;
+    font-weight: 800;
+    text-shadow: none;
 }
 
-[data-theme="light"] .card {
-    background: #ffffff;
-    border: 2px solid #e2e8f0;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-    color: #0f172a;
-}
-
-[data-theme="light"] .card-title {
-    color: #0f172a;
-    font-weight: 700;
-    border-bottom: 2px solid #e2e8f0;
-}
-
-/* スコアボタン */
-[data-theme="light"] .score-btn {
-    background: rgba(59, 130, 246, 0.08);
-    border: 2px solid rgba(59, 130, 246, 0.3);
-    color: #1e40af;
+[data-theme="light"] .current-selector {
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid #cbd5e1;
+    color: #1e293b;
     font-weight: 600;
 }
 
-[data-theme="light"] .score-btn:hover {
-    background: rgba(59, 130, 246, 0.15);
+[data-theme="light"] .current-selector:hover {
+    background: white;
     border-color: #3b82f6;
-    transform: translateY(-2px);
+    color: #1e40af;
+}
+
+[data-theme="light"] .funds-display {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%);
+    border: 2px solid #cbd5e1;
+}
+
+[data-theme="light"] .funds-amount {
+    color: #059669;
+    font-weight: 800;
+    text-shadow: none;
+}
+
+[data-theme="light"] #currentFundsLabel {
+    color: #1e293b;
+    font-weight: 700;
+}
+
+[data-theme="light"] .settings-button {
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid #cbd5e1;
+    color: #1e293b;
+    font-weight: 600;
+}
+
+[data-theme="light"] .settings-button:hover {
+    background: white;
+    border-color: #3b82f6;
+    color: #1e40af;
+}
+
+/* ============================================
+   カード
+   ============================================ */
+
+[data-theme="light"] .card {
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    color: #0a0f1a;
+}
+
+[data-theme="light"] .card:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    border-color: #94a3b8;
+}
+
+[data-theme="light"] .card-title {
+    color: #0a0f1a;
+    font-weight: 800;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+/* ============================================
+   スコアボタン
+   ============================================ */
+
+[data-theme="light"] .score-btn {
+    background: rgba(59, 130, 246, 0.1);
+    border: 2px solid #3b82f6;
+    color: #1e40af;
+    font-weight: 700;
+}
+
+[data-theme="light"] .score-btn:hover {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: #2563eb;
+    color: #1e3a8a;
 }
 
 [data-theme="light"] .score-btn.selected {
     background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
     color: white;
     border-color: #1d4ed8;
-    font-weight: 700;
+    font-weight: 800;
 }
 
 [data-theme="light"] .score-label {
-    color: #0f172a;
-    font-weight: 600;
+    color: #0a0f1a;
+    font-weight: 700;
 }
 
-/* 統計カード */
+/* ============================================
+   統計カード
+   ============================================ */
+
 [data-theme="light"] .statistics-card {
     background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-    border: 2px solid #93c5fd;
+    border: 2px solid #60a5fa;
 }
 
 [data-theme="light"] .stat-highlight {
     background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
 }
 
 [data-theme="light"] .stat-highlight .stat-label {
     color: #dbeafe;
-    font-weight: 600;
+    font-weight: 700;
 }
 
 [data-theme="light"] .stat-highlight .stat-value {
     color: #ffffff;
-    font-weight: 800;
+    font-weight: 900;
 }
 
 [data-theme="light"] .stat-item {
-    background: rgba(255, 255, 255, 0.7);
-    border: 2px solid rgba(59, 130, 246, 0.2);
+    background: rgba(255, 255, 255, 0.8);
+    border: 2px solid rgba(59, 130, 246, 0.3);
 }
 
 [data-theme="light"] .stat-item .stat-label {
-    color: #475569;
-    font-weight: 600;
+    color: #1e293b;
+    font-weight: 700;
 }
 
 [data-theme="light"] .stat-item .stat-value {
-    color: #0f172a;
-    font-weight: 700;
+    color: #0a0f1a;
+    font-weight: 800;
 }
 
 [data-theme="light"] .martingale-stats {
-    background: rgba(251, 191, 36, 0.15);
-    border: 2px solid rgba(251, 191, 36, 0.4);
+    background: rgba(251, 191, 36, 0.2);
+    border: 2px solid rgba(251, 191, 36, 0.5);
 }
 
 [data-theme="light"] .stat-row {
-    color: #0f172a;
-    font-weight: 600;
+    color: #0a0f1a;
+    font-weight: 700;
 }
 
 [data-theme="light"] .stat-value-inline {
-    color: #d97706;
-    font-weight: 700;
+    color: #b45309;
+    font-weight: 800;
 }
 
 [data-theme="light"] .session-profit {
@@ -1565,825 +1628,428 @@
 
 [data-theme="light"] .profit-label {
     color: #d1fae5;
-    font-weight: 600;
+    font-weight: 700;
 }
 
-/* ボタン */
+[data-theme="light"] .profit-value {
+    color: #ffffff;
+    font-weight: 900;
+}
+
+/* ============================================
+   ボタン
+   ============================================ */
+
 [data-theme="light"] .button {
     background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
     color: white;
-    font-weight: 600;
+    font-weight: 700;
 }
 
 [data-theme="light"] .calculate-btn {
     background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
     color: white;
-    font-weight: 600;
-}
-
-/* マーチンゲール表示 */
-[data-theme="light"] .martingale-level-display {
-    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-    border: 2px solid #60a5fa;
-}
-
-[data-theme="light"] .martingale-counter {
-    background: rgba(245, 158, 11, 0.2);
-    border-color: rgba(245, 158, 11, 0.5);
-    color: #b45309;
     font-weight: 700;
 }
 
+/* ============================================
+   マーチンゲール表示
+   ============================================ */
+
+[data-theme="light"] .martingale-level-display {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border: 2px solid #3b82f6;
+}
+
+[data-theme="light"] .martingale-counter {
+    background: rgba(245, 158, 11, 0.25);
+    border-color: rgba(245, 158, 11, 0.6);
+    color: #92400e;
+    font-weight: 800;
+}
+
 [data-theme="light"] .martingale-info {
-    color: #475569;
-    font-weight: 600;
+    color: #1e293b;
+    font-weight: 700;
 }
 
 [data-theme="light"] .suggestion-box {
     background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    border-color: #60a5fa;
+    border-color: #3b82f6;
 }
 
 [data-theme="light"] .suggestion-text {
     color: white;
+    font-weight: 800;
+}
+
+/* ============================================
+   ステータスバッジ
+   ============================================ */
+
+[data-theme="light"] .status-badge {
     font-weight: 700;
 }
 
-/* ステータスバッジ */
-[data-theme="light"] .status-badge {
-    font-weight: 600;
+[data-theme="light"] .status-verified {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(5, 150, 105, 0.3));
+    color: #065f46;
+    font-weight: 800;
 }
 
-/* リスク表示 */
+[data-theme="light"] .status-verifying {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.3), rgba(217, 119, 6, 0.3));
+    color: #92400e;
+    font-weight: 800;
+}
+
+[data-theme="light"] .status-active {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(220, 38, 38, 0.3));
+    color: #991b1b;
+    font-weight: 800;
+}
+
+[data-theme="light"] .status-inactive {
+    background: linear-gradient(135deg, rgba(107, 114, 128, 0.3), rgba(75, 85, 99, 0.3));
+    color: #374151;
+    font-weight: 800;
+}
+
+[data-theme="light"] .status-item {
+    color: #0a0f1a;
+    font-weight: 700;
+}
+
+/* ============================================
+   リスク表示
+   ============================================ */
+
+[data-theme="light"] .risk-card {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.15) 100%);
+    border: 2px solid rgba(239, 68, 68, 0.4);
+}
+
 [data-theme="light"] .risk-label {
-    color: #0f172a;
-    font-weight: 600;
+    color: #0a0f1a;
+    font-weight: 700;
 }
 
 [data-theme="light"] .risk-value {
-    color: #0f172a;
-    font-weight: 700;
+    color: #0a0f1a;
+    font-weight: 800;
 }
 
-/* 設定項目 */
-[data-theme="light"] .input-label {
-    color: #0f172a;
-    font-weight: 600;
-}
-
-[data-theme="light"] .input-field,
-[data-theme="light"] .select-field {
-    background: white;
-    border: 2px solid #cbd5e1;
-    color: #0f172a;
-    font-weight: 500;
-}
-
-[data-theme="light"] .input-hint {
-    color: #64748b;
-    font-weight: 500;
+[data-theme="light"] .risk-item {
+    background: rgba(255, 255, 255, 0.8);
+    border: 2px solid rgba(59, 130, 246, 0.3);
 }
 
 /* ============================================
-   モバイル最適化 - コンパクトレイアウト
+   設定モーダル
    ============================================ */
 
-@media (max-width: 768px) {
-    /* ヘッダーをコンパクトに */
-    .header {
-        padding: 10px 0;
-    }
-    
-    .header-content {
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    .header-content > div {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    
-    .title {
-        font-size: 1.3em;
-    }
-    
-    .settings-button {
-        padding: 8px 12px;
-        font-size: 0.9em;
-    }
-    
-    /* カードの余白を削減 */
-    .card {
-        padding: 15px;
-        margin-bottom: 15px;
-    }
-    
-    .card-title {
-        font-size: 1.1em;
-        margin-bottom: 12px;
-        padding-bottom: 8px;
-    }
-    
-    /* スコアグリッドをコンパクトに */
-    .score-grid {
-        grid-template-columns: repeat(5, 1fr);
-        gap: 6px;
-    }
-    
-    .score-btn {
-        padding: 12px 8px;
-        font-size: 1em;
-    }
-    
-    .score-label {
-        font-size: 0.9em;
-        margin-bottom: 8px;
-    }
-    
-    /* 統計グリッドを1列に */
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-    }
-    
-    .stat-item {
-        padding: 12px;
-    }
-    
-    .stat-highlight {
-        padding: 15px;
-        margin-bottom: 15px;
-    }
-    
-    .stat-highlight .stat-value {
-        font-size: 2em;
-    }
-    
-    /* マーチン表示をコンパクトに */
-    .martingale-level-display {
-        padding: 12px;
-    }
-    
-    .martingale-counter {
-        font-size: 1em;
-        padding: 4px 10px;
-    }
-    
-    .martingale-info {
-        font-size: 0.8em;
-    }
-    
-    .martingale-progress-bar {
-        height: 5px;
-    }
-    
-    /* ベット提案をコンパクトに */
-    .suggestion-box {
-        padding: 15px;
-    }
-    
-    .suggestion-text {
-        font-size: 1em;
-        line-height: 1.6;
-    }
-    
-    /* リスク管理をコンパクトに */
-    .risk-display {
-        grid-template-columns: 1fr;
-        gap: 10px;
-    }
-    
-    .risk-item {
-        padding: 12px;
-    }
-    
-    /* チャートコンテナ - 固定高さとオーバーフロー防止 */
-    .chart-container {
-        height: 300px;
-        min-height: 300px;
-        background: rgba(15, 20, 25, 0.4);
-        backdrop-filter: blur(15px);
-        border-radius: 18px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #6b7280;
-        position: relative;
-        overflow: hidden;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .chart-canvas {
-        width: 100%;
-        height: 100%;
-        display: block;
-        border-radius: 18px;
-    }
-
-    #chartPlaceholder {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 1;
-    }
-    
-    /* 履歴をコンパクトに */
-    .history-container {
-        max-height: 250px;
-    }
-    
-    .history-item {
-        padding: 10px;
-        font-size: 0.9em;
-    }
-    
-    /* セッション収支をコンパクトに */
-    .session-profit {
-        padding: 15px;
-    }
-    
-    .profit-value {
-        font-size: 1.5em;
-    }
-}
-
-/* ============================================
-   超小型モバイル (iPhone SE等)
-   ============================================ */
-
-@media (max-width: 480px) {
-    .container {
-        padding: 10px;
-    }
-    
-    .card {
-        padding: 12px;
-        margin-bottom: 12px;
-    }
-    
-    .card-title {
-        font-size: 1em;
-        margin-bottom: 10px;
-    }
-    
-    /* スコアボタンをさらにコンパクトに */
-    .score-btn {
-        padding: 10px 6px;
-        font-size: 0.95em;
-    }
-    
-    /* 統計を1列に */
-    .stats-grid {
-        grid-template-columns: 1fr;
-        gap: 8px;
-    }
-    
-    .stat-highlight .stat-value {
-        font-size: 1.8em;
-    }
-    
-    /* ステータス項目の文字サイズ */
-    .status-item {
-        font-size: 0.9em;
-        padding: 10px;
-    }
-    
-    /* ボタンのサイズ調整 */
-    .button {
-        padding: 12px 20px;
-        font-size: 0.95em;
-    }
-    
-    .calculate-btn {
-        padding: 12px;
-        font-size: 0.95em;
-    }
-    
-    /* チャート高さをさらに削減 */
-    .chart-container {
-        height: 200px;
-    }
-    
-    .history-container {
-        max-height: 200px;
-    }
-}
-
-/* ============================================
-   モバイル用: 2カラムを1カラムに
-   ============================================ */
-
-@media (max-width: 768px) {
-    .main-content {
-        grid-template-columns: 1fr;
-        gap: 0;
-    }
-    
-    /* 重要な情報を上に配置 */
-    .main-content > div:first-child {
-        order: 1;
-    }
-    
-    .main-content > div:last-child {
-        order: 2;
-    }
-}
-
-/* ============================================
-   アコーディオン風に折りたたみ可能（オプション）
-   ============================================ */
-
-@media (max-width: 768px) {
-    .card.collapsible .card-content {
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.3s ease;
-    }
-    
-    .card.collapsible.expanded .card-content {
-        max-height: 2000px;
-    }
-    
-    .card.collapsible .card-title {
-        cursor: pointer;
-        user-select: none;
-    }
-    
-    .card.collapsible .card-title::after {
-        content: '▼';
-        float: right;
-        transition: transform 0.3s ease;
-    }
-    
-    .card.collapsible.expanded .card-title::after {
-        transform: rotate(180deg);
-    }
-}
-
-/* ============================================
-   スクロール最適化
-   ============================================ */
-
-@media (max-width: 768px) {
-    /* スムーズスクロール */
-    html {
-        scroll-behavior: smooth;
-    }
-    
-    /* スクロールバーを細く */
-    ::-webkit-scrollbar {
-        width: 6px;
-    }
-    
-    ::-webkit-scrollbar-track {
-        background: rgba(0, 0, 0, 0.1);
-    }
-    
-    ::-webkit-scrollbar-thumb {
-        background: rgba(0, 0, 0, 0.3);
-        border-radius: 3px;
-    }
-    
-    /* オーバースクロール防止 */
-    body {
-        overscroll-behavior-y: none;
-    }
-}
-
-/* ============================================
-   タッチデバイス最適化
-   ============================================ */
-
-@media (hover: none) and (pointer: coarse) {
-    /* タップ領域を広く */
-    .score-btn {
-        min-height: 44px;
-        min-width: 44px;
-    }
-    
-    .button,
-    .calculate-btn {
-        min-height: 44px;
-    }
-    
-    .settings-button {
-        min-height: 40px;
-        min-width: 40px;
-    }
-    
-    /* タップ時のフィードバック強化 */
-    .score-btn:active,
-    .button:active {
-        transform: scale(0.95);
-    }
-}
-
-/* ============================================
-   横向き対応
-   ============================================ */
-
-@media (max-width: 768px) and (orientation: landscape) {
-    .header {
-        padding: 8px 0;
-    }
-    
-    .title {
-        font-size: 1.1em;
-    }
-    
-    .card {
-        padding: 12px;
-    }
-    
-    .chart-container,
-    .history-container {
-        height: 180px;
-    }
-}
-
-/* ============================================
-   フォント強調（視認性向上）
-   ============================================ */
-
-@media (max-width: 768px) {
-    /* 重要な数値を強調 */
-    .funds-amount,
-    #currentBetAmount,
-    .stat-value,
-    .profit-value {
-        font-weight: 800;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    }
-    
-    /* ラベルを読みやすく */
-    .stat-label,
-    .risk-label,
-    .input-label {
-        font-weight: 600;
-    }
-}
-
-/* ============================================
-   ライトモード時の影を強調（視認性向上）
-   ============================================ */
-
-[data-theme="light"] .card {
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="light"] .stat-highlight {
-    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
-}
-
-[data-theme="light"] .session-profit {
-    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
-}
-
-[data-theme="light"] .statistics-card {
-    box-shadow: 0 2px 15px rgba(59, 130, 246, 0.15);
-}
-
-/* ============================================
-   モバイルタブナビゲーション
-   components.css の末尾に追加
-   ============================================ */
-
-/* タブナビゲーション */
-.mobile-tab-nav {
-    display: none;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-    border-radius: 12px;
-    padding: 8px;
-    margin-bottom: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-}
-
-.mobile-tab-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    padding: 12px 8px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    color: #94a3b8;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 0.85em;
-    font-weight: 600;
-}
-
-.mobile-tab-btn span:first-child {
-    font-size: 1.5em;
-}
-
-.mobile-tab-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateY(-2px);
-}
-
-.mobile-tab-btn.active {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    border-color: #60a5fa;
-    color: white;
-    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
-    transform: translateY(-2px);
-}
-
-/* ライトモード用タブ */
-[data-theme="light"] .mobile-tab-nav {
-    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.15);
-}
-
-[data-theme="light"] .mobile-tab-btn {
-    background: rgba(255, 255, 255, 0.7);
-    border: 2px solid rgba(59, 130, 246, 0.2);
-    color: #475569;
-}
-
-[data-theme="light"] .mobile-tab-btn:hover {
-    background: rgba(255, 255, 255, 0.9);
-}
-
-[data-theme="light"] .mobile-tab-btn.active {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    border-color: #2563eb;
-    color: white;
-    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
-}
-
-/* モバイルでタブナビゲーションを表示 */
-@media (max-width: 768px) {
-    .mobile-tab-nav {
-        display: grid;
-    }
-    
-    /* タブコンテンツのアニメーション */
-    [data-mobile-tab] {
-        animation: fadeIn 0.3s ease;
-    }
-    
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-}
-
-/* 超小型モバイル */
-@media (max-width: 480px) {
-    .mobile-tab-nav {
-        padding: 6px;
-        gap: 6px;
-    }
-    
-    .mobile-tab-btn {
-        padding: 10px 6px;
-        font-size: 0.8em;
-    }
-    
-    .mobile-tab-btn span:first-child {
-        font-size: 1.3em;
-    }
-}
-
-/* ============================================
-   追加のモバイル最適化
-   ============================================ */
-
-/* ヘッダーの固定（オプション） */
-@media (max-width: 768px) {
-    .header {
-        position: sticky;
-        top: 0;
-        z-index: 200;
-    }
-}
-
-/* セクション間の余白最適化 */
-@media (max-width: 768px) {
-    .container {
-        padding: 8px;
-    }
-    
-    .main-content {
-        gap: 0;
-    }
-    
-    /* カード間の余白を統一 */
-    .card {
-        margin-bottom: 12px;
-    }
-    
-    .card:last-child {
-        margin-bottom: 0;
-    }
-}
-
-/* スクロールインジケーター */
-@media (max-width: 768px) {
-    .scroll-indicator {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 50px;
-        height: 50px;
-        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 1.5em;
-        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
-        cursor: pointer;
-        z-index: 1000;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-    
-    .scroll-indicator.visible {
-        opacity: 1;
-    }
-    
-    .scroll-indicator:active {
-        transform: scale(0.95);
-    }
-}
-
-/* フォーカス時のハイライト強化 */
-@media (max-width: 768px) {
-    .score-btn:focus,
-    .button:focus,
-    .mobile-tab-btn:focus {
-        outline: 3px solid #3b82f6;
-        outline-offset: 2px;
-    }
-    
-    [data-theme="light"] .score-btn:focus,
-    [data-theme="light"] .button:focus,
-    [data-theme="light"] .mobile-tab-btn:focus {
-        outline-color: #2563eb;
-    }
-}
-
-/* ============================================
-   コンパクト表示モード（さらに小さく）
-   ============================================ */
-
-@media (max-width: 768px) {
-    /* 数値表示を大きく、ラベルを小さく */
-    .stat-value {
-        font-size: 1.6em;
-    }
-    
-    .stat-label {
-        font-size: 0.85em;
-    }
-    
-    /* ステータスバッジをコンパクトに */
-    .status-badge {
-        padding: 4px 10px;
-        font-size: 0.85em;
-    }
-    
-    /* アイコンのサイズ調整 */
-    .card-title span:first-child {
-        font-size: 1.2em;
-    }
-}
-
-/* ============================================
-   ダークモード時のコントラスト向上
-   ============================================ */
-
-[data-theme="dark"] .card {
-    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-    border: 2px solid #475569;
-}
-
-[data-theme="dark"] .stat-value,
-[data-theme="dark"] .profit-value,
-[data-theme="dark"] .funds-amount {
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-/* ============================================
-   設定モーダル - ライトモード対応
-   ============================================ */
-
-   [data-theme="light"] .settings-modal {
-    background: rgba(255, 255, 255, 0.95);
+[data-theme="light"] .settings-modal {
+    background: rgba(0, 0, 0, 0.6);
 }
 
 [data-theme="light"] .settings-content {
     background: rgba(255, 255, 255, 0.98);
     border: 2px solid #cbd5e1;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
 }
 
 [data-theme="light"] .settings-title {
-    color: #0f172a;
-    font-weight: 700;
+    color: #0a0f1a;
+    font-weight: 800;
 }
 
 [data-theme="light"] .settings-section {
-    background: rgba(241, 245, 249, 0.7);
+    background: rgba(241, 245, 249, 0.9);
     border: 2px solid #cbd5e1;
 }
 
 [data-theme="light"] .settings-section:hover {
-    background: rgba(226, 232, 240, 0.9);
-    border-color: #94a3b8;
+    background: rgba(226, 232, 240, 1);
+    border-color: #64748b;
 }
 
 [data-theme="light"] .section-title {
-    color: #0f172a;
-    font-weight: 700;
+    color: #0a0f1a;
+    font-weight: 800;
 }
 
 [data-theme="light"] .input-label {
-    color: #334155;
-    font-weight: 600;
+    color: #1e293b;
+    font-weight: 700;
 }
 
 [data-theme="light"] .input-field,
 [data-theme="light"] .select-field {
     background: white;
     border: 2px solid #cbd5e1;
-    color: #0f172a;
-    font-weight: 500;
+    color: #0a0f1a;
+    font-weight: 600;
 }
 
 [data-theme="light"] .input-field:focus,
 [data-theme="light"] .select-field:focus {
     border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
     background: white;
 }
 
 [data-theme="light"] .input-hint {
-    color: #64748b;
-    font-weight: 500;
-}
-
-[data-theme="light"] .enhanced-slider {
-    background: linear-gradient(90deg, #10b981 0%, #f59e0b 50%, #ef4444 100%);
-}
-
-[data-theme="light"] .slider-labels {
     color: #475569;
     font-weight: 600;
 }
 
-[data-theme="light"] .current-limit-display {
-    background: rgba(239, 68, 68, 0.15);
-    border: 2px solid rgba(239, 68, 68, 0.4);
-    color: #dc2626;
+[data-theme="light"] .slider-labels {
+    color: #1e293b;
     font-weight: 700;
+}
+
+[data-theme="light"] .current-limit-display {
+    background: rgba(239, 68, 68, 0.2);
+    border: 2px solid rgba(239, 68, 68, 0.5);
+    color: #991b1b;
+    font-weight: 800;
 }
 
 [data-theme="light"] .radio-option {
-    background: rgba(241, 245, 249, 0.7);
+    background: rgba(241, 245, 249, 0.9);
     border: 2px solid #cbd5e1;
+    color: #1e293b;
+    font-weight: 600;
 }
 
 [data-theme="light"] .radio-option:hover {
-    background: rgba(226, 232, 240, 0.9);
+    background: rgba(226, 232, 240, 1);
+    border-color: #64748b;
 }
 
 [data-theme="light"] .radio-option input[type="radio"]:checked + span {
-    color: #2563eb;
-    font-weight: 700;
+    color: #1e40af;
+    font-weight: 800;
 }
 
 [data-theme="light"] .theme-btn {
-    background: rgba(241, 245, 249, 0.7);
+    background: rgba(241, 245, 249, 0.9);
     border: 2px solid #cbd5e1;
-    color: #475569;
+    color: #1e293b;
+    font-weight: 600;
 }
 
 [data-theme="light"] .theme-btn:hover {
-    background: rgba(226, 232, 240, 0.9);
+    background: rgba(226, 232, 240, 1);
+    border-color: #64748b;
 }
 
 [data-theme="light"] .theme-btn.active {
     background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
     color: white;
     border-color: #1d4ed8;
+    font-weight: 800;
+}
+
+/* ============================================
+   履歴
+   ============================================ */
+
+[data-theme="light"] .history-container {
+    background: rgba(241, 245, 249, 0.8);
+    border: 2px solid #cbd5e1;
+}
+
+[data-theme="light"] .history-item {
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid rgba(59, 130, 246, 0.3);
+    color: #0a0f1a;
+    font-weight: 600;
+}
+
+[data-theme="light"] .history-item:hover {
+    background: white;
+    border-color: #3b82f6;
+}
+
+[data-theme="light"] .history-empty {
+    color: #475569;
+    font-weight: 600;
+}
+
+/* ============================================
+   チャート
+   ============================================ */
+
+[data-theme="light"] .chart-container {
+    background: rgba(241, 245, 249, 0.8);
+    border: 2px solid #cbd5e1;
+}
+
+[data-theme="light"] #chartPlaceholder {
+    color: #475569;
+    font-weight: 600;
+}
+
+/* ============================================
+   勝者表示の色
+   ============================================ */
+
+[data-theme="light"] .winner-player {
+    color: #1e40af;
+    font-weight: 800;
+}
+
+[data-theme="light"] .winner-banker {
+    color: #dc2626;
+    font-weight: 800;
+}
+
+[data-theme="light"] .winner-tie {
+    color: #0891b2;
+    font-weight: 800;
+}
+
+/* ============================================
+   リザルト表示
+   ============================================ */
+
+[data-theme="light"] .result-display {
+    background: rgba(241, 245, 249, 0.9);
+    border: 2px solid #cbd5e1;
+}
+
+[data-theme="light"] .result-row {
+    color: #0a0f1a;
     font-weight: 700;
+}
+
+[data-theme="light"] #winnerValue {
+    font-weight: 800;
+}
+
+/* ============================================
+   モバイルタブナビゲーション
+   ============================================ */
+
+[data-theme="light"] .mobile-tab-nav {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
+}
+
+[data-theme="light"] .mobile-tab-btn {
+    background: rgba(255, 255, 255, 0.8);
+    border: 2px solid rgba(59, 130, 246, 0.3);
+    color: #1e293b;
+    font-weight: 700;
+}
+
+[data-theme="light"] .mobile-tab-btn:hover {
+    background: white;
+    border-color: #3b82f6;
+}
+
+[data-theme="light"] .mobile-tab-btn.active {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border-color: #1d4ed8;
+    color: white;
+    font-weight: 800;
+}
+
+/* ============================================
+   その他の重要な要素
+   ============================================ */
+
+[data-theme="light"] #currentBetAmount {
+    color: #b45309 !important;
+    font-weight: 800 !important;
+}
+
+[data-theme="light"] #currentBetAmount.martingale-high {
+    color: #991b1b !important;
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.4);
+}
+
+/* ============================================
+   影の強調（視認性向上）
+   ============================================ */
+
+[data-theme="light"] .card {
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="light"] .stat-highlight {
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.5);
+}
+
+[data-theme="light"] .session-profit {
+    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.5);
+}
+
+[data-theme="light"] .statistics-card {
+    box-shadow: 0 2px 15px rgba(59, 130, 246, 0.2);
+}
+
+/* ============================================
+   フォント強調（モバイル含む）
+   ============================================ */
+
+@media (max-width: 768px) {
+    [data-theme="light"] .funds-amount,
+    [data-theme="light"] #currentBetAmount,
+    [data-theme="light"] .stat-value,
+    [data-theme="light"] .profit-value {
+        font-weight: 900;
+    }
+    
+    [data-theme="light"] .stat-label,
+    [data-theme="light"] .risk-label,
+    [data-theme="light"] .input-label {
+        font-weight: 700;
+    }
+}
+
+/* ============================================
+   通貨セレクターモーダル
+   ============================================ */
+
+[data-theme="light"] .currency-modal {
+    background: rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="light"] .currency-modal-content {
+    background: rgba(255, 255, 255, 0.98);
+    border: 2px solid #cbd5e1;
+}
+
+[data-theme="light"] .currency-modal-content h2 {
+    color: #0a0f1a;
+    font-weight: 800;
+}
+
+[data-theme="light"] .modal-description {
+    color: #1e293b;
+    font-weight: 600;
+}
+
+[data-theme="light"] .currency-option {
+    background: rgba(241, 245, 249, 0.9);
+    border: 2px solid #cbd5e1;
+    color: #0a0f1a;
+}
+
+[data-theme="light"] .currency-option:hover {
+    background: white;
+    border-color: #3b82f6;
+}
+
+[data-theme="light"] .currency-name {
+    color: #0a0f1a;
+    font-weight: 700;
+}
+
+[data-theme="light"] .currency-code {
+    color: #475569;
+    font-weight: 600;
 }
