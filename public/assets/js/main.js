@@ -79,6 +79,27 @@ function updateCurrencyOptions() {
     });
 }
 
+function updateLanguageOptions() {
+    const languageSelect = document.getElementById('languageSelect');
+    if (!languageSelect) return;
+    
+    const languages = [
+        { code: 'ja', flag: '🇯🇵', name: { ja: '日本語', en: 'Japanese', es: 'Japonés', zh: '日语', ko: '일본어', fr: 'Japonais' } },
+        { code: 'en', flag: '🇺🇸', name: { ja: '英語', en: 'English', es: 'Inglés', zh: '英语', ko: '영어', fr: 'Anglais' } },
+        { code: 'es', flag: '🇪🇸', name: { ja: 'スペイン語', en: 'Spanish', es: 'Español', zh: '西班牙语', ko: '스페인어', fr: 'Espagnol' } },
+        { code: 'zh', flag: '🇨🇳', name: { ja: '中国語', en: 'Chinese', es: 'Chino', zh: '中文', ko: '중국어', fr: 'Chinois' } },
+        { code: 'ko', flag: '🇰🇷', name: { ja: '韓国語', en: 'Korean', es: 'Coreano', zh: '韩语', ko: '한국어', fr: 'Coréen' } },
+        { code: 'fr', flag: '🇫🇷', name: { ja: 'フランス語', en: 'French', es: 'Francés', zh: '法语', ko: '프랑스어', fr: 'Français' } }
+    ];
+    
+    languages.forEach((language, index) => {
+        const option = languageSelect.options[index];
+        if (option) {
+            option.textContent = `${language.flag} ${language.name[currentLanguage]}`;
+        }
+    });
+}
+
 function formatCurrency(amount, currency) {
     const currencyCode = currency || currentCurrency;
     const currencyConfig = CURRENCIES[currencyCode];
@@ -217,6 +238,10 @@ function updateUIText() {
     }
     
     // 通貨セレクトオプションの更新
+    updateCurrencyOptions();
+    
+    // 言語セレクトオプションの更新
+    updateLanguageOptions();
     
     updateDisplay();
     
